@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>新产品设计开发控制程序指南</title>
+  <style>
+    :root { --ink:#1d2c32; --muted:#60727a; --navy:#142f3b; --teal:#0b8179; --mint:#e8f4ef; --paper:#f4f6f3; --line:#d7e2dc; --orange:#c86e39; --red:#a74435; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:"Microsoft YaHei", "PingFang SC", sans-serif; line-height:1.72; }
+    a { color:inherit; }
+    .hero { background:var(--navy); color:#fff; padding:62px max(6vw, calc((100vw - 1280px)/2)) 48px; position:relative; overflow:hidden; }
+    .hero::after { content:""; position:absolute; width:460px; height:460px; right:-130px; top:-230px; border:1px solid #ffffff28; border-radius:50%; box-shadow:0 0 0 76px #ffffff08, 0 0 0 152px #ffffff05; pointer-events:none; }
+    .eyebrow { color:#86d6ca; font-size:12px; font-weight:700; letter-spacing:.17em; }
+    h1 { font-size:clamp(30px, 4.5vw, 54px); line-height:1.2; letter-spacing:.02em; margin:15px 0; }
+    .hero p { max-width:860px; color:#c6dcd9; margin:0; font-size:16px; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:25px; }
+    .hero-meta span { border:1px solid #ffffff35; border-radius:99px; color:#d9ebe8; font-size:12px; padding:4px 12px; }
+     .layout { max-width:1280px; min-width:0; margin:auto; display:grid; grid-template-columns:228px minmax(0,1fr); gap:42px; padding:38px 28px 78px; align-items:start; }
+    nav { position:sticky; top:22px; border-left:1px solid #c6d7d0; padding-left:17px; }
+    nav strong { display:block; color:var(--muted); font-size:11px; letter-spacing:.15em; margin-bottom:9px; }
+     nav a { display:block; min-width:0; color:#425c63; font-size:13px; padding:5px 0; text-decoration:none; overflow-wrap:anywhere; }
+     .subnav { display:none; }
+    nav a:hover, nav a:focus { color:var(--teal); }
+    section { scroll-margin-top:20px; margin-bottom:62px; }
+    .section-head { display:flex; gap:14px; align-items:baseline; border-bottom:1px solid #b9ccc5; padding-bottom:13px; margin-bottom:23px; }
+    .number { color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.1em; }
+    h2 { font-size:27px; line-height:1.3; margin:0; }
+    h3 { font-size:19px; line-height:1.4; margin:0 0 9px; }
+    h4 { font-size:15px; margin:0 0 5px; }
+    p { margin:0 0 12px; }
+    .lead { font-size:17px; max-width:900px; }
+    .muted, .source { color:var(--muted); }
+    .small { font-size:13px; }
+    .source { font-size:12px; margin-top:10px; }
+    .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:22px 0; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:19px; }
+    .card .tag, .stage-label { color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.08em; }
+    .card h3 { margin-top:8px; }
+    .card p { color:#536a71; font-size:14px; margin-bottom:0; }
+    .note { background:var(--mint); border-left:3px solid var(--teal); font-size:14px; margin:19px 0; padding:14px 17px; }
+    .note.warn { background:#fff1e8; border-left-color:var(--orange); }
+    .note.red { background:#fff0ee; border-left-color:var(--red); }
+    .flow { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; margin:24px 0 18px; }
+    .flow a { background:var(--navy); border-radius:5px; color:#fff; min-height:111px; padding:14px 11px; position:relative; text-decoration:none; }
+    .flow a:hover { background:var(--teal); }
+    .flow b { color:#8ad8cc; display:block; font-size:11px; margin-bottom:8px; }
+    .flow span { display:block; font-size:14px; font-weight:700; line-height:1.35; }
+    .flow small { color:#c8dedb; display:block; font-size:11px; line-height:1.45; margin-top:6px; }
+    .timeline { border-left:2px solid #b9d8cf; margin:25px 0 0 9px; padding-left:26px; }
+    .stage { margin-bottom:29px; position:relative; }
+    .stage::before { background:var(--teal); border:3px solid var(--paper); border-radius:50%; content:""; height:12px; left:-34px; position:absolute; top:5px; width:12px; }
+    .stage h3 { margin:3px 0 8px; }
+    .stage p { font-size:14px; }
+    details { background:#fff; border:1px solid var(--line); border-radius:7px; margin:10px 0; }
+    summary { cursor:pointer; display:flex; font-weight:700; gap:11px; list-style:none; padding:15px 19px; }
+    summary::-webkit-details-marker { display:none; }
+    summary::after { color:var(--teal); content:"+"; font-size:21px; font-weight:400; margin-left:auto; }
+    details[open] summary::after { content:"−"; }
+    .detail-body { border-top:1px solid #edf1ee; font-size:14px; padding:17px 19px 19px; }
+    .detail-body p:last-child { margin-bottom:0; }
+    .pill { background:#e2f2ed; border-radius:99px; color:#08746d; display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; white-space:nowrap; }
+    .split { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .split .card { height:100%; }
+    .table-wrap { background:#fff; border:1px solid var(--line); border-radius:7px; overflow-x:auto; }
+    table { border-collapse:collapse; font-size:13px; min-width:650px; width:100%; }
+    th { background:#eaf1ed; color:#45625d; font-size:12px; text-align:left; }
+    th, td { border-bottom:1px solid #e8eeea; padding:10px 13px; vertical-align:top; }
+    tr:last-child td { border-bottom:0; }
+    .tight td, .tight th { padding:8px 10px; }
+    .stage-table th:first-child, .stage-table td:first-child { width:15%; }
+    .status { color:var(--teal); font-weight:700; white-space:nowrap; }
+    .red-text { color:var(--red); }
+    ul { margin:8px 0 12px; padding-left:21px; }
+    li { margin:5px 0; }
+    .filter { background:#fff; border:1px solid #c6d8d1; border-radius:6px; font:inherit; font-size:14px; margin:6px 0 14px; padding:11px 13px; width:100%; }
+    .filter:focus { outline:2px solid #8ccdc1; outline-offset:1px; }
+    footer { border-top:1px solid var(--line); color:var(--muted); font-size:12px; padding-top:17px; }
+     @media (max-width:1000px) { .layout { grid-template-columns:1fr; gap:25px; } nav { border-bottom:1px solid var(--line); border-left:0; display:flex; flex-wrap:wrap; gap:4px 15px; padding:0 0 13px; position:static; } nav strong { margin:0; width:100%; } nav a { padding:3px 0; } .flow { grid-template-columns:repeat(4,1fr); } }
+     @media (max-width:650px) { .hero { padding:40px 21px 35px; } .hero p { min-width:0; overflow-wrap:anywhere; } .layout { padding:24px 17px 50px; } main { min-width:0; } nav { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 14px; } nav strong { grid-column:1 / -1; } nav a { min-width:0; } .cards, .split { grid-template-columns:1fr; } .flow { grid-template-columns:repeat(2,minmax(0,1fr)); } .flow a { min-height:101px; min-width:0; } h2 { font-size:23px; } section { margin-bottom:48px; } }
+    @media print { nav, .filter { display:none; } .layout { display:block; padding:20px; } .hero { padding:30px; print-color-adjust:exact; } details, details .detail-body { display:block; } section { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">QMB-GB.0025-2025 · MIDEA REFRIGERATION</div>
+    <h1>新产品设计开发<br>控制程序指南</h1>
+    <p>将正式程序中的阶段、交付、评审、问题闭环和特殊项目要求，整理成一份可离线检索的项目执行地图。制度原文、整理说明和待确认事项分开标示。</p>
+    <div class="hero-meta"><span>正式程序：2025-03-12发布</span><span>2025-03-14实施</span><span>替换 QMB-GB.0025-2022a</span><span>27页PDF</span><span>离线阅读</span></div>
+  </header>
+  <div class="layout">
+    <nav aria-label="页面目录">
+      <strong>阅读导航</strong>
+      <a href="#overview">01　文件定位</a><a href="#lifecycle">02　全生命周期</a><a href="#levels">03　等级与裁剪</a><a href="#planning">04　单产品规划</a><a href="#design">05　方案阶段</a><a href="#trial-build">06　产品试制</a><a href="#trial-run">07　产品试产</a><a href="#gates">08　阶段门与红线</a><a href="#special">09　特殊项目</a><a href="#roles">10　角色职责</a><a href="#records">11　交付与引用</a><a href="#limits">12　边界与核对</a>
+    </nav>
+    <main>
+      <section id="overview">
+        <div class="section-head"><span class="number">01 / SOURCE</span><h2>先确定文件定位</h2></div>
+        <p class="lead">这不是对Excel流程分权表的重述，而是对正式企业标准 <strong>QMB-GB.0025-2025《新产品设计开发控制程序》</strong> 的阅读辅助。它管的是冰箱事业部新品从单产品规划到项目结项的过程角色、责任、周期、转阶段规则和考核要求。</p>
+        <div class="cards">
+          <div class="card"><span class="tag">制度明确</span><h3>控制边界</h3><p>覆盖单产品规划、方案设计、产品试制、产品试产、投产鉴定、上市决策、产品退市；销售与客户服务另有管理办法。</p></div>
+          <div class="card"><span class="tag">阅读方式</span><h3>先分类再执行</h3><p>先判断项目等级、开发形式、品牌/区域、是否开模和是否派生，再确定需要的节点和交付物。</p></div>
+          <div class="card"><span class="tag">证据意识</span><h3>交付即阶段证据</h3><p>会议纪要、评审报告、测试报告、BOM、封样、问题库记录和系统审批共同构成转阶段依据。</p></div>
+        </div>
+        <div class="note"><strong>标识规则：</strong>页面中的“PDF明确”是原文要求的压缩转述；“整理说明”是为了帮助理解而做的流程归纳；“待确认”表示PDF引用了附件、流程手册或外部办法，但当前页面没有展开其完整内容。</div>
+        <div class="note warn"><strong>版本信息：</strong>PDF封面显示2025-03-12发布、2025-03-14实施，并替换《QMB-GB.0025-2022a 新产品设计开发控制程序》。正式执行仍应以受控系统中的有效版本、分权手册和最新引用文件为准。</div>
+        <p class="source">来源：PDF第1–3页，第1章“目的与范围”、第2章“规范性引用文件”。</p>
+      </section>
+
+      <section id="lifecycle">
+        <div class="section-head"><span class="number">02 / LIFECYCLE</span><h2>全生命周期：七个主环节，多个并行支撑</h2></div>
+        <p>程序第1章列出的主要环节是：<strong>单产品规划 → 方案设计 → 产品试制 → 产品试产 → 投产鉴定 → 上市决策 → 产品退市</strong>。第5章全流程图还展示了平台开发、先行研究、模块开发等支撑链，它们不是每个单产品项目都要完整走一遍。</p>
+        <div class="flow" aria-label="新产品生命周期主线">
+          <a href="#planning"><b>01</b><span>单产品规划</span><small>需求、概念、企划决策</small></a>
+          <a href="#design"><b>02</b><span>方案设计</span><small>专业评审、手板、综合方案</small></a>
+          <a href="#trial-build"><b>03</b><span>产品试制</span><small>方案验证、测试、样机鉴定</small></a>
+          <a href="#trial-run"><b>04</b><span>产品试产</span><small>制造组织、试产验证、封样</small></a>
+          <a href="#gates"><b>05</b><span>投产鉴定</span><small>零重大问题、资料齐套</small></a>
+          <a href="#launch"><b>06</b><span>上市决策</span><small>按规格书计划提交</small></a>
+          <a href="#lifecycle-end"><b>07</b><span>产品退市</span><small>生命周期决策与退出</small></a>
+        </div>
+        <div class="timeline">
+          <article class="stage" id="launch"><div class="stage-label">06 · MARKET ENTRY</div><h3>上市决策</h3><p><strong>PDF明确：</strong>产品企划应在产品规格书要求的计划时间前提交上市决策流程。</p><p><strong>整理说明：</strong>上市决策不是投产鉴定的同义词；投产鉴定是开发和制造准入，上市决策是产品进入市场前的决策节点。</p><div class="source">来源：PDF第20页，6.6。</div></article>
+          <article class="stage" id="lifecycle-end"><div class="stage-label">07 · PRODUCT LIFECYCLE</div><h3>产品生命周期与退市</h3><p><strong>PDF明确：</strong>产品企划根据市场监控数据分析产品表现，确定生命周期状态并组织事业部产委会决策；随后综合售后维护、渠道和物料库存等情况管理退市。</p><div class="source">来源：PDF第25页，6.8.1–6.8.2。</div></article>
+        </div>
+        <div class="note"><strong>整理说明：</strong>第5页的跨部门流程图把“产品策略平台、平台开发部、先行研究院、模块开发部、产品开发部、工厂”等泳道放在同一图中。实际项目应按项目等级和适用开发形态裁剪，不应把图上的所有支撑活动理解为固定串行步骤。投产鉴定后还需完成首批产和项目结项；项目结项是控制动作，但不单列为第1章所列的主要环节。</div>
+      </section>
+
+      <section id="levels">
+        <div class="section-head"><span class="number">03 / TAILORING</span><h2>项目等级决定流程深度</h2></div>
+        <p>项目等级按结构、性能、电控、外观四个维度的全新开发程度和综合难度划分。最终等级以开发立项等级为准，变更等级需在GPM系统走等级变更流程；升级后按新等级增删流程任务。</p>
+        <div class="table-wrap"><table class="tight"><thead><tr><th>等级</th><th>PDF定义</th><th>执行含义</th></tr></thead><tbody>
+          <tr><td><strong>T类</strong></td><td>结构、性能、电控、外观中有三个或三个以上全面全新开发。</td><td>完整度和评审深度最高，关键专业评审和里程碑通常均为必选。</td></tr>
+          <tr><td><strong>I类</strong></td><td>上述四个维度中有两个全新开发，或相当于此类难度。</td><td>基本沿用T/I类完整技术评审和综合方案评审要求。</td></tr>
+          <tr><td><strong>II类</strong></td><td>上述四个维度中有一个全新开发，或相当于此类难度。</td><td>对新开发或变更专业模块必须评审；部分专业交付可按表格裁剪。</td></tr>
+          <tr><td><strong>III类</strong></td><td>已有机型基础上的派生产品，结构、性能、电控、外观有部分变更，或相当于此类难度。</td><td>重点验证变更内容；无开模项目可能减少样机、评审和试制节点。</td></tr>
+        </tbody></table></div>
+        <div class="note warn"><strong>PDF明确：</strong>单专业开发难度高、验证周期长的项目可以申请升级；在满足技术开发难度等级的前提下，只允许升级，不允许降级。销售区域变化要重新综合评估，外销OEM转内销还需补做内销相关用户研究、体验、基本性能、可靠性和安全安规等项目。</div>
+        <h3>里程碑裁剪重点</h3>
+        <div class="table-wrap"><table class="tight stage-table"><thead><tr><th>阶段</th><th>T / I类</th><th>II类</th><th>III类</th><th>备注</th></tr></thead><tbody>
+          <tr><td>单产品规划</td><td>MS1、企划立项、工业设计评审、产品策划决策基本完整</td><td>部分规划节点可选，产品策划决策仍是主门</td><td>规划类节点可按项目裁剪</td><td>实际以项目等级和流程框架配置为准</td></tr>
+          <tr><td>方案与MIS2</td><td>结构、电控、性能专业评审及综合方案评审</td><td>新开发或更改专业模块必须评审</td><td>主要保留项目立项、综合方案评审及必要模块评审</td><td>可靠性、安规、可制造性、可维修性可与其他专业评审合并</td></tr>
+          <tr><td>试制/试产/投产</td><td>完整验证链</td><td>试制、试产、投产鉴定为主</td><td>无开模项目可减少试制和试产前置节点</td><td>投产鉴定条件不能用“条件通过”替代</td></tr>
+        </tbody></table></div>
+        <p class="source">来源：PDF第3–4页3.5；第20–21页6.7.2.1–6.7.2.3；第22页6.7.3。</p>
+      </section>
+
+      <section id="planning">
+        <div class="section-head"><span class="number">04 / SINGLE-PRODUCT PLANNING</span><h2>单产品规划：先证明“做什么、为什么做、能不能做”</h2></div>
+        <p>单产品规划阶段由产品企划主导，核心是把年度/内外销企划大纲转成可决策的产品规划书、用户价值和技术/成本边界。</p>
+        <div class="table-wrap"><table><thead><tr><th>步骤</th><th>主要活动</th><th>关键输出或门槛</th><th>页码</th></tr></thead><tbody>
+          <tr><td>立项与初稿</td><td>内销企划大纲录入GPM，外销按大纲创建项目；PLM创建产品规划书初稿，组建团队和执行计划。</td><td>项目必须来源于年度/内外销企划大纲；初稿包含概念、批产/上市日期、标准化、成本、性能、功能、工业设计、可靠性目标等。</td><td>7</td></tr>
+          <tr><td>概念工程</td><td>内销T/I类及重点II类开展趋势、定位、竞品、用户画像、差异和卖点研究；体验及NPS问题导入。</td><td>《概念工程研究报告》并在立项路演中评审和决策。</td><td>7</td></tr>
+          <tr><td>工业设计与测评</td><td>完成草图、2D、3D、手板；T/I及重点II类组织外观效果图和手板内部专业评审；用户研究组织产品组合测评。</td><td>会议纪要、优化意见、《产品组合测评报告》、《体验及NPS改善问题闭环情况》。</td><td>7–8</td></tr>
+          <tr><td>技术可行性</td><td>评估技术实现、制造实现、综合成本、四新物料工艺路线、供应风险和专利。</td><td>《目标材料审批表》、《初步专利检索分析报告》、《技术可行性评估报告》、《新物料清单》。</td><td>8</td></tr>
+          <tr><td>立项路演与策划决策</td><td>形成具体产品构想，事业部决策是否进入产品开发；修订产品规划书并启动产品策划决策。</td><td>项目等级、基本性能目标、可靠性目标、成本/毛利、用户和产品定位等交付；产品规划书下发前关闭单产品规划阶段AB问题。</td><td>8–9、22–23</td></tr>
+        </tbody></table></div>
+        <div class="note red"><strong>关键否决点：</strong>未通过立项路演需重新规划路演；企划、工业设计和开发外观方案未达成共识时按程序逐级决策；产品规划书下发前，单产品规划阶段AB类问题必须关闭。</div>
+        <p class="source">来源：PDF第7–9页6.1.1–6.1.11；第22页6.7.5.4。</p>
+      </section>
+
+      <section id="design">
+        <div class="section-head"><span class="number">05 / DESIGN</span><h2>方案阶段：把概念变成可评审、可制造、可验证的方案</h2></div>
+        <p>方案阶段以项目经理为主要负责人。原则上，所有技术方案调整、改善或更改需求应在本阶段提出；综合方案评审之后再新增的技术变化，必须按变更规则处理。</p>
+        <details open><summary><span class="pill">输入</span> 立项、计划和产品规格</summary><div class="detail-body"><p>产品企划在MPLM创建正式产品规划书，项目经理据此开发立项、组建团队、召开项目启动会，输出《项目启动会会议纪要》和《项目WBS计划》。T/I类项目在单产品规划阶段还需组织MIS工作坊，并在综合方案评审时对设计MIS会议纪要形成闭环结论。</p><p class="source">来源：PDF第9页6.2.1、第20页6.7.1。</p></div></details>
+        <details><summary><span class="pill">专业设计</span> 结构、性能、电控、电器、包装和专利</summary><div class="detail-body"><p>各专业开展方案设计和DFMEA，并组织可靠性、用户体验、工艺、品质、模具工艺、供应链等参与评审。结构方案评审完成后图纸设计发放，再按MIS2/MIS3和模具规则启动开模。产线技改需求最迟在MIS3预评审确认，试制样机需上大线验证适配，试产前完成技改。</p><p class="source">来源：PDF第9页6.2.2。</p></div></details>
+        <details><summary><span class="pill">可靠性与专利</span> 先过专项门，再进综合方案评审</summary><div class="detail-body"><p>T/I类强制输出可靠性五大交付：企划书可靠性必填项、可靠性规划书、可靠性试验方案、产品设计规格书、FBD及线上DFMEA分析报告；II类不强制输出FBD及DFMEA。可靠性评审通过后方可进入综合方案评审。专利工程师需完成客观检索、核心专利定义、《专利布局清单》和《专利评估报告》。</p><p class="source">来源：PDF第9–10页6.2.3–6.2.4。</p></div></details>
+        <details><summary><span class="pill">手板与模具</span> 评审、测试、供应商和首样同步推进</summary><div class="detail-body"><p>II类及以上全新开发项目需做可制造性评审；II类及以上需做存储运输、安装维修性评审。方案阶段由研发主导手板摸底测试，由项目组、设计可靠性和品质共同确认方案，用户研究主导体验测评。模具立项后3天内确定开模厂（紧急项目2天），招标后3天完成模具方案初稿、7天锁图，模具到制件厂3天内试模打样。</p><p class="source">来源：PDF第10–11页6.2.6–6.2.8。</p></div></details>
+        <details><summary><span class="pill">综合方案评审</span> 方案阶段的冻结和转阶段判断</summary><div class="detail-body"><p>设计可靠性专家预审综合方案评审资料。会议重点复盘摸底测试与规格书、各专业问题、成本达标、专利布局；A类问题必须关闭，否则不得进入下一阶段。A类及重点B类问题的失败案例按要求转化为失败案例，基本性能应优于竞品或现有平台产品。</p><p class="source">来源：PDF第11页6.2.9–6.2.10。</p></div></details>
+
+        <div class="note"><strong>方案阶段阅读方法：</strong>下面把程序 6.2.10 中的 24 项工作按控制逻辑归并为八个工作包，便于理解输入、活动、输出之间的关系。归并只是整理说明，不替代GPM/MPLM/EAM中的实际任务、附件字段、审批流和项目等级裁剪。</div>
+        <h3 id="design-map">方案阶段总流程：从正式规划书到综合方案评审</h3>
+        <div class="table-wrap"><table class="tight stage-table"><thead><tr><th>顺序</th><th>工作包与程序节点</th><th>主要输入</th><th>主要输出</th><th>典型附件/参照</th></tr></thead><tbody>
+          <tr><td>01</td><td><strong>立项启动</strong><br>项目立项及启动、MIS工作坊</td><td>正式产品规划书、产品等级、目标性能/可靠性/成本、上市和批产计划</td><td>项目启动会会议纪要、WBS计划、里程碑任务、设计MIS会议纪要或结论</td><td>附件13项目等级裁定参考表；附件14研发流程框架；附件16平台需求书；附件19平台企划书</td></tr>
+          <tr><td>02</td><td><strong>设计输入展开</strong><br>新物料清单、结构/性能/电控/电器专业评审</td><td>产品规划书、工业设计需求、平台/模块接口、设计标准、历史问题和竞品资料</td><td>各专业方案评审报告、图纸/方案、初版新物料清单、专业问题及整改要求</td><td>附件6工业设计需求书模板；附件18平台规格书及接口规则；附件27模块需求书；附件29新物料清单</td></tr>
+          <tr><td>03</td><td><strong>风险与专项评审</strong><br>可靠性、安规安全、可制造性、可维修性评审</td><td>产品设计规格目标、功能卖点、专业方案、四新物料和历史失效经验</td><td>可靠性规划/试验方案、FBD/DFMEA（T/I强制，II类按程序要求）、可制造性/可维修性/安规结论</td><td>附件9技术可行性分析报告；附件18平台规格书及接口规则；相关可靠性、用户体验和安规受控办法</td></tr>
+          <tr><td>04</td><td><strong>专利与供应链</strong><br>专利评估、手板招标/制作、供方和物料风险识别</td><td>创新点、竞品和参考方案、物料清单、样机需求、供应商寻源条件</td><td>初步专利检索分析报告、专利布局清单/评估报告、手板样件、供应风险和送样计划</td><td>附件10各节点专利报告模板；附件29新物料清单；附件30各阶段其他交付模板</td></tr>
+          <tr><td>05</td><td><strong>手板样机验证</strong><br>手板组装、体验测评、手板摸底测试</td><td>手板/图纸、测试方案、体验任务、产品规格书、样机和新物料</td><td>手板摸底测试报告、产品测试综合评价报告、体验问题点清单、装配/设计整改项</td><td>附件2设计提案报告参考模板；附件3外观共性元素评估报告模板；附件4 COLMO评估报告；用户体验管理办法</td></tr>
+          <tr><td>06</td><td><strong>模具与首样</strong><br>开模申请、模具招标、模具结构评审、模具制作及跟进</td><td>结构图纸、模具规格书、可投模零部件、供应路线和制件要求</td><td>开模流程记录、模具供应商/制件厂、模具结构评审结论、首样及问题整改记录</td><td>附件15模具设计评审表；附件14研发流程框架；模具全生命周期和模具管理受控文件</td></tr>
+          <tr><td>07</td><td><strong>产品综合评价</strong><br>资料、测试和问题关闭检查</td><td>各专业评审结论、手板测试/体验结果、模具首样、成本和专利资料、问题库</td><td>产品综合评价结论、未关闭问题整改方案、转综合方案评审资料包</td><td>附件30各阶段其他交付模板；MPLM问题库；专业Checklist和会议纪要</td></tr>
+          <tr><td>08</td><td><strong>综合方案评审</strong><br>设计可靠性预审、会议评审、转阶段决策</td><td>完整评审资料、摸底测试与规格书对比、成本达标情况、专利布局、问题复盘</td><td>综合方案评审结论、A类问题关闭证据、A/B重点问题失败案例、下一阶段任务和约束</td><td>附件14研发流程框架；附件10专利报告模板；转阶段问题比例和封样要求</td></tr>
+        </tbody></table></div>
+        <p class="source">来源：PDF第9–12页6.2.1–6.2.10及6.2.10方案阶段总体要求表。工作包为本指南的整理归并。</p>
+
+        <h3>各环节输入、产物和附件关系</h3>
+        <details open><summary><span class="pill">01</span> 立项启动：把正式规划书转成可执行开发计划</summary><div class="detail-body"><p><strong>输入：</strong>产品企划通过产品策划决策后，在MPLM创建的正式产品规划书；其中应能看到产品定位、项目等级、基本性能目标、可靠性目标、成本/毛利、上市/批产计划、销售区域和开发约束。若属于平台或模块开发，还要识别平台需求、接口和复用边界。</p><p><strong>活动：</strong>项目经理依据正式产品规划书开发立项、组建项目团队、确定里程碑和详细开发计划；T/I类项目的MIS工作坊应形成明确结论，并在综合方案评审阶段对设计MIS会议纪要形成闭环。</p><p><strong>输出示例：</strong>《项目启动会会议纪要》应能回答“做什么、谁负责、何时完成、按什么等级和节点评审”；《项目WBS计划》应把专业评审、手板、测试、模具和综合方案评审分解为可跟踪任务。</p><p><strong>附件参照：</strong>附件13《项目等级裁定参考表》用于等级识别参考；附件14《研发流程框架》用于流程框架自定义；平台类项目可参照附件16《平台需求书》、附件19《平台企划书》。附件字段和线上任务的实际启用状态需以当前系统确认。</p><p class="source">PDF第9页6.2.1；第3–4页3.5；第21页6.7.2.3。</p></div></details>
+        <details><summary><span class="pill">02</span> 设计输入展开：将规划目标拆成专业方案</summary><div class="detail-body"><p><strong>输入：</strong>正式产品规划书、设计目标、工业设计需求、平台规格和接口、模块需求、适用设计标准、历史相似产品问题、竞品信息，以及项目等级对应的评审深度。</p><p><strong>活动：</strong>结构、性能、电控/电器、包装、专利等专业分别开展方案设计和DFMEA分析，组织可靠性、用户体验、工艺、品质、模具工艺和供应链等代表参加专业评审。结构方案评审完成后发放图纸，再按MIS2/MIS3和模具规则启动开模。</p><p><strong>输出示例：</strong>结构输出方案图纸、装配接口和开模边界；电控输出控制方案、智能功能接口和相关资料；性能输出目标参数和实现方案；每个专业至少应有评审报告、明确结论、问题清单、责任人和完成时间。</p><p><strong>附件参照：</strong>附件6《工业设计需求书模板》可用于目标顾客、目标价格、产品定位、功能规划、结构限制、GUI/CMF要求等输入；附件18《平台规格书及接口规则（含功能组合）》可用于平台参数、零部件新增/借用、接口尺寸和功能组合；附件27《模块需求书模板》可用于模块明细、选项、成本和模具费用等输入；附件29《新物料清单》可用于材料、规格、变更差异、四新属性、标准、开模、供方和风险字段。</p><p class="source">PDF第9页6.2.2；第11–12页6.2.10工作项4–9。</p></div></details>
+        <details><summary><span class="pill">03</span> 可靠性和专项评审：先确认风险可控，再进入综合评审</summary><div class="detail-body"><p><strong>输入：</strong>产品企划需求和功能卖点、产品设计规格目标、专业方案、历史市场/相似机型问题、四新物料信息、目标环境和用户使用条件。</p><p><strong>活动：</strong>项目经理组织设计可靠性和品质可靠性开展可靠性风险分析；可靠性改进工程师提供市场数据分析；项目经理、设计可靠性和品质可靠性明确根因与整改措施。II类及以上全新开发项目进行可制造性评审；II类及以上还需进行存储运输、安装维修性评审；安规安全按适用设计标准评审。</p><p><strong>输出示例：</strong>T/I类可靠性五大交付为企划书可靠性必填项、可靠性规划书、可靠性试验方案、产品设计规格书、FBD及线上DFMEA分析报告；II类不强制输出FBD及DFMEA，但仍需按项目适用要求完成可靠性和风险控制。可制造性评审应形成工艺路线、可制造性提升指标和改善方案。</p><p><strong>附件参照：</strong>附件9《技术可行性分析报告》可作为技术实现难度、新技术/新材料/新工艺、预估成本和结论的输入分析示例；附件18可作为平台接口和继承边界核对依据；可靠性、用户体验和安规相关模板需以主程序引用的最新受控办法为准。</p><p class="source">PDF第9–10页6.2.3、6.2.5–6.2.6；第11–12页6.2.10工作项9、15、16、18。</p></div></details>
+        <details><summary><span class="pill">04</span> 专利、四新物料和供应链：把创新风险转成可追溯清单</summary><div class="detail-body"><p><strong>输入：</strong>项目简介和技术创新点、竞品和参考技术方案、拟采用方案、专业新物料清单、供方寻源条件、法规和有害物质要求。</p><p><strong>活动：</strong>专利工程师进行客观检索和评估，定义核心专利；项目经理组织工程部、供应链和零部件工程中心开展四新物料评审，检讨有害物质法规、供方资质、产能和送样风险。新物料供方原则上寻源两家以上，特殊情况按程序申请备案。</p><p><strong>输出示例：</strong>专利输出《初步专利检索分析报告》《专利布局清单》《专利评估报告》；物料输出初版《新物料清单》、供方/送样计划、风险物料识别和成本估价。专利清单应能追溯检索策略、检索结论、专利名称/专利号/权利人/法律状态及是否申请专利。</p><p><strong>附件参照：</strong>附件10《各节点专利报告模板（结构化）》包含项目创新点、项目专利需求、竞品信息、参考技术方案、检索策略、检索结论、相关专利清单和专利布局字段；附件29《新物料清单》包含物料编码、名称、变更差异、材质牌号、规格、四新属性、有害性、阻燃等级、标准、是否开模、模具/供方和风险物料等字段。</p><p class="source">PDF第10页6.2.4、6.2.6.1；第11页6.2.10工作项3–4。</p></div></details>
+        <details><summary><span class="pill">05</span> 手板、体验和摸底测试：用样件验证设计输入是否成立</summary><div class="detail-body"><p><strong>输入：</strong>产品规格书、专业方案和图纸、手板制作需求、新物料、手板测试方案、用户体验任务、导购/用户测评对象和典型使用场景。</p><p><strong>活动：</strong>项目经理发起手板申请，手板商务招标并跟进制作；样机组装时检查手板件是否满足设计要求、样机可装配性和模块接口。研发主导手板摸底测试，项目组、设计可靠性和品质共同确认测试方案；用户研究主导可用性用户/导购测评、新品交叉评审和可选的APP高保真原型测评。</p><p><strong>输出示例：</strong>《手板摸底测试报告》记录测试项目、条件、结果和问题；《产品测试综合评价报告》形成综合评价；体验测评输出问题点清单并由项目组安排整改；设计提案和外观共性元素评估用于说明设计概念、外观方案及品牌共性检查。</p><p><strong>附件参照：</strong>附件2《设计提案报告参考模板》示例结构包括项目概述、研究综述、设计方案，以及趋势分析、用户洞察、竞品分析、设计方向、设计概念、2D/3D、GUI和CMF；附件3《外观共性元素评估报告模板》和附件4《COLMO外观共性元素评估报告》用于对应品牌/外观共性评估。体验类测评还应回到《QMB-GC11.0015 产品用户体验管理办法》。</p><p class="source">PDF第10页6.2.6.4–6.2.6.5；第11–12页6.2.10工作项10–14、17。</p></div></details>
+        <details><summary><span class="pill">06</span> 模具与首样：把结构方案转成可制造的模具和样件</summary><div class="detail-body"><p><strong>输入：</strong>结构评审通过的图纸、模具规格书、可投模零部件清单、产品外观要求、制件和供应路线、模具预算及供方资源。</p><p><strong>活动：</strong>完成EAM开模申请；模具管理组织招标和模具设计评审，供应链确定制件厂及外协/自制路线。程序要求模具立项完成后3天内确定开模厂，紧急项目2天；招标完成后完成模具方案初稿和锁图；模具到达制件厂后3天内完成试模打样。</p><p><strong>输出示例：</strong>开模申请和供应商确定记录、模具设计评审结论、模具问题清单、首样/试模样件和改模跟踪记录。模具评审应记录分型面、尖钢位、插穿位、段差、进胶、滑块/斜顶、冷却、顶出、排气、外观要求、评审结论和责任人。</p><p><strong>附件参照：</strong>附件15《模具设计评审表》提供上述模具检查项目和“可进行下一步工作/完善后再评审/重新设计”等结论选项；附件14《研发流程框架》用于确认模具节点与MIS2/MIS3的关系。模具管理制度和当前EAM流程决定实际审批及字段。</p><p class="source">PDF第9页6.2.2；第10–11页6.2.7–6.2.8；第11–12页6.2.10工作项19–22。</p></div></details>
+        <details><summary><span class="pill">07</span> 产品综合评价：将分散证据汇总成评审资料包</summary><div class="detail-body"><p><strong>输入：</strong>各专业评审报告和Checklist、可靠性/安规/可制造性/可维修性结论、专利和成本资料、手板测试及体验问题、模具首样状态、问题库和整改证据。</p><p><strong>活动：</strong>测试评价代表检查测试完成情况和问题关闭情况；项目经理组织项目组复盘各专业问题、规格书对比、成本达标、专利布局、手板/模具状态和剩余风险。未关闭问题必须明确责任人、措施、验证方式和完成时间，不能只写“后续跟进”。</p><p><strong>输出示例：</strong>产品综合评价结论、综合方案评审资料目录、问题关闭矩阵、转阶段风险清单和需带入下一阶段验证的任务。这里的“资料包”是整理说明，具体资料清单以项目等级、流程模板和系统任务为准。</p><p><strong>附件参照：</strong>附件30《各阶段其他交付模板》用于补充具体阶段交付；附件10专利报告、附件15模具评审、附件29新物料清单分别作为专项证据；各专业Checklist、会议纪要和MPLM问题库记录共同构成证据链。</p><p class="source">PDF第11页6.2.9；第12页6.2.10工作项23。</p></div></details>
+        <details><summary><span class="pill">08</span> 综合方案评审：形成方案冻结和转试制依据</summary><div class="detail-body"><p><strong>输入：</strong>设计可靠性专家预审通过的综合方案评审资料；摸底测试数据与产品规格书对比；各专业评审问题复盘；成本达标情况；专利布局；可靠性、体验、可制造性、可维修性和安规结论。</p><p><strong>会议重点：</strong>项目经理组织相关人员评审方案完整性和问题关闭状态，确认是否达到下一阶段启动条件。T/I类各评审环节须召开技术评审会；II类针对新开发或更改的专业模块必须评审。相关方、评委、Checklist、结论和线上签审应符合流程手册及分权手册。</p><p><strong>输出示例：</strong>综合方案评审会议纪要/评审结论、A类问题100%关闭证据、A类及重点B类失败案例转化记录、下一阶段验证计划、需冻结的设计/成本/物料/模具边界。基本性能应优于竞品或现有平台产品。</p><p><strong>转阶段红线：</strong>综合方案评审出现A类问题必须关闭，否则不得进入下一阶段。方案转试制的可靠性/标准化和测试问题按程序中的A/B/C比例控制；体验和制造评审另有比例要求，不能用单一“总体通过”替代。具体项目还应核对项目等级和系统任务。</p><p class="source">PDF第11页6.2.9–6.2.10；第21–23页6.7.2–6.7.5。</p></div></details>
+
+        <h3>方案阶段附件索引：按用途查找</h3>
+        <div class="table-wrap"><table class="tight"><thead><tr><th>附件</th><th>名称</th><th>方案阶段用途示例</th><th>边界</th></tr></thead><tbody>
+          <tr><td>附件2</td><td>《设计提案报告参考模板》</td><td>项目概述、研究综述、趋势/用户/竞品分析、设计概念、2D/3D、GUI、CMF</td><td>参考模板；级别内容要求需按附件和当前流程确认</td></tr>
+          <tr><td>附件3、4</td><td>《外观共性元素评估报告模板》；《COLMO外观共性元素评估报告》</td><td>外观方案、品牌共性元素和外观评估</td><td>适用品牌和当前模板版本待确认</td></tr>
+          <tr><td>附件6</td><td>《工业设计需求书模板》</td><td>顾客、价格、定位、卖点、区域、功能、平台、结构限制、GUI/CMF和时间要求</td><td>设计输入示例，不替代正式产品规划书</td></tr>
+          <tr><td>附件9</td><td>《技术可行性分析报告》</td><td>使用情境、用户痛点、技术解决方案、新技术/材料/工艺、难度和预估成本</td><td>表内示例内容需按实际产品重填</td></tr>
+          <tr><td>附件10</td><td>《各节点专利报告模板（结构化）》</td><td>初步专利检索分析、项目相关专利清单、专利布局</td><td>检索数据库、法律状态和申请决定以当前专利流程为准</td></tr>
+          <tr><td>附件13、14</td><td>《项目等级裁定参考表》；《研发流程框架》</td><td>项目等级、里程碑裁剪、流程框架和五级流程参考</td><td>主程序与附件版本/适用范围需核对，不能手工套用周期表</td></tr>
+          <tr><td>附件15</td><td>《模具设计评审表》</td><td>模具结构、进胶、冷却、顶出、排气、外观和评审结论</td><td>配套模具制度和EAM审批配置优先</td></tr>
+          <tr><td>附件16、18、19</td><td>《平台需求书》；《平台规格书及接口规则（含功能组合）》；《平台企划书》</td><td>平台需求、参数、接口、借用/新增部件、功能组合和平台综合方案</td><td>只在平台类或适用项目中使用，具体适用性待确认</td></tr>
+          <tr><td>附件20、21</td><td>《平台产品群认证借用规则》；《平台产品群测试借用规则》</td><td>派生/平台项目的认证和测试借用、差异化验证</td><td>必须先确认项目是否属于可借用范围</td></tr>
+          <tr><td>附件23、24、25、26</td><td>《平台选项集模板》；《基准配置表模板》；《基准产品群测试清单》；《基准产品群认证清单》</td><td>平台选项、基准配置、派生测试与认证清单维护</td><td>属于派生/平台路径，不是所有单产品项目的必交</td></tr>
+          <tr><td>附件27、28</td><td>《模块需求书模板》；《派生模块群测试方案模板-含通配》</td><td>模块需求、选项/成本、派生模块群和通配测试</td><td>模块/派生项目适用，需由流程任务确认</td></tr>
+          <tr><td>附件29、30</td><td>《新物料清单》；《各阶段其他交付模板》</td><td>四新物料、供方/模具/风险字段；补充阶段交付模板</td><td>附件30具体模板未在本页展开，需回到受控附件包</td></tr>
+        </tbody></table></div>
+        <div class="note warn"><strong>附件版本边界：</strong>当前本地附件预览中部分封面显示 QMB-GB.0025-2026，而主程序为 QMB-GB.0025-2025；本指南仅使用其名称和可读取字段举例，不认定这些预览件就是当前有效版本。执行时必须核对受控系统中的附件版本、适用项目等级、审批路径和模板字段。</div>
+        <div class="note"><strong>方案阶段出口检查：</strong>正式规划书和WBS有效 → 项目等级/流程裁剪确认 → 专业方案及评审结论齐套 → 可靠性/安规/可制造性/可维修性完成 → 专利和新物料风险有记录 → 手板测试与体验问题已闭环或有批准整改方案 → 模具/首样状态满足项目要求 → 综合方案评审资料经设计可靠性预审 → A类问题关闭并形成明确转阶段结论。</div>
+        <p class="source">附件名称依据主程序第25–26页第9章及本地附件预览；附件用途是结合主程序6.2条款的整理说明，不构成对附件字段或审批权限的扩展。</p>
+       </section>
+
+      <section id="trial-build">
+        <div class="section-head"><span class="number">06 / TRIAL BUILD</span><h2>产品试制：验证设计方案，而不是提前量产</h2></div>
+        <p>试制重点验证产品方案，由研发项目组主导；为确保有效性，必须由生产线员工组装。试制申请前要完成E-BOM设计发放、测试方案和样机数量确定，工厂在申请完成后10天内完成试制。</p>
+        <div class="table-wrap"><table><thead><tr><th>控制点</th><th>程序要求</th><th>时限/证据</th></tr></thead><tbody>
+          <tr><td>物料准备</td><td>所有物料正式试制前1天到位；研发提供借用物料和新增物料清单；新增外协物料提前2天进中试仓库。</td><td>清单、供方资质/制件厂家确认、到位记录。</td></tr>
+          <tr><td>上线前确认</td><td>试制前1天共同试装空箱体，确认物料齐套、基本装配、发泡前条件。</td><td>预装配、小件部装、总装物料汇总确认。</td></tr>
+          <tr><td>上线试制</td><td>分厂按计划刚性执行；研发主导，各专业协同，生产线员工参与，周期原则上不超过10天。</td><td>试制记录、装配问题记录。</td></tr>
+          <tr><td>问题收集</td><td>下线后2天内召开装配小结，将技术、工艺、电控、测试、设备工装、质量和文件问题录入PLM问题模块，并现场判定责任方。</td><td>PLM问题记录、责任判定、整改方案。</td></tr>
+          <tr><td>测试与测评</td><td>样机下线后1天内送样；测试完成后2天内出具《整机测试报告》；T/I/II类进行五感评审。</td><td>性能、结构、五感、安规安全等测试/评审报告。</td></tr>
+          <tr><td>样机鉴定</td><td>整改后评审样机或零部件状态；发泡Q评价合格，A类问题100%关闭，产品合规性评审合格。</td><td>样机鉴定结论；同时满足转试产前置任务、测试合格和BOM完成制造发放。</td></tr>
+        </tbody></table></div>
+        <div class="note red"><strong>试制转试产的硬条件：</strong>A类问题必须关闭；试制阶段测试完成且合格；问题项有整改方案；BOM完成制造发放。正式程序的修订说明特别强调了“样机鉴定前需BOM完成制造发放”。</div>
+        <p class="source">来源：PDF第12–16页6.3.1–6.3.7及试制阶段总体要求表。</p>
+      </section>
+
+      <section id="trial-run">
+        <div class="section-head"><span class="number">07 / PILOT RUN</span><h2>产品试产：验证生产组织与量产可行性</h2></div>
+        <p>试产重点验证产品生产组织，由首产地工程部主导，研发项目经理协助，按《试产SOP》执行；生产线员工必须参与组装。</p>
+        <div class="table-wrap"><table><thead><tr><th>阶段</th><th>必须完成的工作</th><th>程序中的关键约束</th></tr></thead><tbody>
+          <tr><td>试产申请</td><td>根据试制验证修正设计发放版本，完成M-BOM制造发放；归档电控、工艺、质控交底和供方装配指引；制定试产测试方案。</td><td>M-BOM在转试产前完成；特殊未引入物料可线下清单确认，但投产鉴定前必须补齐BOM。</td></tr>
+          <tr><td>物料准备</td><td>试产上线前1天完成配套；开发工程师确认，工厂进货检验合格后上线。</td><td>禁止项目工程师直接带物料上线；按试制整改后的状态试产。</td></tr>
+          <tr><td>正式试产</td><td>上线前1天确认空箱体、零部件齐套、发泡及总装条件；各专业到场跟进；样机由线体员工制作。</td><td>试产作业刚性执行，原则上周期10天；异常由新品工艺协调记录并按责任主体追溯。</td></tr>
+          <tr><td>测试与问题整改</td><td>进行性能、结构、五感、可靠性、安规安全等测试；问题录入PLM；下线后3天内完成BOM一致性确认和装配小结。</td><td>不合格按要求整改；试产测试合格报告应在实验完成后1天内上挂。</td></tr>
+          <tr><td>物料封样</td><td>依据问题关闭逐步完成整机BOM物料100%封样。</td><td>二次试产按需执行；T/I/II/III开模项目最后一次试产要求100%正式封样。</td></tr>
+          <tr><td>投产鉴定准备</td><td>归档说明书、维修手册、爆炸图、认证报告、整机测试报告、电控资料、可靠性更新、“四新”设计规范和降额评审报告。</td><td>投产鉴定前完成前置任务、问题关闭、正式样品确认、测试合格和失败案例转化确认。</td></tr>
+        </tbody></table></div>
+         <div class="note"><strong>首批产：</strong>项目完成投产鉴定后，工厂需在15天内完成首批产。随后由项目经理提交项目结项流程完成结项。</div>
+         <details><summary><span class="pill">延期与产出</span> 延期考核及试制/试产产出核算</summary><div class="detail-body"><p><strong>PDF明确：</strong>新品开发项目延期考核按照《年度项目激励方案》执行。本指南不替代年度方案中的责任认定、考核口径或激励规则。</p><p><strong>PDF明确：</strong>附则10.1给出试制/试产批次样机折算台数公式：<code>(B/A) × N × S</code>。其中，A为产线代表机型工时，B为新机型工时，N为试制/试产样机数，S为产品品类系数。</p><p><strong>待确认：</strong>实际项目应回到当前有效的年度激励方案、附则和系统规则，确认产品分类、系数、取值以及小数或取整规则；公式不能替代受控排产和审批要求。</p><p class="source">来源：PDF第25页第8章；第26页附则10.1。</p></div></details>
+         <p class="source">来源：PDF第16–20页6.4.1–6.4.9；试产阶段总体要求表。</p>
+      </section>
+
+      <section id="gates">
+        <div class="section-head"><span class="number">08 / GATES</span><h2>阶段门、问题等级和一票否决</h2></div>
+        <h3>评审结论</h3>
+        <div class="table-wrap"><table class="tight"><thead><tr><th>结论</th><th>判定</th><th>后续动作</th></tr></thead><tbody>
+          <tr><td><strong>通过</strong></td><td>无遗留问题，或仅有低风险、可快速解决问题。</td><td>可启动下一活动。</td></tr>
+          <tr><td><strong>不通过</strong></td><td>遗留问题影响下一活动启动，必须先整改。</td><td>明确是否需要再次组织评审；不得直接进入下一活动。</td></tr>
+          <tr><td><strong>条件通过</strong></td><td>问题解决有一定风险，但不影响下一活动启动。</td><td>必须明确条件项的具体操作要求；不适用于投产鉴定。</td></tr>
+        </tbody></table></div>
+        <h3>问题类别</h3>
+        <div class="table-wrap"><table class="tight"><thead><tr><th>类别</th><th>含义</th><th>影响</th></tr></thead><tbody>
+          <tr><td class="red-text"><strong>A类</strong></td><td>关键质量特性不符合，可能导致安规安全、合规问题或核心功能丧失。</td><td>全流程必须关闭；投产鉴定一票否决。</td></tr>
+          <tr><td><strong>B类</strong></td><td>重要质量特性不符合，可能严重影响使用性能或寿命。</td><td>按转阶段表控制；投产鉴定必须关闭。</td></tr>
+          <tr><td><strong>C类</strong></td><td>一般质量特性轻微不符合，非核心功能降低或次要特性不符合。</td><td>按转阶段表控制；投产鉴定必须关闭。</td></tr>
+          <tr><td><strong>D类</strong></td><td>轻微质量特性不符合，通常不易被用户感知。</td><td>按问题库闭环管理。</td></tr>
+        </tbody></table></div>
+        <h3>转阶段比例和封样要求</h3>
+        <div class="table-wrap"><table class="tight"><thead><tr><th>问题维度</th><th>方案 → 试制</th><th>试制 → 试产</th><th>投产鉴定</th></tr></thead><tbody>
+          <tr><td>可靠性/标准化</td><td>A 100%；B 80%；C 80%。未关闭问题须有经评审通过的整改方案，涉及模具的问题在投模前关闭。</td><td>A 100%关闭；B最多3个未关闭；C最多6个未关闭，原则上验证关闭。</td><td>未单列比例，结合投产鉴定ABC均为0执行。</td></tr>
+          <tr><td>测试</td><td>A 100%；B 80%；C 80%，剩余问题可方案关闭并带入下阶段验证。</td><td>A 100%关闭；B 3个；C 6个，部分可方案关闭并在下阶段验证。</td><td>A/B/C均100%关闭；量产机型封样100%，其中85%正式封样。</td></tr>
+          <tr><td>体验测评</td><td>A 100%；涉及模具开发或改模的B类问题必须模具制作前关闭。</td><td>A/B 100%；C 60%，部分可方案关闭并下阶段验证。</td><td>体验评审不通过直接一票否决。</td></tr>
+          <tr><td>制造评审</td><td>A 100%；B 70%，部分可方案关闭并下阶段验证。</td><td>A 100%；B 90%；C 70%，部分可方案关闭并下阶段验证。</td><td>按投产鉴定零问题和封样条件执行。</td></tr>
+        </tbody></table></div>
+        <div class="note red"><strong>投产鉴定一票否决：</strong>基本性能未通过；安全/合规问题未解决；A、B、C类问题未关闭；用户体验测评未通过。</div>
+        <p class="source">来源：PDF第22–24页6.7.3.8、6.7.5.1–6.7.6。</p>
+      </section>
+
+      <section id="special">
+        <div class="section-head"><span class="number">09 / SPECIAL PATHS</span><h2>特殊项目：主流程不变，控制重点改变</h2></div>
+        <div class="split">
+          <div class="card"><span class="tag">派生项目</span><h3>基准 + 差异化测试</h3><p><strong>PDF明确：</strong>试运行主营品类要内化派生管理规则，形成受控的《新建基准、差异化选配原则》。属于派生范围的项目可结合目标基准产品及基准产品群测试/认证清单开展差异化测试，交付评审后在MPLM维护基准配置表。</p><div class="source">来源：PDF第23页6.7.7；相关附件11、20、21、24–28。</div></div>
+          <div class="card"><span class="tag">外销OBM</span><h3>消费者准入与当地体验</h3><p><strong>PDF明确：</strong>T/I类OBM在综合方案评审前完成Midea Watchman消费者准入测试；试制阶段用户试用实际时间不少于4周，不能留置时应在当地开展可用性用户测评。首次进入新国家/区域的全新品类、全新平台需本地化测评。</p><div class="source">来源：PDF第7、23–24页6.1.3.3、6.7.8。</div></div>
+          <div class="card"><span class="tag">智能化OBM</span><h3>增加本地智能化场测</h3><p>重点测试APP主框架、插件页和本地语言；具体环节、产品范围和责任接口由事业部智能化对接人和海外分公司IoT工程师确定，适用国家列有美国、德国、巴西、越南、泰国。</p><div class="source">来源：PDF第24页6.7.8.3。</div></div>
+          <div class="card"><span class="tag">非自有品牌</span><h3>由项目性质确定节点</h3><p>非美的自有品牌项目的流程节点由各单位根据性质和难度综合确定。合规按法律法规和客户要求执行；基本性能、用户体验、可靠性以及开发流程/交付件按客户要求执行，客户无要求时按事业部规定执行；投产鉴定阶段所有A、B类问题必须关闭。</p><div class="source">来源：PDF第24页6.7.9。</div></div>
+        </div>
+        <details><summary>企划变更、工业设计规格书和其他工程变更</summary><div class="detail-body"><ul><li>涉及产品规格书变更：变更提出方组织评审并同步企划，由企划在MIP发起申请，经事业部总裁决策后实施，同时提交产品规划书升版和GPM计划变更；涉及模具、成本增加财经审核。</li><li>所有等级项目开发立项前完成工业设计规格书归档；外观方案变更要及时升版，综合方案评审之后的信息变化需由提出方组织评审并经规定决策后实施。</li><li>图纸、BOM、工艺、软件等其他变更按变更管理程序执行；首批产前物料封样完成并通知备料后，不得私自通知供方变更。</li></ul><p class="source">来源：PDF第24–25页6.7.10–6.7.12。</p></div></details>
+      </section>
+
+      <section id="roles">
+        <div class="section-head"><span class="number">10 / ROLES</span><h2>角色职责：不是“项目经理一个人负责全部”</h2></div>
+        <p>程序把职责拆成产品、专业、质量、制造、供应链和治理角色。以下是面向执行的压缩版；具体到某一项目的审批人，还需结合分权手册和系统配置确认。</p>
+        <div class="table-wrap"><table><thead><tr><th>角色</th><th>核心责任</th><th>常见关键证据/节点</th></tr></thead><tbody>
+          <tr><td><strong>先行企划代表</strong></td><td>中长期产品与技术规划、行业趋势、技术情报、用户调研和品牌卖点规划。</td><td>中长期规划、品牌卖点规划。</td></tr>
+          <tr><td><strong>产品企划代表</strong></td><td>市场分析、产品企划、产品规划书、单产品规划立项/结项、上市和生命周期/退市。</td><td>产品规划书、产品策划决策、上市决策。</td></tr>
+          <tr><td><strong>产品开发代表</strong></td><td>负责单产品规划阶段技术可行性评估、成本分析，以及方案设计、试制、试产等开发活动，分析历史相似零部件和产品环境适应性经验并形成改进对策。</td><td>技术可行性评估、成本分析、方案/试制/试产交付。</td></tr>
+          <tr><td><strong>项目经理</strong></td><td>依据正式产品规划书开发立项、组建团队、制定计划，组织各阶段评审、试制、试产、投产鉴定和结项，推动资料与问题闭环。</td><td>项目启动会纪要、WBS、E/B/M-BOM、综合方案评审、样机鉴定、投产鉴定、结项。</td></tr>
+          <tr><td><strong>专业设计代表</strong></td><td>责任专业方案设计、评审、验证和交付，对准确、完整、及时负责。</td><td>专业方案评审报告、DFMEA、图纸、专业整改。</td></tr>
+          <tr><td><strong>工业设计/用户研究</strong></td><td>ID、CMF、UXI、手板和外观确认；用户/市场测评、体验问题定义、闭环和上市后回访。</td><td>工业设计规格书、产品组合测评报告、用户回访报告。</td></tr>
+          <tr><td><strong>可靠性/品质可靠性</strong></td><td>可靠性目标、规划、试验方案、评审及问题闭环；零部件规范符合性和测试合理性。</td><td>可靠性五大交付、FBD/DFMEA、可靠性测试报告。</td></tr>
+          <tr><td><strong>测试评价代表</strong></td><td>测试方案、各阶段综合测试评价报告、测试完整性、及时性和问题闭环。</td><td>手板摸底、整机测试、试制/试产测试报告。</td></tr>
+          <tr><td><strong>制造/新品工艺</strong></td><td>可制造性、工艺路线、试制/试产组织、生产异常、排产和批量可行性。</td><td>可制造性评审报告、装配小结、试产SOP、工艺文件。</td></tr>
+          <tr><td><strong>模具/供应链/财经</strong></td><td>模具全周期、供应商和物料风险、送样与齐套；成本、投资、价格、利润和财务立项。</td><td>模具评审/首样、供方引入、新物料清单、目标材料成本审批表。</td></tr>
+          <tr><td><strong>项目管理/标准化/知识产权</strong></td><td>体系合规、进度和资料审查；标准化、平台通用和物料编码；专利风险、核心专利和布局。</td><td>稽查问题、标准化评审、专利布局清单和评估报告。</td></tr>
+        </tbody></table></div>
+        <p class="source">来源：PDF第4–6页4.1–4.18。</p>
+      </section>
+
+      <section id="records">
+        <div class="section-head"><span class="number">11 / RECORDS</span><h2>交付物和引用附件：用“证据链”检查项目</h2></div>
+        <p>程序第9章列出30项附件。主程序定义了交付物名称和使用场景，但许多模板的字段、审批路径和最新版内容在附件或其他受控文件中，不能只靠本指南替代。</p>
+        <input class="filter" id="record-filter" type="search" placeholder="搜索交付物、模板或系统，例如：BOM、可靠性、专利" aria-label="搜索交付物索引">
+        <div class="table-wrap"><table><thead><tr><th>证据组</th><th>典型交付</th><th>主要出现阶段</th><th>来源</th></tr></thead><tbody id="record-list">
+          <tr><td class="index-title">规划与用户</td><td>概念工程研究报告、产品规划书、市场需求/顾客调查结论、产品组合测评报告、体验及NPS闭环</td><td>单产品规划</td><td>第7–9页</td></tr>
+          <tr><td class="index-title">工业设计</td><td>工业设计需求书、最终工业设计规格书、外观/内饰颜色材料工艺品质要求、CTQ、UI/丝印图纸</td><td>规划、方案及变更</td><td>第8、24–25页</td></tr>
+          <tr><td class="index-title">技术与可靠性</td><td>技术可行性评估报告、基本性能目标和可靠性目标、可靠性规划书、试验方案、产品设计规格书、FBD/DFMEA</td><td>规划、方案、投产准备</td><td>第8–10、18–20页</td></tr>
+          <tr><td class="index-title">专利与合规</td><td>初步专利检索分析报告、专利布局清单、专利评估报告、认证报告、产品合规性评审、“四新”设计规范</td><td>方案、试制、投产鉴定</td><td>第8–11、18–20页</td></tr>
+          <tr><td class="index-title">物料与BOM</td><td>新物料清单、借用物料清单、E-BOM、M-BOM、目标材料成本审批表、正式/临时样品确认、封样资料</td><td>方案、试制、试产</td><td>第8、12–20页</td></tr>
+          <tr><td class="index-title">测试与问题</td><td>手板摸底测试报告、产品测试综合评价报告、整机测试报告、问题库记录、装配小结、失败案例/PPH沉淀</td><td>方案、试制、试产、结项</td><td>第10–15、17–23页</td></tr>
+          <tr><td class="index-title">量产与售后</td><td>工艺路线文件、质控交底书、供方组件生产装配指引、说明书、维修手册、爆炸图、投产鉴定资料</td><td>试产、投产和结项</td><td>第16–20页</td></tr>
+        </tbody></table></div>
+        <p id="record-empty" class="muted small" hidden>未找到匹配记录。</p>
+        <details><summary>附件目录（第9章）</summary><div class="detail-body"><p>附件1概念工程研究报告模板；附件2设计提案报告模板；附件3外观共性元素评估报告模板；附件4 COLMO外观共性元素评估报告；附件5安规安全试产阶段评审报告；附件6工业设计需求书模板；附件7冰箱事业部流程分权手册；附件8主营品类试点平台清单；附件9技术可行性分析报告；附件10各节点专利报告模板；附件11基准派生管控范围模板；附件12美的海外品牌清单；附件13项目等级裁定参考表；附件14研发流程框架；附件15模具设计评审表；附件16平台需求书；附件17平台工业设计研究趋势评估报告；附件18平台规格书及接口规则；附件19平台企划书；附件20平台产品群认证借用规则；附件21平台产品群测试借用规则；附件22美的集团内控手册V5.0；附件23平台选项集模板；附件24基准配置表模板；附件25基准产品群测试清单；附件26基准产品群认证清单；附件27模块需求书模板；附件28派生模块群测试方案模板；附件29新物料清单；附件30各阶段其他交付模板。</p><p class="source">来源：PDF第25–26页第9章。</p></div></details>
+      </section>
+
+      <section id="limits">
+        <div class="section-head"><span class="number">12 / LIMITS</span><h2>使用边界与待确认项</h2></div>
+        <div class="note warn"><strong>本页是理解和检索辅助，不是审批授权文件。</strong> 下面事项需要回到当前受控附件、流程手册或系统配置核实。</div>
+        <ul>
+           <li><strong>周期表的读取：</strong>第21页给出了T、I、II、III、V级周期区间，但第3.5.1主定义只明确列出T、I、II、III类；V级的适用范围及其与主流程框架的关系需回到附件14、流程手册和系统配置确认。图表还存在分栏和“/”裁剪信息，项目计划不应手工套用本页概览。</li>
+          <li><strong>等级附件：</strong>附件13“项目等级裁定参考表”用于具体裁剪和专业等级定义，本指南只保留主程序中的四类定义。</li>
+          <li><strong>审批人员：</strong>PDF定义的是角色和职责，不等于当前系统中的具体审批人；线上签审还受附件7流程分权手册和分权规定约束。</li>
+          <li><strong>外部引用办法：</strong>产品用户体验、基本性能、生命周期、国际品牌、智能产品、外销OBM、变更管理、高端产品品质等文件未在本页完整展开。</li>
+          <li><strong>“记录”章节：</strong>第11章只列标题，没有给出每一项记录的保存位置、责任人和保存期限；这些信息需要在质量管理或系统规则中确认。</li>
+          <li><strong>术语和转阶段：</strong>PDF同时使用MIS1/MIS2/MIS3/MIS4、样机鉴定、投产鉴定、正式/临时封样、ABCD问题等术语；若项目资料中存在旧版本叫法，应以当前流程任务定义为准。</li>
+          <li><strong>与Excel指南的关系：</strong>《冰箱项目管理流程指南.html》是对12.xlsx流程、分权和人员索引的归纳；本页是QMB-GB.0025-2025正式程序的归纳。两者可以交叉查找，但不能把Excel中的参会部门、名单或隐藏表自动当作本程序的审批要求。</li>
+        </ul>
+        <div class="note"><strong>建议现场检查顺序：</strong>确认项目等级和开发形式 → 确认适用里程碑/裁剪 → 查当前系统任务 → 检查阶段交付和问题库 → 核对封样、BOM、测试、认证和合规 → 再发起转阶段或决策流程。</div>
+        <p class="source">页码均指源PDF页码，不是HTML页面序号。原文件：QMB-GB.0025-2025 新产品设计开发控制程序.docx.pdf。</p>
+      </section>
+
+      <footer>整理依据：D:\big_ai_solution\QMB-GB.0025-2025 新产品设计开发控制程序.docx.pdf。本文为离线阅读和检索辅助，正式执行以受控文件、有效附件、流程分权手册及系统配置为准。</footer>
+    </main>
+  </div>
+  <script>
+    function bindFilter(inputId, listId, emptyId) {
+      const input = document.getElementById(inputId);
+      const rows = Array.from(document.querySelectorAll('#' + listId + ' tr'));
+      if (!input) return;
+      let empty = emptyId ? document.getElementById(emptyId) : null;
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLocaleLowerCase();
+        let matches = 0;
+        rows.forEach((row) => {
+          const visible = row.textContent.toLocaleLowerCase().includes(query);
+          row.hidden = !visible;
+          if (visible) matches += 1;
+        });
+        if (empty) empty.hidden = matches !== 0;
+      });
+    }
+     bindFilter('record-filter', 'record-list', 'record-empty');
+  </script>
+</body>
+</html>
