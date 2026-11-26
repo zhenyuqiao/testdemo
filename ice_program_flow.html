@@ -1,656 +1,360 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>冰箱研发全流程沙盘｜ICE LAB</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #e8f4f7;
-      --ink-dim: #9bb4bc;
-      --muted: #6f8b94;
-      --bg0: #071116;
-      --bg1: #0c1a22;
-      --panel: rgba(12, 28, 36, 0.78);
-      --panel-solid: #0e1f28;
-      --line: rgba(120, 210, 220, 0.18);
-      --line-strong: rgba(120, 210, 220, 0.38);
-      --ice: #4de0d0;
-      --ice-2: #7ad7ff;
-      --amber: #f0a35a;
-      --red: #ff6b6b;
-      --navy: #102833;
-      --mint: rgba(77, 224, 208, 0.12);
-      --white: #fff;
-      --shadow: 0 18px 50px rgba(0,0,0,.35);
-      --radius: 14px;
-      --font-display: "Orbitron", "Noto Sans SC", sans-serif;
-      --font-body: "Noto Sans SC", "PingFang SC", sans-serif;
-      --font-mono: "JetBrains Mono", Consolas, monospace;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      font-family: var(--font-body);
-      line-height: 1.65;
-      background:
-        radial-gradient(1200px 600px at 12% -10%, rgba(77,224,208,.18), transparent 55%),
-        radial-gradient(900px 500px at 90% 8%, rgba(122,215,255,.14), transparent 50%),
-        radial-gradient(800px 700px at 70% 100%, rgba(240,163,90,.08), transparent 45%),
-        linear-gradient(180deg, #050d12 0%, #0a161d 40%, #071116 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(125, 210, 220, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(125, 210, 220, 0.045) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
-      z-index: 0;
-      animation: gridDrift 28s linear infinite;
-    }
-    @keyframes gridDrift {
-      from { background-position: 0 0, 0 0; }
-      to { background-position: 48px 48px, 48px 48px; }
-    }
-    @keyframes riseIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulseRing {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(77,224,208,.35); }
-      50% { box-shadow: 0 0 0 10px rgba(77,224,208,0); }
-    }
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(220%); }
-    }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .shell, .hero { position: relative; z-index: 1; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>冰箱研发全流程一屏图｜交付拆解与能力复用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f7; --panel:#fff; --ink:#1a242b; --muted:#667781; --line:#d5dee4;
+  --teal:#0f7f78; --teal-soft:#e6f4f2; --amber:#b86a2b; --amber-soft:#fff3e8;
+  --blue:#2a6285; --blue-soft:#e8f2f8; --violet:#5a4d7a; --violet-soft:#f1eef7;
+  --red:#a94442; --shadow:0 8px 28px rgba(26,36,43,.08);
+  --font:"IBM Plex Sans SC","IBM Plex Sans","PingFang SC",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:var(--font); color:var(--ink); background:var(--bg);
+  display:grid; grid-template-rows:52px minmax(0,1fr); overflow:hidden;
+}
+button,input{font:inherit}
+button{cursor:pointer}
 
-    /* HERO */
-    .hero {
-      padding: 56px max(5vw, calc((100vw - 1400px)/2)) 42px;
-      border-bottom: 1px solid var(--line);
-      overflow: hidden;
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -80px; top: -120px;
-      width: 420px; height: 420px;
-      border: 1px solid rgba(77,224,208,.25);
-      border-radius: 50%;
-      box-shadow: 0 0 0 70px rgba(77,224,208,.04), 0 0 0 140px rgba(122,215,255,.03);
-      animation: pulseRing 5.5s ease-in-out infinite;
-      pointer-events: none;
-    }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 10px;
-      color: var(--ice);
-      font-family: var(--font-display);
-      font-size: 11px; font-weight: 700; letter-spacing: .22em;
-      text-transform: uppercase;
-      animation: riseIn .7s ease both;
-    }
-    .eyebrow::before {
-      content: ""; width: 28px; height: 2px; background: linear-gradient(90deg, var(--ice), transparent);
-    }
-    h1 {
-      font-family: var(--font-display);
-      font-size: clamp(30px, 5vw, 58px);
-      line-height: 1.12;
-      margin: 16px 0 14px;
-      letter-spacing: .04em;
-      background: linear-gradient(115deg, #f3fffd 10%, #7ad7ff 45%, #4de0d0 75%, #f0a35a 110%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: riseIn .8s .08s ease both;
-    }
-    .hero p {
-      max-width: 820px; margin: 0;
-      color: var(--ink-dim); font-size: 15px;
-      animation: riseIn .8s .16s ease both;
-    }
-    .chips {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px;
-      animation: riseIn .8s .24s ease both;
-    }
-    .chips span {
-      border: 1px solid var(--line-strong);
-      background: rgba(77,224,208,.06);
-      border-radius: 999px;
-      color: var(--ice-2);
-      font-size: 11px;
-      letter-spacing: .06em;
-      padding: 5px 12px;
-      backdrop-filter: blur(8px);
-    }
+/* top bar */
+.topbar{
+  display:flex; align-items:center; gap:12px; padding:0 14px;
+  background:#102833; color:#e8f4f2; border-bottom:1px solid #0a1b22;
+  z-index:5;
+}
+.brand{font-weight:700; letter-spacing:.04em; font-size:14px; white-space:nowrap}
+.brand small{display:block; font-weight:500; color:#8fc9c2; font-size:10px; letter-spacing:.12em; margin-top:1px}
+.topbar .spacer{flex:1}
+.zoom-group,.filter-group{display:flex; gap:4px; align-items:center}
+.zoom-group button,.filter-group button,#fitBtn{
+  border:1px solid #2d4b55; background:#17343e; color:#d7ebe7;
+  border-radius:6px; padding:5px 9px; font-size:12px; min-width:32px;
+}
+.zoom-group button:hover,.filter-group button:hover,#fitBtn:hover,
+.filter-group button.active{background:var(--teal); border-color:var(--teal); color:#fff}
+#search{
+  width:min(280px,28vw); border:1px solid #2d4b55; background:#0c222a; color:#e8f4f2;
+  border-radius:6px; padding:6px 10px; font-size:12px;
+}
+#search:focus{outline:1px solid var(--teal)}
+.hint{color:#7ea8a2; font-size:11px; white-space:nowrap}
 
-    .shell { max-width: 1400px; margin: auto; padding: 28px 24px 80px; }
+/* workspace */
+.workspace{position:relative; min-height:0; overflow:hidden; background:
+  linear-gradient(#eef2f4,#f3f5f7);
+}
+.viewport{
+  position:absolute; inset:0; overflow:auto;
+  display:grid; place-items:center;
+}
+.canvas{
+  transform-origin:center center;
+  transition:transform .18s ease;
+  padding:18px 20px 28px;
+  width:max-content; min-width:100%;
+}
+.canvas.dragging{transition:none; cursor:grabbing}
 
-    /* glass panels */
-    .overview, .route-choice, .toolbar, .planning-panel, .platform-panel,
-    .build-panel, .life-panel, .map, .detail, .support-panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    .overview::before, .build-panel::before, .support-panel::before {
-      content: "";
-      position: absolute; left: 0; right: 0; top: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(77,224,208,.55), transparent);
-    }
+.map-shell{
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow); padding:12px 12px 10px; width:fit-content; margin:0 auto;
+}
 
-    .overview { margin-bottom: 18px; padding: 20px; animation: riseIn .7s .1s ease both; }
-    .overview h2, .route-choice h2, .map h2, .support-head h2,
-    .planning-panel h2, .platform-panel h2, .build-panel h2, .life-panel h2 {
-      font-family: var(--font-display);
-      letter-spacing: .06em;
-      font-size: 17px;
-      margin: 0 0 6px;
-      color: var(--ink);
-    }
-    .overview h2, .route-choice h2, .map h2, .support-head h2 { color: var(--ink); }
-    .planning-panel h2, .platform-panel h2, .build-panel h2, .life-panel h2 { color: var(--ink); }
-    .overview p, .route-choice p, .map-intro, .support-head p { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+.legend-row{
+  display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center;
+  margin:0 0 10px; padding:0 2px; color:var(--muted); font-size:11px;
+}
+.legend-row i{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:middle}
+.l-plat{background:var(--blue)} .l-plan{background:var(--amber)} .l-dev{background:var(--teal)}
+.l-life{background:var(--violet)} .l-sup{background:#6b7c86}
 
-    .stage-rail { display: grid; gap: 10px; grid-template-columns: repeat(5, minmax(0,1fr)); }
-    .stage-card {
-      text-align: left;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px;
-      color: var(--ink);
-      background: linear-gradient(160deg, rgba(77,224,208,.08), rgba(8,20,28,.4));
-      transition: transform .2s ease, border-color .2s ease, background .2s ease;
-    }
-    .stage-card:hover, .stage-card.active {
-      transform: translateY(-3px);
-      border-color: rgba(77,224,208,.55);
-      background: linear-gradient(160deg, rgba(77,224,208,.18), rgba(16,40,52,.55));
-    }
-    .stage-card b {
-      display: block; color: var(--ice);
-      font-family: var(--font-display);
-      font-size: 10px; letter-spacing: .14em;
-    }
-    .stage-card strong { display: block; margin-top: 7px; font-size: 15px; color: #f2fbff; }
-    .stage-card small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .stage-card .subs { margin-top: 8px; color: var(--ice-2); font-size: 11px; opacity: .85; }
+/* main stages row */
+.stages{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(148px, 168px));
+  gap:8px;
+  align-items:stretch;
+}
+.stage{
+  border:1px solid var(--line); border-radius:10px; background:#fbfcfd;
+  display:flex; flex-direction:column; min-width:0; overflow:hidden;
+}
+.stage-h{
+  padding:7px 8px 6px; border-bottom:1px solid var(--line);
+  display:flex; flex-direction:column; gap:1px;
+}
+.stage-h b{
+  font-size:10px; letter-spacing:.08em; font-weight:700;
+}
+.stage-h strong{font-size:13px; line-height:1.25}
+.stage.plat .stage-h{background:var(--blue-soft); color:var(--blue)}
+.stage.plat .stage-h strong{color:#17384a}
+.stage.plan .stage-h{background:var(--amber-soft); color:var(--amber)}
+.stage.plan .stage-h strong{color:#6a3d14}
+.stage.dev .stage-h{background:var(--teal-soft); color:var(--teal)}
+.stage.dev .stage-h strong{color:#0c4f4a}
+.stage.life .stage-h{background:var(--violet-soft); color:var(--violet)}
+.stage.life .stage-h strong{color:#3d3458}
+.stage-body{padding:6px; display:flex; flex-direction:column; gap:4px; flex:1}
 
-    .route-choice { margin-bottom: 16px; padding: 18px; }
-    .choice-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    .choice {
-      flex: 1 1 280px; text-align: left;
-      border: 1px solid var(--line);
-      border-radius: 12px; padding: 14px 15px;
-      background: rgba(255,255,255,.02);
-      color: var(--ink);
-      transition: .2s ease;
-    }
-    .choice:hover, .choice.active {
-      border-color: rgba(122,215,255,.55);
-      background: rgba(122,215,255,.08);
-      box-shadow: inset 0 0 0 1px rgba(122,215,255,.15);
-    }
-    .choice b { display: block; font-size: 14px; color: #eaf8ff; }
-    .choice small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
-    .route-status {
-      margin-top: 13px; padding: 10px 12px;
-      border-left: 3px solid var(--ice);
-      background: rgba(77,224,208,.08);
-      color: #b7e8e2; font-size: 13px;
-    }
+.step{
+  border:1px solid #e1e8ec; background:#fff; border-radius:7px;
+  padding:5px 7px; text-align:left; color:var(--ink);
+  transition:border-color .12s, background .12s, transform .12s;
+  width:100%;
+}
+.step:hover{border-color:#9fc9c4; background:#f4fbfa}
+.step.active{border-color:var(--teal); background:var(--teal-soft); box-shadow:inset 3px 0 0 var(--teal)}
+.step .idx{
+  font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--muted);
+}
+.step .title{display:block; font-size:11.5px; font-weight:600; line-height:1.25; margin-top:1px}
+.step .io{
+  display:flex; gap:6px; margin-top:3px; font-size:9.5px; color:var(--muted);
+}
+.step .io span{white-space:nowrap}
+.step.hit{outline:2px solid #f0a35a; outline-offset:1px}
 
-    .toolbar {
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px; padding: 12px 14px;
-    }
-    .toolbar strong {
-      font-family: var(--font-display);
-      font-size: 12px; letter-spacing: .08em;
-      color: var(--ice-2);
-    }
-    .toolbar input {
-      min-width: 260px; padding: 9px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--line-strong);
-      background: rgba(0,0,0,.25);
-      color: var(--ink);
-      outline: none;
-    }
-    .toolbar input:focus { border-color: var(--ice); box-shadow: 0 0 0 3px rgba(77,224,208,.15); }
-    .filters { display: flex; flex-wrap: wrap; gap: 6px; }
-    .filters button, .jump, .support-clear, .support-option {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255,255,255,.03);
-      color: var(--ink-dim);
-      font-size: 12px;
-      padding: 6px 11px;
-      transition: .15s ease;
-    }
-    .filters button:hover, .filters button.active,
-    .support-option:hover, .support-option.active,
-    .support-clear:hover {
-      color: #041015;
-      background: linear-gradient(90deg, var(--ice), var(--ice-2));
-      border-color: transparent;
-    }
+/* connectors between stages */
+.stages{position:relative}
+.stage{position:relative}
+.stage:not(:last-child)::after{
+  content:""; position:absolute; right:-7px; top:28px; width:6px; height:2px;
+  background:#9db0ba; z-index:2;
+}
 
-    .optional { color: var(--amber); font-size: 11px; font-weight: 700; margin-left: 5px; }
-    .board { display: grid; gap: 16px; grid-template-columns: minmax(0,1fr) 380px; align-items: start; margin-top: 8px; }
-    .map, .detail { padding: 18px; min-width: 0; }
-    .detail { position: sticky; top: 14px; }
-    .detail-head { border-bottom: 1px solid var(--line); margin-bottom: 18px; padding-bottom: 16px; }
-    .detail-head .kicker {
-      color: var(--ice); font-family: var(--font-display);
-      font-size: 11px; letter-spacing: .16em;
-    }
-    .detail-head h2 {
-      font-family: var(--font-display);
-      font-size: 26px; margin: 6px 0 8px; letter-spacing: .04em;
-      color: #f4fcff;
-    }
-    .detail-head p { color: var(--ink-dim); margin: 0; }
-    .status {
-      display: inline-block; margin-top: 12px;
-      padding: 3px 10px; border-radius: 999px;
-      background: rgba(77,224,208,.14);
-      color: var(--ice); font-size: 11px; font-weight: 700;
-      border: 1px solid rgba(77,224,208,.25);
-    }
-    .grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .card {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--line);
-      border-radius: 12px; padding: 14px; min-width: 0;
-    }
-    .card h3 { font-size: 14px; margin: 0 0 8px; color: #dff7f4; }
-    .card p, .card ul { font-size: 13px; margin: 0; color: var(--ink-dim); }
-    .card ul { padding-left: 18px; margin-top: 6px; }
-    .card li { margin: 4px 0; }
-    .wide { grid-column: 1 / -1; }
-    .file {
-      background: rgba(0,0,0,.22);
-      border-left: 3px solid var(--ice);
-      margin: 10px 0; padding: 10px 12px; border-radius: 0 10px 10px 0;
-    }
-    .file strong { display: block; font-size: 13px; color: #e9fbff; }
-    .file small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
-    .sample {
-      margin-top: 8px; padding: 10px 12px;
-      border-radius: 8px;
-      background: #061014;
-      border: 1px solid rgba(77,224,208,.15);
-      color: #9fe8de;
-      font-family: var(--font-mono);
-      font-size: 11px; line-height: 1.6;
-      white-space: pre-wrap; overflow: auto;
-    }
-    .gate {
-      background: rgba(240,163,90,.1);
-      border-left: 3px solid var(--amber);
-      font-size: 13px; margin: 14px 0 0; padding: 12px 14px;
-      color: #ffd7b0; border-radius: 0 10px 10px 0;
-    }
-    .red {
-      background: rgba(255,107,107,.1);
-      border-left-color: var(--red);
-      color: #ffc4c4;
-    }
-    .source { color: var(--muted); font-size: 12px; margin-top: 16px; }
-    .handoff {
-      margin-top: 10px; padding: 10px 12px;
-      border-left: 3px solid var(--amber);
-      background: rgba(240,163,90,.08);
-      color: #ffd7b0; font-size: 13px; border-radius: 0 10px 10px 0;
-    }
-    .support-hint {
-      margin-top: 12px; padding: 10px 12px;
-      border-left: 3px solid var(--ice);
-      background: rgba(77,224,208,.08);
-      color: #b9ebe4; font-size: 13px; border-radius: 0 10px 10px 0;
-    }
-    .support-hint button {
-      background: transparent; border: 0; color: var(--ice-2);
-      font-weight: 700; padding: 0 2px; text-decoration: underline;
-    }
+/* support strip */
+.support-strip{
+  margin-top:10px; border-top:1px dashed #d0d9df; padding-top:8px;
+}
+.support-strip .label{
+  font-size:11px; color:var(--muted); margin:0 0 6px; font-weight:600;
+}
+.support-pills{display:flex; flex-wrap:wrap; gap:5px}
+.pill{
+  border:1px solid #d5dee4; background:#f7f9fa; color:#40545e;
+  border-radius:999px; padding:4px 9px; font-size:11px;
+}
+.pill:hover,.pill.active{background:#102833; color:#e8f4f2; border-color:#102833}
+.support-mini{
+  display:none; margin-top:8px; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:6px; padding:8px; background:#f7f9fa; border:1px solid var(--line); border-radius:8px;
+}
+.support-mini.show{display:grid}
+.support-mini .mini-h{grid-column:1/-1; font-size:12px; font-weight:600; color:#102833; margin:0}
+.snode{
+  border:1px solid #dde5ea; background:#fff; border-radius:6px; padding:5px 7px; text-align:left;
+}
+.snode:hover,.snode.active{border-color:var(--teal); background:var(--teal-soft)}
+.snode b{display:block; font-size:10px; color:var(--muted)}
+.snode strong{display:block; font-size:11px; margin-top:1px; line-height:1.25}
+.snode small{display:block; font-size:10px; color:var(--muted); margin-top:2px}
 
-    /* panels */
-    .planning-panel, .platform-panel, .build-panel, .life-panel {
-      margin-bottom: 16px; padding: 18px;
-      grid-column: 1 / -1;
-    }
-    .platform-panel h3 { color: var(--ice-2); font-size: 14px; margin: 18px 0 8px; letter-spacing: .08em; font-family: var(--font-display); }
-    .support-panel { margin-top: 18px; padding: 20px; }
-    .support-head { display: flex; gap: 14px; justify-content: space-between; align-items: flex-start; }
-    .support-head p { max-width: 860px; }
-    .support-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .support-flows { display: grid; gap: 14px; margin-top: 16px; }
-    .support-flow {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--line);
-      border-radius: 12px; padding: 15px; overflow: hidden;
-    }
-    .support-flow h3 { margin: 0 0 4px; color: #eafbff; font-size: 16px; }
-    .support-flow > p { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
+/* detail drawer */
+.drawer{
+  position:absolute; top:0; right:0; bottom:0; width:min(400px,92vw);
+  background:#fff; border-left:1px solid var(--line); box-shadow:-12px 0 30px rgba(0,0,0,.08);
+  transform:translateX(105%); transition:transform .22s ease; z-index:8;
+  display:flex; flex-direction:column; min-height:0;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-h{
+  display:flex; align-items:flex-start; gap:10px; padding:12px 14px;
+  border-bottom:1px solid var(--line); background:#f8fafb;
+}
+.drawer-h .meta{flex:1; min-width:0}
+.drawer-h .kicker{font-size:10px; letter-spacing:.1em; color:var(--teal); font-weight:700}
+.drawer-h h2{margin:3px 0 4px; font-size:18px; line-height:1.25}
+.drawer-h p{margin:0; color:var(--muted); font-size:12px}
+#closeDrawer{
+  border:1px solid var(--line); background:#fff; border-radius:6px; width:30px; height:30px;
+}
+.drawer-body{padding:12px 14px 20px; overflow:auto; flex:1}
+.block{margin:0 0 12px}
+.block h3{margin:0 0 6px; font-size:12px; letter-spacing:.04em; color:#40545e}
+.file{
+  border:1px solid var(--line); border-left:3px solid var(--teal);
+  border-radius:0 8px 8px 0; padding:7px 9px; margin:0 0 6px; background:#fbfcfd;
+}
+.file strong{display:block; font-size:12px}
+.file small{display:block; color:var(--muted); font-size:11px; margin-top:2px}
+.sample{
+  margin-top:5px; padding:7px 8px; border-radius:6px; background:#102833; color:#c9e8e3;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:10.5px;
+  white-space:pre-wrap; line-height:1.5;
+}
+.out-list{margin:0; padding-left:16px; font-size:12px}
+.out-list li{margin:3px 0}
+.gate{
+  background:var(--amber-soft); border-left:3px solid var(--amber);
+  padding:8px 10px; border-radius:0 8px 8px 0; font-size:12px; color:#6a3d14;
+}
+.gate.red{background:#fdecec; border-left-color:var(--red); color:#7a2e2c}
+.status{
+  display:inline-block; margin-top:6px; font-size:10px; font-weight:700;
+  background:var(--teal-soft); color:var(--teal); border-radius:999px; padding:2px 8px;
+}
+.source{color:var(--muted); font-size:11px; margin-top:10px}
+.support-hint{margin-top:10px; font-size:12px; color:#355}
+.support-hint button{
+  border:0; background:transparent; color:var(--teal); font-weight:700;
+  text-decoration:underline; padding:0 2px;
+}
+.empty-drawer{color:var(--muted); font-size:13px; padding:24px 8px; text-align:center}
 
-    /* fishbone */
-    .node-list, .sequence { display: none; }
-    .spine-scroll { overflow-x: auto; padding: 2px 4px 18px; }
-    .spine {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(260px, 1fr));
-      min-width: 2100px;
-      position: relative;
-    }
-    .spine::before {
-      content: "";
-      position: absolute; left: 100px; right: 100px; top: 262px; height: 3px;
-      background: linear-gradient(90deg, transparent, var(--ice), var(--ice-2), var(--ice), transparent);
-      box-shadow: 0 0 18px rgba(77,224,208,.35);
-    }
-    .planning-spine { grid-template-columns: repeat(5, minmax(260px, 1fr)); min-width: 1350px; }
-    .planning-spine::before { background: linear-gradient(90deg, transparent, #f0a35a, #ffcf8a, #f0a35a, transparent); box-shadow: 0 0 18px rgba(240,163,90,.3); }
-    .platform-dev-spine { grid-template-columns: repeat(6, minmax(260px, 1fr)); min-width: 1620px; }
-    .build-spine { grid-template-columns: repeat(4, minmax(260px, 1fr)); min-width: 1100px; }
-    .build-spine::before { background: linear-gradient(90deg, transparent, #7ad7ff, #4de0d0, #7ad7ff, transparent); }
-    .life-spine { grid-template-columns: repeat(2, minmax(260px, 1fr)); min-width: 560px; }
-    .life-spine::before { background: linear-gradient(90deg, transparent, #c9a6ff, #7ad7ff, transparent); box-shadow: 0 0 16px rgba(201,166,255,.25); }
-    .support-flow .spine { grid-template-columns: repeat(4, minmax(250px, 1fr)); min-width: 1000px; }
-    .support-flow .spine::before { background: linear-gradient(90deg, transparent, #8fd8c8, transparent); }
+.backdrop{
+  position:absolute; inset:0; background:rgba(16,40,51,.18); opacity:0; pointer-events:none;
+  transition:opacity .2s; z-index:7;
+}
+.backdrop.show{opacity:1; pointer-events:auto}
 
-    .process {
-      display: grid;
-      grid-template-rows: minmax(250px,auto) 58px minmax(250px,auto);
-      min-width: 0; position: relative;
-    }
-    .process::after {
-      content: "";
-      position: absolute; left: calc(50% - 7px); top: 255px;
-      width: 14px; height: 14px; border-radius: 50%;
-      background: var(--ice);
-      box-shadow: 0 0 0 4px rgba(77,224,208,.18), 0 0 16px rgba(77,224,208,.45);
-      z-index: 2;
-    }
-    .planning-spine .process::after { background: #f0a35a; box-shadow: 0 0 0 4px rgba(240,163,90,.2), 0 0 16px rgba(240,163,90,.4); }
-    .build-spine .process::after { background: #7ad7ff; }
-    .life-spine .process::after { background: #c9a6ff; }
-    .process.active .process-card {
-      border-color: rgba(77,224,208,.5);
-      box-shadow: 0 10px 28px rgba(0,0,0,.28), inset 0 0 0 1px rgba(77,224,208,.12);
-    }
-    .process-card {
-      margin: 0 8px; min-width: 0; padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: rgba(8,18,24,.72);
-      transition: .15s ease;
-    }
-    .process-card.input { align-self: end; border-bottom: 3px solid rgba(77,224,208,.65); }
-    .process-card.output { border-top: 3px solid rgba(240,163,90,.7); }
-    .process-card h3 {
-      display: flex; justify-content: space-between; align-items: center;
-      margin: 0 0 8px; font-size: 13px; color: #d7f6f1;
-    }
-    .process-card ul { margin: 0; padding-left: 16px; font-size: 12px; }
-    .process-card li { margin: 3px 0; }
-    .process-card button {
-      background: transparent; border: 0; color: var(--ink-dim);
-      padding: 0; text-align: left; width: 100%;
-    }
-    .process-card button:hover { color: var(--ice); }
-    .process-card button.is-focus {
-      background: rgba(240,163,90,.14);
-      border-radius: 6px; color: #ffe0bd; padding: 2px 4px;
-    }
-    .process-core {
-      align-self: center; justify-self: center;
-      width: 128px; height: 128px;
-      border-radius: 50%;
-      border: 2px solid rgba(77,224,208,.45);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(122,215,255,.35), transparent 45%),
-        linear-gradient(160deg, #143443, #0a1b24 70%);
-      color: #fff;
-      padding: 18px 12px;
-      position: relative; text-align: center; z-index: 3;
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-      overflow: hidden;
-    }
-    .process-core::before {
-      content: "";
-      position: absolute; inset: -40% auto auto -30%;
-      width: 60%; height: 160%;
-      background: linear-gradient(180deg, transparent, rgba(255,255,255,.12), transparent);
-      animation: scanline 3.8s linear infinite;
-      pointer-events: none;
-    }
-    .process-core:hover, .process.active .process-core {
-      transform: scale(1.05);
-      border-color: var(--ice);
-      box-shadow: 0 0 0 6px rgba(77,224,208,.12), 0 12px 30px rgba(0,0,0,.35);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(77,224,208,.4), transparent 45%),
-        linear-gradient(160deg, #1a4a52, #0d2830 70%);
-    }
-    .planning-spine .process-core {
-      border-color: rgba(240,163,90,.45);
-      background: radial-gradient(circle at 30% 25%, rgba(240,163,90,.28), transparent 45%), linear-gradient(160deg, #3a2718, #1a120c 70%);
-    }
-    .planning-spine .process-core:hover, .planning-spine .process.active .process-core {
-      border-color: #f0a35a;
-      background: radial-gradient(circle at 30% 25%, rgba(240,163,90,.4), transparent 45%), linear-gradient(160deg, #5a3a20, #24160e 70%);
-    }
-    .platform-panel .process-core {
-      border-color: rgba(122,215,255,.4);
-      background: radial-gradient(circle at 30% 25%, rgba(122,215,255,.28), transparent 45%), linear-gradient(160deg, #163844, #0c1f28 70%);
-    }
-    .build-spine .process-core {
-      border-color: rgba(122,215,255,.45);
-      background: radial-gradient(circle at 30% 25%, rgba(122,215,255,.3), transparent 45%), linear-gradient(160deg, #17384a, #0c1d28 70%);
-    }
-    .life-spine .process-core {
-      border-color: rgba(201,166,255,.45);
-      background: radial-gradient(circle at 30% 25%, rgba(201,166,255,.28), transparent 45%), linear-gradient(160deg, #2a2040, #15101f 70%);
-    }
-    .support-flow .process-core {
-      background: radial-gradient(circle at 30% 25%, rgba(143,216,200,.25), transparent 45%), linear-gradient(160deg, #1d3538, #101f22 70%);
-    }
-    .process-core b {
-      display: block; color: var(--ice);
-      font-family: var(--font-display);
-      font-size: 10px; letter-spacing: .12em;
-    }
-    .process-core strong { display: block; font-size: 13px; line-height: 1.3; margin-top: 6px; }
-    .process-core small { display: block; color: #b7d4d0; font-size: 10px; margin-top: 5px; }
-    .branch { display: block; font-size: 11px; line-height: 1.35; margin-bottom: 5px; color: var(--ink-dim); }
-    .branch::before { content: "↗ "; color: var(--ice); font-weight: 700; }
-    .output .branch::before { content: "↘ "; color: var(--amber); }
-    .count {
-      background: rgba(77,224,208,.14);
-      border-radius: 999px; color: var(--ice);
-      font-size: 10px; padding: 2px 6px;
-      border: 1px solid rgba(77,224,208,.2);
-    }
-    .process.hidden { display: none; }
-    .route-note { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
-    .legend {
-      display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
-      color: var(--muted); font-size: 12px; margin-top: 14px;
-    }
-    .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-    .pdf { background: var(--ice); }
-    .guide { background: var(--amber); }
-    .confirm { background: var(--red); }
-    .empty { color: var(--muted); padding: 30px 8px; text-align: center; }
-    .node { /* unused list style kept for safety */
-      background: rgba(255,255,255,.03); border: 1px solid var(--line);
-      border-radius: 8px; color: var(--ink); padding: 12px; text-align: left; width: 100%;
-    }
+@media (max-width:900px){
+  body{grid-template-rows:auto minmax(0,1fr); overflow:auto}
+  .topbar{flex-wrap:wrap; height:auto; padding:8px 10px; gap:8px}
+  .hint{display:none}
+  #search{width:100%}
+  .workspace{min-height:70vh}
+}
 
+/* artifact & capability */
+.mode-group{display:flex;gap:4px;align-items:center}
+.mode-group button{
+  border:1px solid #2d4b55; background:#17343e; color:#d7ebe7;
+  border-radius:6px; padding:5px 9px; font-size:12px;
+}
+.mode-group button.active,.mode-group button:hover{background:var(--teal); border-color:var(--teal); color:#fff}
+.cap-panel{
+  display:none; margin-top:10px; border:1px solid var(--line); border-radius:10px;
+  background:#fbfcfd; padding:10px;
+}
+.cap-panel.show{display:block}
+.cap-panel h3{margin:0 0 8px; font-size:13px}
+.cap-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px}
+.cap-card{
+  border:1px solid #dde5ea; background:#fff; border-radius:8px; padding:8px; text-align:left;
+}
+.cap-card:hover,.cap-card.active{border-color:var(--teal); background:var(--teal-soft)}
+.cap-card b{display:block; font-size:10px; color:var(--muted); letter-spacing:.06em}
+.cap-card strong{display:block; font-size:12px; margin-top:2px}
+.cap-card small{display:block; font-size:10px; color:var(--muted); margin-top:4px; line-height:1.35}
+.part{
+  border:1px solid var(--line); border-radius:8px; padding:8px 9px; margin:0 0 8px; background:#fff;
+}
+.part h4{margin:0 0 4px; font-size:12.5px}
+.part .meta{display:grid; gap:4px; margin-top:6px}
+.tagrow{display:flex; flex-wrap:wrap; gap:4px}
+.tag{
+  font-size:10px; border-radius:999px; padding:2px 7px; border:1px solid #d5dee4; background:#f7f9fa; color:#40545e;
+}
+.tag.src{background:#e8f2f8; border-color:#c5dbe8; color:#2a6285}
+.tag.plat{background:#e6f4f2; border-color:#b9ded9; color:#0f7f78}
+.tag.method{background:#fff3e8; border-color:#efd2b3; color:#b86a2b}
+.tag.cap{background:#f1eef7; border-color:#d9d0ea; color:#5a4d7a; cursor:pointer}
+.out-btn{
+  display:block; width:100%; text-align:left; border:1px solid #e1e8ec; background:#fff;
+  border-radius:7px; padding:6px 8px; margin:0 0 5px; font-size:12px;
+}
+.out-btn:hover,.out-btn.active{border-color:var(--teal); background:var(--teal-soft)}
+.out-btn small{display:block; color:var(--muted); font-size:10px; margin-top:2px}
+.tabs{display:flex; gap:4px; margin:0 0 10px}
+.tabs button{
+  border:1px solid var(--line); background:#f7f9fa; border-radius:6px; padding:4px 8px; font-size:11px; color:#40545e;
+}
+.tabs button.active{background:#102833; color:#e8f4f2; border-color:#102833}
+.linklist{margin:6px 0 0; padding-left:16px; font-size:11px; color:#40545e}
+.linklist li{margin:3px 0}
 
-    /* dark scrollbars */
-    .spine-scroll::-webkit-scrollbar { height: 8px; }
-    .spine-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.04); border-radius: 8px; }
-    .spine-scroll::-webkit-scrollbar-thumb { background: rgba(77,224,208,.35); border-radius: 8px; }
-    .spine-scroll { scrollbar-color: rgba(77,224,208,.35) rgba(255,255,255,.04); scrollbar-width: thin; }
-    h1 {
-      font-family: "Noto Sans SC", "Orbitron", sans-serif !important;
-      font-weight: 700;
-      letter-spacing: .08em !important;
-    }
-    .process-core { width: 118px !important; height: 118px !important; padding: 16px 10px !important; }
-    .process-core strong { font-size: 12px !important; }
-    .process-card { max-height: 230px; overflow: auto; }
-
-    @media (max-width:1100px) { .stage-rail { grid-template-columns: 1fr 1fr; } }
-    @media (max-width:900px) {
-      .board { grid-template-columns: 1fr; }
-      .detail { position: static; }
-    }
-    @media (max-width:620px) {
-      .hero { padding: 36px 18px 28px; }
-      .shell { padding: 16px 12px 50px; }
-      .toolbar { flex-direction: column; align-items: stretch; }
-      .toolbar input { min-width: 0; width: 100%; }
-      .stage-rail { grid-template-columns: 1fr; }
-      .detail-head h2 { font-size: 22px; }
-      .wide { grid-column: auto; }
-    }
-    @media print {
-      body { background: #fff; color: #111; }
-      body::before { display: none; }
-      .toolbar, .map { display: none; }
-      .board { display: block; }
-      .detail { border: 0; box-shadow: none; position: static; }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <header class="hero">
-    <div class="eyebrow">ICE LAB · FULL R&amp;D CONTROL SURFACE</div>
-    <h1>冰箱研发全流程沙盘</h1>
-    <p>把平台、企划、方案、试制试产投产、上市与分流程压进同一张可交互控制台。每个节点上下展开输入 / 输出证据链——更像工程台，而不是说明书。</p>
-    <div class="chips">
-      <span>主线五段</span><span>方案八工作包</span><span>试制 · 试产 · 投产</span>
-      <span>分流程嵌套</span><span>输入输出证据链</span><span>离线可用</span>
+  <header class="topbar">
+    <div class="brand">冰箱研发全流程一屏图<small>ONE-SCREEN PROCESS MAP</small></div>
+    <div class="filter-group" role="group" aria-label="主线过滤">
+      <button class="active" data-lane="all">全部</button>
+      <button data-lane="plat">平台</button>
+      <button data-lane="plan">企划</button>
+      <button data-lane="dev">开发</button>
+      <button data-lane="life">上市</button>
+    </div>
+    <div class="mode-group" role="group" aria-label="视图模式">
+      <button class="active" data-mode="flow">流程全貌</button>
+      <button data-mode="capability">共性能力</button>
+    </div>
+    <input id="search" type="search" placeholder="搜索节点 / 输入 / 输出…" aria-label="搜索">
+    <div class="spacer"></div>
+    <span class="hint">滚轮缩放 · 拖动画布 · 点击节点看详情</span>
+    <div class="zoom-group">
+      <button type="button" id="zoomOut" title="缩小">−</button>
+      <button type="button" id="fitBtn" title="一屏适配">适配一屏</button>
+      <button type="button" id="zoomIn" title="放大">+</button>
     </div>
   </header>
-  <main class="shell">
-    <section class="overview" aria-labelledby="overview-title">
-      <h2 id="overview-title">完整主线 · 从平台到产品再到生命周期</h2>
-      <p>跨控制程序与项目管理指南整理的典型路径。点击阶段跳转对应沙盘；派生 / 转产等特殊路径在下方分流程启用。</p>
-      <div class="stage-rail" role="group" aria-label="主线五段">
-        <button class="stage-card" type="button" data-jump="platform"><b>01 · PLATFORM PLANNING</b><strong>平台规划</strong><small>需求、MIS1 论证、工业设计原型、平台路演与规划下发</small><div class="subs">支撑：工业设计 · 技术研究</div></button>
-        <button class="stage-card" type="button" data-jump="platform-dev"><b>02 · PLATFORM DEV</b><strong>平台开发</strong><small>立项、方案设计、手板模具验证、平台综合方案评审与交付</small><div class="subs">支撑：模块 · 开模改模 · 可靠性</div></button>
-        <button class="stage-card" type="button" data-jump="planning"><b>03 · PRODUCT PLANNING</b><strong>单产品企划</strong><small>企划大纲、概念工程、工业设计测评、可行性、产品策划决策</small><div class="subs">支撑：工业设计 · 技术研究</div></button>
-        <button class="stage-card" type="button" data-jump="main"><b>04 · PRODUCT DEV</b><strong>产品开发</strong><small>方案阶段 → 试制 → 试产 → 投产鉴定与结项</small><div class="subs">支撑：图纸 BOM · 开模 · 可靠性 · 模块</div></button>
-        <button class="stage-card" type="button" data-jump="lifecycle"><b>05 · MARKET &amp; LIFE</b><strong>上市与生命周期</strong><small>上市决策、在销 / 退市 / 停售等状态管理</small><div class="subs">支撑：特殊路径 · 工程变更</div></button>
-      </div>
-    </section>
 
-    <section class="route-choice" aria-labelledby="route-title">
-      <h2 id="route-title">先选择研发主路径</h2>
-      <p>完整主线通常是：平台规划 → 平台开发 → 单产品企划 → 产品开发 → 上市与生命周期。此处选择沙盘展开侧重，不替代等级裁定与系统任务。</p>
-      <div class="choice-row" role="group" aria-label="产品路径选择">
-        <button class="choice active" data-route="with-planning"><b>完整单产品路径：含企划</b><small>企划大纲 → 概念工程 → 工业设计 / 测评 → 可行性 → 产品策划决策 → 方案 / 试制 / 试产 / 投产 → 上市。</small></button>
-        <button class="choice" data-route="without-planning"><b>单产品路径：跳过企划</b><small>已有正式产品规划书，或派生 / 模块等已完成上游规划，直接进入产品开发主线。</small></button>
-        <button class="choice" data-route="platform"><b>平台优先路径</b><small>先展开平台规划与平台开发；平台交付后再衔接单产品企划或产品开发。</small></button>
-      </div>
-      <div class="route-status" id="route-status">当前路径：完整单产品路径。正式产品规划书由上游单产品企划输出，再进入方案→试制→试产→投产。</div>
-    </section>
-
-    <div class="toolbar">
-      <strong>沿完整主线推进 · 点击上下分支查看证据链</strong>
-      <div class="filters" role="group" aria-label="流程筛选">
-        <button class="active" data-filter="all">全部流程</button>
-        <button data-filter="input">只看输入</button>
-        <button data-filter="output">只看输出</button>
-        <button data-filter="risk">只看评审关口</button>
-      </div>
-      <input id="search" type="search" placeholder="搜索节点、文件、样例，例如：试制、封样、平台规划、DFMEA" aria-label="搜索沙盘节点">
-    </div>
-
-    <section class="upstream-panel planning-panel" id="planning-panel">
-      <h2>03 · 单产品企划主线</h2>
-      <p class="map-intro">来自控制程序 6.1 与项目管理指南「产品企划类」。证明做什么、为什么做、能不能做，输出正式产品规划书交给产品开发。</p>
-      <div class="spine-scroll"><div class="spine planning-spine" id="planning-spine"></div></div>
-      <div class="handoff"><strong>交接点：</strong>单产品企划通过产品策划决策并下发正式产品规划书后，交给产品开发「项目立项及启动」。企划阶段 A/B 类问题应在规划书下发前关闭。支撑分流程：工业设计专项、技术研究与成果转化。</div>
-    </section>
-
-    <section class="upstream-panel platform-panel" id="platform-panel">
-      <h2>01–02 · 平台研发主线</h2>
-      <p class="map-intro">来自项目管理指南「(新)平台规划项目 / (新)平台产品开发项目」。平台开发自身含方案、评审、模具、验证和交付，不应与单产品全部节点机械合并。</p>
-      <h3>平台规划</h3>
-      <div class="spine-scroll"><div class="spine planning-spine" id="platform-planning-spine"></div></div>
-      <h3>平台开发</h3>
-      <div class="spine-scroll"><div class="spine platform-dev-spine" id="platform-development-spine"></div></div>
-      <div class="handoff"><strong>平台交接点：</strong>平台规划输出平台规划书、SKU/配置边界；平台开发完成综合方案评审与平台交付后，接口和复用边界才能作为后续产品方案输入。支撑分流程：模块开发、开模与改模、可靠性设计专项、工业设计专项。</div>
-    </section>
-
-    <section class="build-panel" id="design-panel">
-      <h2>04a · 产品开发｜方案阶段</h2>
-      <p class="map-intro">把正式规划书变成可评审、可制造、可验证的方案。上方输入、下方输出；点击节点查看文件证据链。</p>
-      <div class="spine-scroll"><div class="spine" id="spine" style="grid-template-columns:repeat(8, minmax(260px, 1fr)); min-width:2100px;"></div></div>
-    </section>
-
-    <section class="build-panel" id="build-panel">
-      <h2>04b · 产品开发｜试制 · 试产 · 投产 · 结项</h2>
-      <p class="map-intro">试制验证设计方案，试产验证生产组织，投产鉴定是量产准入门，结项关闭项目。</p>
-      <div class="spine-scroll"><div class="spine build-spine" id="build-spine"></div></div>
-      <div class="handoff"><strong>阶段门摘要：</strong>方案→试制：A 类关闭；试制→试产：测试合格 + BOM 制造发放 + 封样要求；投产鉴定：A/B/C 关闭，体验与基本性能不可条件通过。</div>
-    </section>
-
-    <section class="life-panel" id="life-panel">
-      <h2>05 · 上市与生命周期</h2>
-      <p class="map-intro">上市决策 ≠ 投产鉴定；生命周期表是状态变更审批索引，不要求所有状态依次经过。</p>
-      <div class="spine-scroll"><div class="spine life-spine" id="life-spine"></div></div>
-    </section>
-
-    <div class="board">
-      <section class="map">
-        <h2>节点详情与证据链</h2>
-        <p class="map-intro">在任意鱼骨图中点击圆形节点或上下分支；右侧展示完整输入样例、输出产物、关口要求和可挂载的支撑分流程。</p>
-        <div class="legend"><span><i class="pdf"></i>程序 / PDF 明确</span><span><i class="guide"></i>工作簿整理</span><span><i class="confirm"></i>待系统确认</span></div>
-      </section>
-      <section class="detail" id="detail" aria-live="polite"></section>
-    </div>
-
-    <section class="support-panel" id="support-panel">
-      <div class="support-head">
-        <div>
-          <h2>主流程下的分流程（并行支撑）</h2>
-          <p>专业、工程、治理和特殊业务工作表嵌套在主线各阶段之下并行开展。选择后展开鱼骨图，查看支撑主线交付的子流程输入输出。</p>
+  <div class="workspace">
+    <div class="viewport" id="viewport">
+      <div class="canvas" id="canvas">
+        <div class="map-shell" id="mapShell">
+          <div class="legend-row">
+            <span><i class="l-plat"></i>平台</span>
+            <span><i class="l-plan"></i>单产品企划</span>
+            <span><i class="l-dev"></i>产品开发</span>
+            <span><i class="l-life"></i>上市与生命周期</span>
+            <span><i class="l-sup"></i>下方可展开分流程</span>
+            <span>共 <b id="nodeCount">0</b> 个主节点 · 一屏看全貌 · 点输出拆内容块 / 来源 / 方法 · 再抽共性能力</span>
+          </div>
+          <div class="stages" id="stages"></div>
+          <div class="support-strip" id="supportStrip">
+            <div class="label">并行分流程（点击展开，不占主线视线）</div>
+            <div class="support-pills" id="supportPills"></div>
+            <div class="support-mini" id="supportMini"></div>
+          </div>
+          <div class="cap-panel" id="capPanel">
+            <h3>跨节点共性能力 · 点击查看复用机会</h3>
+            <p style="margin:0 0 8px;font-size:11px;color:#667781">同一能力若在多个交付物中重复出现，可沉淀为公共平台 / 方法 / 资产，提升复用与方案产出效率。</p>
+            <div class="cap-grid" id="capGrid"></div>
+          </div>
         </div>
-        <button class="support-clear" id="support-clear" type="button">清空选择</button>
       </div>
-      <div class="support-options" id="support-options"></div>
-      <div class="support-flows" id="support-flows"></div>
-    </section>
-  </main>
-  <script>
+    </div>
+    <div class="backdrop" id="backdrop"></div>
+    <aside class="drawer" id="drawer" aria-live="polite">
+      <div class="drawer-h">
+        <div class="meta" id="drawerMeta"><div class="empty-drawer">点击任意节点，查看输入 / 输出与关口</div></div>
+        <button type="button" id="closeDrawer" aria-label="关闭">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+  </div>
 
-     const nodes = [
+<script>
+const platformPlanningNodes = [
+        { id:'platform-need', title:'平台需求与立项', short:'定义平台方向和必要性', kicker:'PP1 / NEED', desc:'从平台需求书、品类规划和技术趋势出发，确认平台开发必要性、产品群范围、市场机会和目标边界。', owner:'平台企划；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件16《平台需求书》；附件19《平台企划书》。', inputs:[['平台需求书','平台规划输入','平台方向、目标品类、市场机会、目标产品群、关键性能和时间要求','附件16《平台需求书》\n目标品类：示例\n平台范围：待确认'],['品类/技术规划与竞品资料','平台论证输入','趋势、竞品、技术路线、用户需求和平台复用机会','平台趋势分析\n竞品对标\n技术机会清单']], outputs:['平台项目立项记录','平台需求和产品群边界','平台开发团队与计划','MIS1工作坊输入'], gate:'平台需求和目标产品群需先明确；平台规划不是所有单产品项目的必经流程。'},
+        { id:'platform-mis1', title:'概念工程与MIS1论证', short:'验证平台方向和可行性', kicker:'PP2 / MIS1', desc:'开展平台概念工程、工业设计原型、用户与竞品研究以及MIS1论证，形成平台方向、配置范围和关键风险的集体判断。', owner:'平台企划；工业设计；用户研究；开发和可靠性代表', source:'12.xlsx《2-(新)平台规划项目》；指南平台规划主线。', inputs:[['平台需求和概念方案','MIS1输入','平台定位、用户价值、产品组合、工业设计方向和技术路线','平台概念方案\n用户价值：待验证\n设计方向：示例'],['技术可行性、成本与风险资料','论证输入','技术难度、成本/投资、专利、四新物料、供应和制造风险','技术可行性分析\n成本测算\n风险清单']], outputs:['《MIS1报告》','对标诊断和结论汇总','平台产品群/配置方向','平台路演决策材料'], gate:'MIS1结论应能支撑平台是否继续、调整或储备；具体会议和系统审批角色以12.xlsx当前表单配置为准。'},
+        { id:'platform-design', title:'平台工业设计与配置规划', short:'形成平台外观和SKU边界', kicker:'PP3 / ID', desc:'将平台概念转成工业设计方向、原型和产品群配置，识别平台共性、选项、基准配置和差异化边界。', owner:'平台企划；工业设计；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件17《平台工业设计研究趋势评估报告》；附件23–24。', inputs:[['MIS1报告与平台概念','设计输入','平台定位、用户研究、趋势、竞品、共性元素和差异化方向','MIS1结论\n平台设计方向\n品牌/区域约束'],['产品群配置和接口规则','配置输入','SKU、选项集、基准配置、平台规格和功能组合','附件18平台规格书\n附件23平台选项集\n附件24基准配置表']], outputs:['平台工业设计方案/原型','SKU配置表','基准配置和平台共性边界','平台规格及接口输入'], gate:'配置和接口边界需在平台规划书下发前稳定；具体选项和借用规则按平台项目适用性确认。'},
+        { id:'platform-roadshow', title:'平台路演与规划下发', short:'形成平台规划书并决策', kicker:'PP4 / ROADSHOW', desc:'组织平台路演和决策，修订并下发平台规划书；储备或终止结论应在系统和会议证据中清楚记录。', owner:'平台企划；事业部决策者；项目团队', source:'12.xlsx《2-(新)平台规划项目》；附件19《平台企划书》。', inputs:[['MIS1、设计和配置资料包','路演输入','MIS1报告、对标诊断、工业设计方案、SKU、成本、技术和风险结论','平台路演材料包\n问题清单与决策项'],['平台开发边界与资源计划','决策输入','平台开发项目、首基准/产品群、资源、周期和投资边界','平台开发任务包\n首基准：待确认\n资源计划：示例']], outputs:['正式《平台规划书》','平台SKU/配置边界','平台规划决策结论','平台产品开发项目触发输入'], gate:'平台规划书下发后，平台开发项目可进入立项；若规划结论均为储备，原表存在自动触发结项的规则提示，需按当前系统确认。'}
+      ];
+const platformDevelopmentNodes = [
+        { id:'platform-dev-launch', title:'平台开发立项与启动', short:'平台规划转开发任务', kicker:'PD1 / START', desc:'平台规划结项后，系统在相应平台产品开发项目经理账户上创建平台开发立项流程，完成团队、计划和平台首基准范围确认。', owner:'平台开发项目经理；平台企划；项目团队', source:'12.xlsx《3-(新)平台产品开发项目》；平台规划与开发衔接规则。', inputs:[['平台规划书与SKU配置表','平台开发输入','平台目标、产品群、基准配置、接口、功能组合和平台边界','正式平台规划书\nSKU配置表\n基准配置表'],['平台开发任务包','项目启动输入','首基准、项目等级、里程碑、资源、成本和验证计划','平台开发WBS\n首基准清单\n里程碑计划']], outputs:['平台开发立项记录','平台开发团队和WBS','首基准/产品群开发范围','平台开发评审计划'], gate:'平台开发立项应明确首基准、平台复用边界和交付规则；多个首基准可按平台任务配置分别推进。'},
+        { id:'platform-dev-design', title:'平台方案设计与专业评审', short:'形成平台技术方案', kicker:'PD2 / DESIGN', desc:'开展平台结构、性能、电控、电器、工业设计、可靠性、专利和制造相关方案设计，形成平台共性能力与首基准差异的评审证据。', owner:'平台开发项目经理；各专业；可靠性；供应链；模具', source:'12.xlsx《3-(新)平台产品开发项目》；平台开发方案设计链。', inputs:[['平台规划书、接口和功能组合','设计输入','平台参数、借用/新增部件、接口、选项和基准配置','附件18平台规格书\n接口规则\n功能组合'],['专业方案、历史问题和平台风险','评审输入','结构/性能/电控/电器方案、DFMEA、历史问题、四新物料和专利风险','平台专业方案\nDFMEA/FBD\n平台问题清单']], outputs:['平台专业方案和评审结论','平台规格/接口冻结边界','新物料清单与供应计划','平台可靠性、专利和制造风险结论'], gate:'平台共性和首基准差异需分开记录；平台开发评审不等同于所有单产品项目的评审要求。'},
+        { id:'platform-dev-verify', title:'平台手板、模具与验证', short:'验证平台共性和首基准', kicker:'PD3 / VERIFY', desc:'平台开发进入手板摸底、模具和样件验证，按平台产品群测试/认证借用规则识别可借用内容和必须新增的验证。', owner:'平台开发项目经理；测试评价；模具；品质；供应链', source:'12.xlsx《3-(新)平台产品开发项目》；附件20–21、附件25–26。', inputs:[['平台方案、图纸和可投模清单','样件/模具输入','平台结构图纸、首基准、可投模范围、模具规格和供应路线','平台图纸\n可投模零部件\n模具设计评审资料'],['平台测试/认证借用规则','验证裁剪输入','基准产品群、可借用测试/认证项目、差异化验证边界','附件20平台产品群认证借用规则\n附件21平台产品群测试借用规则']], outputs:['手板摸底测试报告','平台模具/首样和问题闭环','平台产品群测试与认证清单','平台共性问题和差异化问题整改项'], gate:'借用规则必须先确认适用范围；平台测试和认证清单不能直接套用于全部产品。'},
+        { id:'platform-dev-gate', title:'平台综合方案评审与交付', short:'平台能力可复用、可交付', kicker:'PD4 / GATE', desc:'以平台综合方案评审为开模和平台交付前的重要关口，汇总平台规格、首基准验证、成本、问题、测试认证和复用边界，形成平台交付。', owner:'平台开发项目经理；设计可靠性；平台企划；各专业和价值链', source:'12.xlsx《3-(新)平台产品开发项目》；平台综合方案评审和平台交付节点。', inputs:[['平台综合评审资料包','平台评审输入','专业评审、手板/模具验证、可靠性、成本、专利、测试认证和问题矩阵','平台综合方案评审资料\n问题关闭矩阵\n借用边界'],['平台规划结论与首基准状态','交付判断输入','规划书、首基准、配置表、平台接口和储备/开发状态','平台交付清单\n首基准状态\n平台复用约束']], outputs:['平台综合方案评审结论','平台规格/接口/选项交付','平台产品群测试认证交付','平台开发结项或转产品开发输入'], gate:'平台综合方案评审位于开模前的综合评审位置；规划结论均为储备时，原表存在自动触发结项提示，实际条件需回到当前工作表确认。'}
+      ];
+const planningNodes = [
+       { id:'plan-brief', title:'企划大纲与规划立项', short:'从年度/内外销企划形成项目', kicker:'P1 / BRIEF', desc:'产品企划将年度企划大纲转成GPM/PLM中的项目和产品规划书初稿，先明确为什么做、面向谁做以及基本时间和经营边界。', owner:'产品企划；产品经理；项目团队', source:'指南对应主程序PDF第7页6.1.1–6.1.2。', inputs:[['年度/内外销企划大纲','规划立项输入','产品方向、市场区域、目标上市/批产时间、经营要求和年度机会','企划大纲\n区域：内销/外销\n目标上市：待项目确认'],['市场与产品策略资料','项目背景输入','市场机会、竞品、目标顾客、产品组合和品牌要求','市场趋势资料\n竞品对标\n目标顾客画像']], outputs:['GPM/PLM规划项目','《产品规划书》初稿','规划团队和执行计划','概念、上市/批产、成本、性能、功能、设计和可靠性目标'], gate:'项目应来源于年度/内外销企划大纲；规划书初稿需形成可供概念工程和技术可行性分析的边界。'},
+       { id:'plan-concept', title:'概念工程与用户价值', short:'证明产品做什么、为谁做', kicker:'P2 / CONCEPT', desc:'对内销T/I类及重点II类项目开展趋势、定位、竞品、用户画像、差异化和卖点研究，将体验及NPS问题导入产品概念。', owner:'产品企划；用户研究；工业设计；相关专业', source:'指南对应主程序PDF第7页6.1.3–6.1.4。', inputs:[['产品规划书初稿','概念研究输入','产品定位、目标顾客、市场区域、初始功能和经营目标','产品定位：待确认\n目标用户：待调研\n差异化卖点：待形成'],['趋势、竞品和用户研究资料','用户价值输入','趋势分析、竞品体验、用户画像、痛点、NPS问题和使用场景','用户画像\n竞品体验差异\n问题优先级']], outputs:['《概念工程研究报告》','产品概念/差异化卖点','立项路演的概念决策材料','体验及NPS改善问题输入'], gate:'适用项目应在立项路演中对概念工程研究报告进行评审和决策；项目等级和重点II类适用性需按流程任务确认。'},
+       { id:'plan-design', title:'工业设计、手板与组合测评', short:'把概念变成可感知方案', kicker:'P3 / DESIGN', desc:'完成草图、2D、3D和手板，对外观效果、品牌共性、可用性和产品组合进行评审，形成对概念的用户和内部反馈。', owner:'工业设计；用户研究；产品企划；项目团队', source:'指南对应主程序PDF第7–8页6.1.5–6.1.7。', inputs:[['概念工程研究报告','设计输入','用户洞察、竞品差异、设计方向、概念卖点和品牌要求','设计方向：待确认\n核心卖点：待转译\n品牌约束：按适用品牌核对'],['草图、2D/3D和手板','外观测评输入','外观方案、GUI/CMF、结构限制、手板制作和评审对象','附件2设计提案参考模板\n2D/3D方案\n手板版本：示例'],['产品组合与体验测评任务','测评输入','测评对象、产品组合、评价维度、体验及NPS问题','用户/导购测评任务\n评价结论：待测评']], outputs:['外观效果图和设计方案','工业设计/内部专业评审会议纪要','《产品组合测评报告》','《体验及NPS改善问题闭环情况》','优化后的产品概念与设计输入'], gate:'企划、工业设计和开发外观方案未达成共识时按程序逐级决策；测评问题需形成闭环或带入后续方案阶段。'},
+       { id:'plan-feasibility', title:'技术可行性与创新风险', short:'确认技术、制造、成本和供应风险', kicker:'P4 / FEASIBILITY', desc:'将产品构想转成技术实现、制造实现、综合成本、四新物料工艺路线、供应风险和专利方面的可行性判断。', owner:'项目经理；技术专业；供应链；专利工程师；成本/财务', source:'指南对应主程序PDF第8页6.1.8–6.1.9。', inputs:[['产品构想与设计方案','技术分析输入','功能卖点、使用情境、用户痛点、外观方案和初步规格','产品构想：示例\n核心功能：待确认\n目标成本：待估算'],['技术、制造和供应链资料','可行性输入','技术方案、制造路线、新技术/新材料/新工艺、供方、产能和成本','附件9技术可行性分析报告\n结论：可实现/需验证/存在风险'],['创新点与法规要求','专利/合规输入','项目创新点、竞品参考、专利检索、材料法规和有害物质要求','附件10专利报告\n附件29新物料清单\n目标材料审批表']], outputs:['《技术可行性评估报告》','《目标材料审批表》','《初步专利检索分析报告》','《新物料清单》','成本/供应风险及验证计划'], gate:'技术、制造、成本和供应风险不能只保留口头结论；需形成可决策的评估报告，并将待验证项带入立项路演。'},
+       { id:'plan-decision', title:'立项路演与产品策划决策', short:'决定是否进入产品开发', kicker:'P5 / DECISION', desc:'形成具体产品构想并组织立项路演和产品策划决策。通过后修订、定版并下发正式产品规划书，作为方案阶段项目立项的输入。', owner:'产品企划；事业部决策者；项目经理；相关专业', source:'指南对应主程序PDF第8–9页6.1.10–6.1.11；第22–23页6.7.5.4。', inputs:[['概念、设计和可行性资料包','路演输入','概念工程、工业设计、用户测评、技术可行性、成本、专利和物料风险','立项路演材料包\n关键问题：责任/措施/时间'],['等级与目标边界','策划决策输入','项目等级、基本性能、可靠性、成本/毛利、用户、定位、上市/批产计划','等级：待裁定\n目标性能：待规格化\n毛利：待确认']], outputs:['立项路演会议纪要/决策结论','修订后的正式《产品规划书》','产品策划决策通过记录','方案阶段项目立项输入','单产品规划阶段AB问题关闭证据'], gate:'未通过立项路演需重新规划路演；产品规划书下发前，单产品规划阶段A/B类问题必须关闭。正式规划书下发后，交给方案阶段“项目立项及启动”。'}
+      ];
+const nodes = [
       { id:'launch', title:'项目立项及启动', short:'正式规划书进入开发项目', kicker:'01 / START', desc:'把单产品规划阶段形成的正式产品规划书转换为项目团队、里程碑和可执行WBS。平台或模块项目同时识别复用边界和接口输入。', owner:'项目经理；产品企划；平台企划/可靠性与标准化', source:'PDF第9页6.2.1；第11页6.2.10工作项1–2。', inputs:[['正式产品规划书','正式版规划输入','项目定位、等级、基本性能目标、可靠性目标、成本/毛利、上市/批产计划','项目号：FR-2025-001\n项目等级：I类\n目标上市：2025-11\n基本性能目标：待按规格书填写'],['项目等级与流程框架','流程裁剪依据','结构、性能、电控、外观的全新程度；适用MIS节点和评审深度','附件13《项目等级裁定参考表》\n附件14《研发流程框架》'],['平台/模块需求（如适用）','平台路径输入','平台需求、接口、功能组合、复用和新增边界','附件16《平台需求书》\n附件19《平台企划书》']], outputs:['《项目启动会会议纪要》','《项目WBS计划》','项目团队、里程碑任务和详细开发计划','T/I类MIS工作坊结论或设计MIS会议纪要闭环任务'], gate:'进入下一节点前：正式规划书有效；项目等级和流程裁剪已确认；WBS已经分解到专业评审、手板、模具和综合方案评审。'},
       { id:'design-input', title:'设计输入展开与专业方案', short:'把规划目标拆成各专业方案', kicker:'02 / DESIGN INPUT', desc:'结构、性能、电控/电器、包装和专利等专业基于设计输入开展方案设计、DFMEA和专业评审。专业方案是后续可靠性、手板和模具工作的共同输入。', owner:'专业设计代表；项目经理；可靠性、工艺、品质、模具、供应链代表', source:'PDF第9页6.2.2；第11页6.2.10工作项3–9。', inputs:[['工业设计需求书','外观与体验设计输入','目标顾客、目标价格、产品定位、卖点、销售区域、GUI/CMF、结构限制和时间要求','附件6《工业设计需求书模板》\n目标顾客：年轻家庭\n设计类型：CMF差异化 + UXI'],['平台规格与接口规则（如适用）','平台技术输入','平台参数、部件新增/借用、接口尺寸、功能组合和区域适用性','附件18《平台规格书及接口规则（含功能组合）》\n部件：借用/新增\n接口：尺寸与装配约束'],['模块需求（如适用）','模块化输入','模块明细、选项、成本、模具费用和适用平台','附件27《模块需求书模板》\n模块名称：冷藏室风道模块\n选项：标准/升级'],['设计标准、历史问题和竞品资料','专业评审依据','最新设计规范、历史相似零部件问题、竞品结构和性能边界','专业Checklist\n历史问题清单\n竞品对标资料']], outputs:['结构、性能、电控/电器等专业方案','各专业方案评审报告和明确结论','图纸/接口/设计约束','初版《新物料清单》','专业问题、责任人、措施和完成时间'], gate:'结构专业评审完成并发放图纸后，才按MIS2/MIS3和模具规则进入开模判断；产线技改需求最晚在MIS3预评审确认。'},
       { id:'risk', title:'可靠性与专项评审', short:'先确认风险可控，再进综合评审', kicker:'03 / RISK REVIEW', desc:'把产品目标、专业方案和历史经验转成可靠性、安规、可制造性、可维修性的专项证据。专项评审不是一个泛泛的“会”，而是对后续验证范围和风险承担方式的确认。', owner:'项目经理；设计可靠性；品质可靠性；新品工艺；售后；电器工程师', source:'PDF第9–10页6.2.3、6.2.5–6.2.6；第12页工作项15–18。', inputs:[['产品设计规格目标','可靠性目标输入','功能卖点、关键参数、目标环境、用户使用条件和可靠性目标','产品设计规格书\n目标温度、噪声、能耗、寿命等字段按项目规格填写'],['技术可行性分析报告','技术风险输入','使用情境、用户痛点、技术方案、新技术/新材料/新工艺、技术难度、预估成本','附件9《技术可行性分析报告》\n结论：可实现/需验证/存在风险'],['四新物料与历史问题','失效预防输入','新材料、新工艺、新供方、相似机型市场问题和改进经验','附件29《新物料清单》\n四新：是\n风险物料：是\n对应标准：待补'],['专业方案与DFMEA','专项评审输入','结构、电控、性能、电器方案和潜在失效模式','FBD及线上DFMEA\nII类是否强制输出需按程序和项目任务确认']], outputs:['T/I类可靠性五大交付：可靠性规划书、可靠性试验方案、产品设计规格书、FBD/线上DFMEA及企划书可靠性必填项','可制造性评审报告、工艺路线、改善方案','存储运输/安装维修性评审结论','安规安全评审结论','专项问题和整改措施'], gate:'可靠性评审通过后方可进入综合方案评审；II类及以上全新开发项目需进行可制造性评审，II类及以上需进行存储运输、安装维修性评审。'},
@@ -660,38 +364,17 @@
       { id:'review', title:'产品综合评价', short:'把分散证据汇总成评审资料包', kicker:'07 / SYNTHESIS', desc:'测试评价代表和项目经理对资料、测试、成本、专利、模具和问题状态进行总检查，把各专业输出整理成综合方案评审可用的资料包。', owner:'项目经理；测试评价；各专业和价值链代表', source:'PDF第11页6.2.9；第12页工作项23。', inputs:[['各专业评审结论','资料完整性输入','结构、电控、性能、电器、可靠性、安规、工艺和可维修性结论','专业评审报告\nChecklist\n会议纪要'],['手板/模具验证证据','样机状态输入','测试报告、体验问题、装配结论、模具首样和问题整改','《手板摸底测试报告》\n《产品测试综合评价报告》\n附件15模具评审表'],['成本、专利和问题库','决策输入','成本达标情况、专利布局、A/B/C问题、责任和验证证据','附件10专利报告\nMPLM问题库\n新物料清单']], outputs:['产品综合评价结论','综合方案评审资料目录','问题关闭矩阵','剩余风险和下一阶段验证清单','需冻结的设计、成本、物料和模具边界'], gate:'未关闭问题不能只写“后续跟进”，应有责任人、措施、验证方式和完成时间；资料包的具体清单按项目等级、流程模板和系统任务确定。'},
        { id:'gate', title:'综合方案评审与转阶段', short:'形成方案冻结和转试制依据', kicker:'08 / GATE', desc:'设计可靠性专家预审通过后，项目经理组织综合方案评审，复盘摸底测试与规格书、专业问题、成本、专利和转阶段条件。它是方案阶段的出口。', owner:'项目经理；设计可靠性专家；各专业和价值链代表', source:'PDF第11页6.2.9–6.2.10；第21–23页6.7.2–6.7.5。', inputs:[['综合方案评审资料包','评审输入','测试与规格书对比、各专业问题、成本达标、专利布局、可靠性和专项结论','资料目录 + 评审PPT/报告\n设计可靠性专家预审记录'],['问题关闭矩阵','转阶段输入','A/B/C问题状态、整改方案、验证结果、责任和完成时间','问题库导出\nA类：关闭\nB/C类：按转阶段规则控制'],['失败案例和方案边界','知识沉淀输入','A类及重点B类问题、设计缺陷、批量风险和规避措施','失败案例/PPH沉淀\n冻结的设计、成本、物料和模具边界']], outputs:['综合方案评审会议纪要/结论','A类问题100%关闭证据','A类及重点B类失败案例转化记录','下一阶段验证计划和约束','转产品试制的系统任务或决策结果'], gate:'红线：综合方案评审出现A类问题必须关闭，否则不得进入下一阶段。基本性能应优于竞品或现有平台产品。方案转试制的A/B/C比例、体验和制造评审比例需按程序表和项目等级核对。'},
      ];
-      const planningNodes = [
-       { id:'plan-brief', title:'企划大纲与规划立项', short:'从年度/内外销企划形成项目', kicker:'P1 / BRIEF', desc:'产品企划将年度企划大纲转成GPM/PLM中的项目和产品规划书初稿，先明确为什么做、面向谁做以及基本时间和经营边界。', owner:'产品企划；产品经理；项目团队', source:'指南对应主程序PDF第7页6.1.1–6.1.2。', inputs:[['年度/内外销企划大纲','规划立项输入','产品方向、市场区域、目标上市/批产时间、经营要求和年度机会','企划大纲\n区域：内销/外销\n目标上市：待项目确认'],['市场与产品策略资料','项目背景输入','市场机会、竞品、目标顾客、产品组合和品牌要求','市场趋势资料\n竞品对标\n目标顾客画像']], outputs:['GPM/PLM规划项目','《产品规划书》初稿','规划团队和执行计划','概念、上市/批产、成本、性能、功能、设计和可靠性目标'], gate:'项目应来源于年度/内外销企划大纲；规划书初稿需形成可供概念工程和技术可行性分析的边界。'},
-       { id:'plan-concept', title:'概念工程与用户价值', short:'证明产品做什么、为谁做', kicker:'P2 / CONCEPT', desc:'对内销T/I类及重点II类项目开展趋势、定位、竞品、用户画像、差异化和卖点研究，将体验及NPS问题导入产品概念。', owner:'产品企划；用户研究；工业设计；相关专业', source:'指南对应主程序PDF第7页6.1.3–6.1.4。', inputs:[['产品规划书初稿','概念研究输入','产品定位、目标顾客、市场区域、初始功能和经营目标','产品定位：待确认\n目标用户：待调研\n差异化卖点：待形成'],['趋势、竞品和用户研究资料','用户价值输入','趋势分析、竞品体验、用户画像、痛点、NPS问题和使用场景','用户画像\n竞品体验差异\n问题优先级']], outputs:['《概念工程研究报告》','产品概念/差异化卖点','立项路演的概念决策材料','体验及NPS改善问题输入'], gate:'适用项目应在立项路演中对概念工程研究报告进行评审和决策；项目等级和重点II类适用性需按流程任务确认。'},
-       { id:'plan-design', title:'工业设计、手板与组合测评', short:'把概念变成可感知方案', kicker:'P3 / DESIGN', desc:'完成草图、2D、3D和手板，对外观效果、品牌共性、可用性和产品组合进行评审，形成对概念的用户和内部反馈。', owner:'工业设计；用户研究；产品企划；项目团队', source:'指南对应主程序PDF第7–8页6.1.5–6.1.7。', inputs:[['概念工程研究报告','设计输入','用户洞察、竞品差异、设计方向、概念卖点和品牌要求','设计方向：待确认\n核心卖点：待转译\n品牌约束：按适用品牌核对'],['草图、2D/3D和手板','外观测评输入','外观方案、GUI/CMF、结构限制、手板制作和评审对象','附件2设计提案参考模板\n2D/3D方案\n手板版本：示例'],['产品组合与体验测评任务','测评输入','测评对象、产品组合、评价维度、体验及NPS问题','用户/导购测评任务\n评价结论：待测评']], outputs:['外观效果图和设计方案','工业设计/内部专业评审会议纪要','《产品组合测评报告》','《体验及NPS改善问题闭环情况》','优化后的产品概念与设计输入'], gate:'企划、工业设计和开发外观方案未达成共识时按程序逐级决策；测评问题需形成闭环或带入后续方案阶段。'},
-       { id:'plan-feasibility', title:'技术可行性与创新风险', short:'确认技术、制造、成本和供应风险', kicker:'P4 / FEASIBILITY', desc:'将产品构想转成技术实现、制造实现、综合成本、四新物料工艺路线、供应风险和专利方面的可行性判断。', owner:'项目经理；技术专业；供应链；专利工程师；成本/财务', source:'指南对应主程序PDF第8页6.1.8–6.1.9。', inputs:[['产品构想与设计方案','技术分析输入','功能卖点、使用情境、用户痛点、外观方案和初步规格','产品构想：示例\n核心功能：待确认\n目标成本：待估算'],['技术、制造和供应链资料','可行性输入','技术方案、制造路线、新技术/新材料/新工艺、供方、产能和成本','附件9技术可行性分析报告\n结论：可实现/需验证/存在风险'],['创新点与法规要求','专利/合规输入','项目创新点、竞品参考、专利检索、材料法规和有害物质要求','附件10专利报告\n附件29新物料清单\n目标材料审批表']], outputs:['《技术可行性评估报告》','《目标材料审批表》','《初步专利检索分析报告》','《新物料清单》','成本/供应风险及验证计划'], gate:'技术、制造、成本和供应风险不能只保留口头结论；需形成可决策的评估报告，并将待验证项带入立项路演。'},
-       { id:'plan-decision', title:'立项路演与产品策划决策', short:'决定是否进入产品开发', kicker:'P5 / DECISION', desc:'形成具体产品构想并组织立项路演和产品策划决策。通过后修订、定版并下发正式产品规划书，作为方案阶段项目立项的输入。', owner:'产品企划；事业部决策者；项目经理；相关专业', source:'指南对应主程序PDF第8–9页6.1.10–6.1.11；第22–23页6.7.5.4。', inputs:[['概念、设计和可行性资料包','路演输入','概念工程、工业设计、用户测评、技术可行性、成本、专利和物料风险','立项路演材料包\n关键问题：责任/措施/时间'],['等级与目标边界','策划决策输入','项目等级、基本性能、可靠性、成本/毛利、用户、定位、上市/批产计划','等级：待裁定\n目标性能：待规格化\n毛利：待确认']], outputs:['立项路演会议纪要/决策结论','修订后的正式《产品规划书》','产品策划决策通过记录','方案阶段项目立项输入','单产品规划阶段AB问题关闭证据'], gate:'未通过立项路演需重新规划路演；产品规划书下发前，单产品规划阶段A/B类问题必须关闭。正式规划书下发后，交给方案阶段“项目立项及启动”。'}
-      ];
-      const platformPlanningNodes = [
-        { id:'platform-need', title:'平台需求与立项', short:'定义平台方向和必要性', kicker:'PP1 / NEED', desc:'从平台需求书、品类规划和技术趋势出发，确认平台开发必要性、产品群范围、市场机会和目标边界。', owner:'平台企划；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件16《平台需求书》；附件19《平台企划书》。', inputs:[['平台需求书','平台规划输入','平台方向、目标品类、市场机会、目标产品群、关键性能和时间要求','附件16《平台需求书》\n目标品类：示例\n平台范围：待确认'],['品类/技术规划与竞品资料','平台论证输入','趋势、竞品、技术路线、用户需求和平台复用机会','平台趋势分析\n竞品对标\n技术机会清单']], outputs:['平台项目立项记录','平台需求和产品群边界','平台开发团队与计划','MIS1工作坊输入'], gate:'平台需求和目标产品群需先明确；平台规划不是所有单产品项目的必经流程。'},
-        { id:'platform-mis1', title:'概念工程与MIS1论证', short:'验证平台方向和可行性', kicker:'PP2 / MIS1', desc:'开展平台概念工程、工业设计原型、用户与竞品研究以及MIS1论证，形成平台方向、配置范围和关键风险的集体判断。', owner:'平台企划；工业设计；用户研究；开发和可靠性代表', source:'12.xlsx《2-(新)平台规划项目》；指南平台规划主线。', inputs:[['平台需求和概念方案','MIS1输入','平台定位、用户价值、产品组合、工业设计方向和技术路线','平台概念方案\n用户价值：待验证\n设计方向：示例'],['技术可行性、成本与风险资料','论证输入','技术难度、成本/投资、专利、四新物料、供应和制造风险','技术可行性分析\n成本测算\n风险清单']], outputs:['《MIS1报告》','对标诊断和结论汇总','平台产品群/配置方向','平台路演决策材料'], gate:'MIS1结论应能支撑平台是否继续、调整或储备；具体会议和系统审批角色以12.xlsx当前表单配置为准。'},
-        { id:'platform-design', title:'平台工业设计与配置规划', short:'形成平台外观和SKU边界', kicker:'PP3 / ID', desc:'将平台概念转成工业设计方向、原型和产品群配置，识别平台共性、选项、基准配置和差异化边界。', owner:'平台企划；工业设计；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件17《平台工业设计研究趋势评估报告》；附件23–24。', inputs:[['MIS1报告与平台概念','设计输入','平台定位、用户研究、趋势、竞品、共性元素和差异化方向','MIS1结论\n平台设计方向\n品牌/区域约束'],['产品群配置和接口规则','配置输入','SKU、选项集、基准配置、平台规格和功能组合','附件18平台规格书\n附件23平台选项集\n附件24基准配置表']], outputs:['平台工业设计方案/原型','SKU配置表','基准配置和平台共性边界','平台规格及接口输入'], gate:'配置和接口边界需在平台规划书下发前稳定；具体选项和借用规则按平台项目适用性确认。'},
-        { id:'platform-roadshow', title:'平台路演与规划下发', short:'形成平台规划书并决策', kicker:'PP4 / ROADSHOW', desc:'组织平台路演和决策，修订并下发平台规划书；储备或终止结论应在系统和会议证据中清楚记录。', owner:'平台企划；事业部决策者；项目团队', source:'12.xlsx《2-(新)平台规划项目》；附件19《平台企划书》。', inputs:[['MIS1、设计和配置资料包','路演输入','MIS1报告、对标诊断、工业设计方案、SKU、成本、技术和风险结论','平台路演材料包\n问题清单与决策项'],['平台开发边界与资源计划','决策输入','平台开发项目、首基准/产品群、资源、周期和投资边界','平台开发任务包\n首基准：待确认\n资源计划：示例']], outputs:['正式《平台规划书》','平台SKU/配置边界','平台规划决策结论','平台产品开发项目触发输入'], gate:'平台规划书下发后，平台开发项目可进入立项；若规划结论均为储备，原表存在自动触发结项的规则提示，需按当前系统确认。'}
-      ];
-      const platformDevelopmentNodes = [
-        { id:'platform-dev-launch', title:'平台开发立项与启动', short:'平台规划转开发任务', kicker:'PD1 / START', desc:'平台规划结项后，系统在相应平台产品开发项目经理账户上创建平台开发立项流程，完成团队、计划和平台首基准范围确认。', owner:'平台开发项目经理；平台企划；项目团队', source:'12.xlsx《3-(新)平台产品开发项目》；平台规划与开发衔接规则。', inputs:[['平台规划书与SKU配置表','平台开发输入','平台目标、产品群、基准配置、接口、功能组合和平台边界','正式平台规划书\nSKU配置表\n基准配置表'],['平台开发任务包','项目启动输入','首基准、项目等级、里程碑、资源、成本和验证计划','平台开发WBS\n首基准清单\n里程碑计划']], outputs:['平台开发立项记录','平台开发团队和WBS','首基准/产品群开发范围','平台开发评审计划'], gate:'平台开发立项应明确首基准、平台复用边界和交付规则；多个首基准可按平台任务配置分别推进。'},
-        { id:'platform-dev-design', title:'平台方案设计与专业评审', short:'形成平台技术方案', kicker:'PD2 / DESIGN', desc:'开展平台结构、性能、电控、电器、工业设计、可靠性、专利和制造相关方案设计，形成平台共性能力与首基准差异的评审证据。', owner:'平台开发项目经理；各专业；可靠性；供应链；模具', source:'12.xlsx《3-(新)平台产品开发项目》；平台开发方案设计链。', inputs:[['平台规划书、接口和功能组合','设计输入','平台参数、借用/新增部件、接口、选项和基准配置','附件18平台规格书\n接口规则\n功能组合'],['专业方案、历史问题和平台风险','评审输入','结构/性能/电控/电器方案、DFMEA、历史问题、四新物料和专利风险','平台专业方案\nDFMEA/FBD\n平台问题清单']], outputs:['平台专业方案和评审结论','平台规格/接口冻结边界','新物料清单与供应计划','平台可靠性、专利和制造风险结论'], gate:'平台共性和首基准差异需分开记录；平台开发评审不等同于所有单产品项目的评审要求。'},
-        { id:'platform-dev-verify', title:'平台手板、模具与验证', short:'验证平台共性和首基准', kicker:'PD3 / VERIFY', desc:'平台开发进入手板摸底、模具和样件验证，按平台产品群测试/认证借用规则识别可借用内容和必须新增的验证。', owner:'平台开发项目经理；测试评价；模具；品质；供应链', source:'12.xlsx《3-(新)平台产品开发项目》；附件20–21、附件25–26。', inputs:[['平台方案、图纸和可投模清单','样件/模具输入','平台结构图纸、首基准、可投模范围、模具规格和供应路线','平台图纸\n可投模零部件\n模具设计评审资料'],['平台测试/认证借用规则','验证裁剪输入','基准产品群、可借用测试/认证项目、差异化验证边界','附件20平台产品群认证借用规则\n附件21平台产品群测试借用规则']], outputs:['手板摸底测试报告','平台模具/首样和问题闭环','平台产品群测试与认证清单','平台共性问题和差异化问题整改项'], gate:'借用规则必须先确认适用范围；平台测试和认证清单不能直接套用于全部产品。'},
-        { id:'platform-dev-gate', title:'平台综合方案评审与交付', short:'平台能力可复用、可交付', kicker:'PD4 / GATE', desc:'以平台综合方案评审为开模和平台交付前的重要关口，汇总平台规格、首基准验证、成本、问题、测试认证和复用边界，形成平台交付。', owner:'平台开发项目经理；设计可靠性；平台企划；各专业和价值链', source:'12.xlsx《3-(新)平台产品开发项目》；平台综合方案评审和平台交付节点。', inputs:[['平台综合评审资料包','平台评审输入','专业评审、手板/模具验证、可靠性、成本、专利、测试认证和问题矩阵','平台综合方案评审资料\n问题关闭矩阵\n借用边界'],['平台规划结论与首基准状态','交付判断输入','规划书、首基准、配置表、平台接口和储备/开发状态','平台交付清单\n首基准状态\n平台复用约束']], outputs:['平台综合方案评审结论','平台规格/接口/选项交付','平台产品群测试认证交付','平台开发结项或转产品开发输入'], gate:'平台综合方案评审位于开模前的综合评审位置；规划结论均为储备时，原表存在自动触发结项提示，实际条件需回到当前工作表确认。'}
-      ];
-
-      const buildNodes = [
+const buildNodes = [
         { id:'trial-build', title:'产品试制与样机鉴定', short:'验证设计方案，不是提前量产', kicker:'09 / TRIAL BUILD', desc:'试制由研发项目组主导，生产线员工组装。重点验证产品方案：物料齐套、上线试制、装配小结、整机测试、五感评审和样机鉴定。支撑分流程：图纸/BOM/工程变更、开模与改模、可靠性测试链。', owner:'项目经理；研发各专业；工厂制造/新品工艺；测试评价；品质', source:'PDF第12–16页6.3.1–6.3.7；12.xlsx产品开发类试制节点。', supports:['engineering','mold-change','reliability'], inputs:[['E-BOM设计发放与测试方案','试制准入输入','试制申请前完成E-BOM设计发放；确定测试方案和样机数量；工厂申请完成后10天内完成试制','E-BOM发放记录\n试制申请单\n测试方案：性能/结构/安规'],['物料齐套与借用/新增清单','物料准备输入','正式试制前1天物料到位；研发提供借用和新增物料清单；新增外协物料提前2天进中试仓库','借用物料清单\n新增物料清单\n供方/制件厂家确认'],['装配与发泡前条件','上线确认输入','试制前1天空箱体试装；确认物料齐套、基本装配和发泡前条件','预装配确认\n小件部装确认\n总装物料汇总']], outputs:['试制记录与装配问题清单','PLM问题模块记录与责任判定','《整机测试报告》与五感评审结论','样机鉴定结论','转试产前置：A类关闭、测试合格、BOM制造发放'], gate:'试制转试产硬条件：A类问题必须关闭；试制测试完成且合格；问题项有整改方案；BOM完成制造发放。样机鉴定前需BOM完成制造发放。' },
         { id:'trial-run', title:'产品试产与封样', short:'验证生产组织与量产可行性', kicker:'10 / PILOT RUN', desc:'试产由首产地工程部主导，研发项目经理协助，按《试产SOP》执行。重点验证生产组织、M-BOM、工艺交底、试产测试和整机BOM物料封样。', owner:'首产地工程部；项目经理；新品工艺；品质；供应链；测试评价', source:'PDF第16–20页6.4.1–6.4.9；12.xlsx产品开发类试产节点。', supports:['engineering','mold-change','reliability'], inputs:[['试制整改后的设计发放与M-BOM','试产准入输入','根据试制验证修正设计发放版本；完成M-BOM制造发放；归档电控、工艺、质控交底和供方装配指引','M-BOM制造发放\n试产SOP\n工艺/质控交底'],['试产测试方案与物料配套','上线准备输入','制定试产测试方案；上线前1天完成配套；进货检验合格后上线；禁止项目工程师直接带物料上线','试产测试方案\n配套确认记录\n进货检验合格'],['空箱体/发泡/总装条件','产线确认输入','上线前1天确认空箱体、零部件齐套、发泡及总装条件；各专业到场跟进','空箱体确认\n发泡条件确认\n总装条件确认']], outputs:['试产作业与异常追溯记录','性能/结构/五感/可靠性/安规测试报告','BOM一致性确认与装配小结','整机BOM物料封样进度（目标100%）','投产鉴定准备资料包'], gate:'T/I/II/III开模项目最后一次试产要求100%正式封样；特殊未引入物料可线下清单确认，但投产鉴定前必须补齐BOM。二次试产按需执行。' },
         { id:'production-gate', title:'投产鉴定', short:'量产准入，不可条件通过', kicker:'11 / PRODUCTION', desc:'投产鉴定确认零重大问题、资料齐套、正式样品确认和失败案例转化。基本性能、安全合规、A/B/C问题和用户体验均可一票否决。', owner:'项目经理；设计可靠性；品质；制造；认证；售后；相关专业', source:'PDF第18–20、22–24页6.4.8–6.4.9、6.7.3–6.7.6；12.xlsx DR4投产鉴定。', supports:['engineering','reliability','special-projects'], inputs:[['投产鉴定资料包','鉴定输入','说明书、维修手册、爆炸图、认证报告、整机测试报告、电控资料、可靠性更新、“四新”设计规范和降额评审报告','资料目录齐套检查表\n认证报告\n可靠性更新资料'],['问题关闭与正式封样','准入证据','前置任务完成、问题关闭、正式样品确认、测试合格、失败案例转化确认','A/B/C：0未关闭\n量产机型封样100%\n其中正式封样≥85%'],['体验与基本性能结论','一票否决输入','基本性能对比、用户体验测评结论、安全/合规状态','基本性能：优于竞品/平台\n体验测评：通过\n安全合规：关闭']], outputs:['投产鉴定会议纪要/结论','量产准入决策','正式封样与资料齐套证据','首批产启动条件','失败案例/PPH沉淀确认'], gate:'红线：基本性能未通过、安全/合规未解决、A/B/C未关闭、用户体验未通过 → 一票否决。投产鉴定不适用“条件通过”。' },
         { id:'project-close', title:'首批产与项目结项', short:'量产起步并关闭开发项目', kicker:'12 / CLOSE', desc:'投产鉴定后工厂15天内完成首批产；项目经理提交结项。PD类还需满足首批产合格及稳定量产两个批次等要求。支撑分流程：工程变更、特殊路径、项目管理变更。', owner:'项目经理；工厂制造；品质；供应链；项目管理', source:'PDF第20页；第25页第8章；12.xlsx产品开发结项条件。', supports:['engineering','pm-change','special-projects'], inputs:[['投产鉴定通过结论','结项前置','投产鉴定通过、量产准入条件和首批产计划','投产鉴定结论\n首批产计划：15天内'],['首批产质量与稳定量产证据','结项证据','首批产合格、稳定量产批次、遗留问题关闭和资料归档','首批产合格记录\n稳定量产批次：按项目类型'],['项目资料与问题库闭环','归档输入','设计/工艺/质量/售后资料、问题库、失败案例和系统任务关闭','结项资料清单\n问题库100%闭环要求按项目类型']], outputs:['首批产完成记录','项目结项流程与结论','归档资料包','遗留事项移交（如有）','后续生命周期监控输入'], gate:'项目结项是控制动作；不同等级/项目类型结项条件不同，需按系统任务和分权手册确认。延期考核按《年度项目激励方案》执行。' }
       ];
-
-      const lifecycleNodes = [
+const lifecycleNodes = [
         { id:'launch-decision', title:'上市决策', short:'进入市场前的产品决策', kicker:'L1 / LAUNCH', desc:'产品企划应在产品规格书要求的计划时间前提交上市决策。上市决策不是投产鉴定的同义词：投产鉴定是开发和制造准入，上市决策是进入市场前的决策节点。', owner:'产品企划；事业部产委会/决策者；项目经理；市场/销售相关角色', source:'PDF第20页6.6；12.xlsx新品评审地图上市路演/上市决策。', supports:['special-projects','pm-change'], inputs:[['产品规格书与上市计划','上市时机输入','规格书要求的计划上市时间、销售区域、渠道准备和产品定位','规格书上市计划\n区域：内销/外销\n渠道准备：待确认'],['投产/量产准入与资料状态','上市前置输入','投产鉴定结论、认证、说明书/售后资料、封样和供货准备','投产鉴定通过\n认证报告齐套\n售后资料归档'],['市场与风险结论','决策输入','市场机会、竞品、成本/毛利、遗留风险和生命周期预案','上市路演材料\n风险与应对']], outputs:['上市决策会议纪要/结论','上市批准或退回整改项','市场导入计划','生命周期监控起点'], gate:'上市决策应按规格书计划时间前提交；是否与投产鉴定合并召开，以当前评审地图和系统任务为准。' },
         { id:'lifecycle-mgmt', title:'生命周期与退市管理', short:'在销到退市的状态管控', kicker:'L2 / LIFECYCLE', desc:'产品企划根据市场监控数据分析产品表现，确定生命周期状态并组织事业部产委会决策；再综合售后、渠道和物料库存管理退市。状态包括在销售、退市启动、制造终止、总部停售、退市、冻结及逆向变更。', owner:'产品企划；售后；渠道；供应链；制造；决策者', source:'PDF第25页6.8.1–6.8.2；12.xlsx《17-生命周期变更》。', supports:['engineering','special-projects','pm-change'], inputs:[['市场监控与产品表现','状态判定输入','销量、质量、售后、NPS、竞品和经营表现','市场监控报告\n售后问题趋势\n经营表现'],['库存、渠道与售后维护','退市约束输入','渠道库存、物料库存、售后维护周期和替代机型','库存结构\n售后维护计划\n替代机型'],['状态变更申请与审批资料','变更输入','目标状态、原因、影响分析和1年内新品退市等特殊条件','生命周期变更申请\n1年内退市：增加审批人员']], outputs:['生命周期状态决策','退市/停售/冻结等变更记录','库存与售后协同计划','逆向状态变更记录（如适用）'], gate:'生命周期表是变更审批索引，不意味着所有状态必须依次经过；1年内新品退市须增加相应审批人员。' }
       ];
-      const supportFlows = [
+const supportFlows = [
         { id:'research', title:'技术研究与成果转化', tag:'技术能力', stage:'平台规划 / 单产品企划 / 方案前期', intro:'适用于先行研究、技术成熟度提升和成果转入产品开发。研究验收不等于已量产应用。', source:'12.xlsx《8-研究项目流程分权手册》', nodes:[['R1 需求与技术立项','研究需求、技术情报、战略规划','技术需求、研究立项、团队与计划'],['R2 方案研究与验证','技术方案、样机/试验条件、TRL目标','方案验证报告、可靠性结论、FBD/DFMEA、设计标准初稿'],['R3 技术验收','研究成果、测试数据、问题整改','技术验收结论、封样/图纸/成本资料'],['R4 成果转化与结项','验收结论、搭载产品条件','成果转化关联项目、结项记录']] },
         { id:'module', title:'模块开发', tag:'平台能力', stage:'平台开发 / 产品开发方案阶段', intro:'形成可复用模块：需求评估 → 方案 → 开模封样 → 交付评审 → 结项。方案转阶段要求 A 类全关、B 类闭环率≥85%。', source:'12.xlsx《9-模块项目流程分权》', nodes:[['M1 模块需求评估','模块需求、对标、标准化、技术/成本分析','需求评估结论、模块立项建议'],['M2 模块方案设计','模块需求、平台接口、选项和成本边界','模块方案、评审结论、图纸和测试计划'],['M3 开模封样与验证','模块图纸、可投模清单、测试方案','模具/样件、封样测试、A类关闭和B类闭环'],['M4 模块交付与结项','测试、问题库、新物料封样、系统资料','模块交付评审结论、模块标准化/复用资料、结项']] },
         { id:'industrial', title:'工业设计专项', tag:'设计能力', stage:'平台规划 / 单产品企划 / 方案阶段', intro:'从需求到规格书：调研、效果图、手板评审、CMF/ID/UI 输出，为平台及单产品提供工业设计输入。', source:'12.xlsx《13-工业设计项目分权》', nodes:[['ID1 需求与立项','工业设计需求、品牌/区域、产品定位','设计任务、团队和计划'],['ID2 调研与效果图提案','趋势、用户、竞品、品牌共性','调研结论、效果图提案、ID评审意见'],['ID3 手板/样品评审','2D/3D、手板、CMF/UXI任务','手板评审、优化意见、外观样件结论'],['ID4 规格书与结项','优化方案、封样/测评结论','工业设计规格书、CMF/ID/UI方案、结项资料']] },
@@ -702,8 +385,7 @@
         { id:'standards', title:'技术标准治理', tag:'制度治理', stage:'平台 / 方案 / 量产准备', intro:'企业标准规划 → 征求意见 → 终稿；另有废弃和临时修订。该表是标准治理分权，不是标准条文全文。', source:'12.xlsx《16-技术标准系统流程分权》', nodes:[['ST1 标准规划','标准需求、专业范围、主笔','标准规划立项'],['ST2 征求意见','征求意见稿、分委会意见','意见汇总与修订'],['ST3 终稿与发布','终稿、投票、例会结论','标准发布记录'],['ST4 废弃/临时修订','变更原因、影响范围','废弃或临时修订生效']] },
         { id:'special-projects', title:'特殊业务项目路径', tag:'特殊路径', stage:'按条件裁剪主线', intro:'海外差异化、派生/定制、转产、泰国本地化、东芝日本向和92编码按适用条件选择，不是统一串行流程。', source:'12.xlsx《6、10、11、12、18、19、20、21》', nodes:[['S1 适用性判定','项目来源、市场/品牌、母机/平台、工厂和编码条件','项目类型与适用工作表'],['S2 需求与差异评估','差异化需求、BOM/配置、认证、母机问题','差异清单、配置/认证/测试范围'],['S3 项目开发与评审','对应专表的设计、认证、试制/试产节点','项目评审、测试/认证和问题闭环'],['S4 结项/上市决策','结项资料、状态、上市或转产条件','结项、上市/转产或后续生命周期任务']] }
       ];
-
-      const nodeSupports = {
+const nodeSupports = {
         'launch':['pm-change','research'],
         'design-input':['industrial','module','engineering','reliability'],
         'risk':['reliability','standards'],
@@ -726,183 +408,738 @@
         'platform-dev-verify':['mold-change','reliability'],
         'platform-dev-gate':['mold-change','module','pm-change']
       };
-     const spineEl = document.getElementById('spine');
-     const detailEl = document.getElementById('detail');
-     const searchEl = document.getElementById('search');
-     const filterEls = document.querySelectorAll('[data-filter]');
-     const routeEls = document.querySelectorAll('[data-route]');
-      const planningPanelEl = document.getElementById('planning-panel');
-      const planningSpineEl = document.getElementById('planning-spine');
-      const platformPanelEl = document.getElementById('platform-panel');
-      const platformPlanningSpineEl = document.getElementById('platform-planning-spine');
-      const platformDevelopmentSpineEl = document.getElementById('platform-development-spine');
-      const routeStatusEl = document.getElementById('route-status');
-      const supportOptionsEl = document.getElementById('support-options');
-      const supportFlowsEl = document.getElementById('support-flows');
-      const supportClearEl = document.getElementById('support-clear');
-      const buildSpineEl = document.getElementById('build-spine');
-      const lifeSpineEl = document.getElementById('life-spine');
-      const designPanelEl = document.getElementById('design-panel');
-      const buildPanelEl = document.getElementById('build-panel');
-      const lifePanelEl = document.getElementById('life-panel');
-      const jumpEls = document.querySelectorAll('[data-jump]');
-      let selected = 'launch';
-      let selectedGroup = 'main';
-      let filter = 'all';
-      let focused = '';
-      let route = 'with-planning';
-      let selectedSupports = [];
-      function supportButtons(ids) {
-        const list = (ids || []).map(id => supportFlows.find(f => f.id === id)).filter(Boolean);
-        if (!list.length) return '';
-        return `<div class="support-hint"><strong>可挂载支撑分流程：</strong>${list.map(f => `<button type="button" data-open-support="${f.id}">${f.tag}·${f.title}</button>`).join('　')}</div>`;
-      }
-      function bindSupportHints() {
-        detailEl.querySelectorAll('[data-open-support]').forEach(btn => btn.addEventListener('click', () => {
-          const id = btn.dataset.openSupport;
-          if (!selectedSupports.includes(id)) selectedSupports = [...selectedSupports, id];
-          renderSupportOptions();
-          renderSupportFlows();
-          document.getElementById('support-panel').scrollIntoView({ behavior:'smooth', block:'start' });
-        }));
-      }
-      function allTypedNodes() {
-        return [
-          ...nodes.map(n => ({...n, group:'main'})),
-          ...planningNodes.map(n => ({...n, group:'planning'})),
-          ...buildNodes.map(n => ({...n, group:'build'})),
-          ...lifecycleNodes.map(n => ({...n, group:'lifecycle'})),
-          ...platformPlanningNodes.map(n => ({...n, group:'platform-planning'})),
-          ...platformDevelopmentNodes.map(n => ({...n, group:'platform-development'}))
-        ];
-      }
-    function renderNodes() {
-      const query = searchEl.value.trim().toLocaleLowerCase();
-      const filtered = nodes.filter(n => {
-        const haystack = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + n.source).toLocaleLowerCase();
-        const matchesQuery = haystack.includes(query);
-        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案|鉴定|投产|决策|关口|封样/.test(n.title));
-        return matchesQuery && matchesFilter;
-      });
-      spineEl.innerHTML = filtered.length ? filtered.map(n => `<article class="process ${selectedGroup === 'main' && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === 'main' && focused === file[0] ? 'is-focus' : ''}" data-file="${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-node="${n.id}"><b>${String(nodes.indexOf(n) + 1).padStart(2,'0')} / FLOW</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === 'main' && focused === item ? 'is-focus' : ''}" data-output="${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的节点</div>';
-      spineEl.querySelectorAll('[data-node]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.node; selectedGroup = 'main'; focused = ''; renderNodes(); renderDetail(); }));
-      spineEl.querySelectorAll('[data-file]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.file.split('|')[0]; selectedGroup = 'main'; focused = button.dataset.file.split('|')[1]; renderNodes(); renderDetail(focused, 'input'); }));
-      spineEl.querySelectorAll('[data-output]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.output.split('|')[0]; selectedGroup = 'main'; focused = button.dataset.output.split('|')[1]; renderNodes(); renderDetail(focused, 'output'); }));
-    }
-     function matchesSearch(parts, query) {
-       return !query || parts.join(' ').toLocaleLowerCase().includes(query);
-     }
-     function renderPlanning() {
-       planningPanelEl.hidden = route !== 'with-planning';
-       const query = searchEl.value.trim().toLocaleLowerCase();
-       const visible = planningNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query));
-       planningSpineEl.innerHTML = visible.length ? visible.map((n, index) => `<article class="process ${selectedGroup === 'planning' && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === 'planning' && focused === file[0] ? 'is-focus' : ''}" data-plan-file="${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-plan-node="${n.id}"><b>${String(planningNodes.indexOf(n) + 1).padStart(2,'0')} / PLAN</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === 'planning' && focused === item ? 'is-focus' : ''}" data-plan-output="${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的单产品规划节点</div>';
-      planningSpineEl.querySelectorAll('[data-plan-node]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planNode; selectedGroup = 'planning'; focused = ''; renderPlanning(); renderNodes(); renderDetail(); }));
-      planningSpineEl.querySelectorAll('[data-plan-file]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planFile.split('|')[0]; selectedGroup = 'planning'; focused = button.dataset.planFile.split('|')[1]; renderPlanning(); renderNodes(); renderDetail(focused, 'input'); }));
-       planningSpineEl.querySelectorAll('[data-plan-output]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planOutput.split('|')[0]; selectedGroup = 'planning'; focused = button.dataset.planOutput.split('|')[1]; renderPlanning(); renderNodes(); renderDetail(focused, 'output'); }));
-     }
-     function renderProcessSpine(target, flowNodes, prefix, group, widthClass) {
-       target.innerHTML = flowNodes.length ? flowNodes.map((n, index) => `<article class="process ${selectedGroup === group && selected === `${group}:${n[0]}` ? 'active' : ''}" data-process="${n[0]}"><div class="process-card input"><h3>输入文件 <span class="count">${n[1].length}</span></h3>${n[1].map(file => `<button class="${selectedGroup === group && focused === file ? 'is-focus' : ''}" data-flow-input="${group}|${n[0]}|${file}"><span class="branch">${file}</span></button>`).join('')}</div><button class="process-core" data-flow-node="${group}|${n[0]}"><b>${String(index + 1).padStart(2,'0')} / ${prefix}</b><strong>${n[0]}</strong><small>${n[2]}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n[3].length}</span></h3>${n[3].map(item => `<button class="${selectedGroup === group && focused === item ? 'is-focus' : ''}" data-flow-output="${group}|${n[0]}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的流程节点</div>';
-      target.querySelectorAll('[data-flow-node]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowNode.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = ''; renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1])); }));
-      target.querySelectorAll('[data-flow-input]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowInput.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1]), focused, 'input'); }));
-      target.querySelectorAll('[data-flow-output]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowOutput.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1]), focused, 'output'); }));
-    }
-     function renderPlatform() {
-       const visible = route === 'platform';
-       platformPanelEl.hidden = !visible;
-       const query = searchEl.value.trim().toLocaleLowerCase();
-       const planningRows = platformPlanningNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query)).map(n => [n.title, n.inputs.map(file => file[0]), n.short, n.outputs]);
-       const developmentRows = platformDevelopmentNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query)).map(n => [n.title, n.inputs.map(file => file[0]), n.short, n.outputs]);
-      renderProcessSpine(platformPlanningSpineEl, planningRows, 'P-PLAN', 'platform-planning', '');
-      renderProcessSpine(platformDevelopmentSpineEl, developmentRows, 'P-DEV', 'platform-development', '');
-    }
-    function renderSupportOptions() {
-      supportOptionsEl.innerHTML = supportFlows.map(flow => `<button class="support-option ${selectedSupports.includes(flow.id) ? 'active' : ''}" data-support="${flow.id}" type="button">${flow.tag} · ${flow.title}</button>`).join('');
-      supportOptionsEl.querySelectorAll('[data-support]').forEach(button => button.addEventListener('click', () => { const id = button.dataset.support; selectedSupports = selectedSupports.includes(id) ? selectedSupports.filter(item => item !== id) : [...selectedSupports, id]; renderSupportOptions(); renderSupportFlows(); }));
-    }
-     function renderSupportFlows() {
-       const selectedFlows = supportFlows.filter(flow => selectedSupports.includes(flow.id));
-       const query = searchEl.value.trim().toLocaleLowerCase();
-       supportFlowsEl.innerHTML = selectedFlows.length ? selectedFlows.map(flow => `<article class="support-flow"><h3>${flow.tag} · ${flow.title}</h3><p>${flow.intro}<br><strong>主要挂载主线：</strong>${flow.stage || '按项目裁剪'}</p><div class="spine-scroll"><div class="spine" id="support-${flow.id}"></div></div><p class="source">${flow.source}。此处为沙盘整理，不替代原工作表和当前系统流程。</p></article>`).join('') : '<p class="empty">请选择一个或多个分流程，查看它们如何嵌套支撑主线各阶段的输入输出。</p>';
-       selectedFlows.forEach(flow => { const target = document.getElementById(`support-${flow.id}`); const flowMatches = matchesSearch([flow.title, flow.tag, flow.intro, flow.source], query); const rows = (flowMatches ? flow.nodes : flow.nodes.filter(row => matchesSearch(row, query))).map(row => [row[0], [row[1]], '支线节点', [row[2]]]); renderProcessSpine(target, rows, 'SUPPORT', `support:${flow.id}`, ''); });
-    }
-    function renderFlowDetail(row, focus, focusType) {
-      const flow = selectedGroup.startsWith('platform') ? [...platformPlanningNodes, ...platformDevelopmentNodes].find(n => n.title === row[0]) : supportFlows.flatMap(item => item.nodes).map(item => ({title:item[0], short:item[2], inputs:[[item[1],'支线输入',item[1],item[1]]], outputs:[item[2]], gate:'该支线的具体审批、时限和角色需回到原工作表确认。', owner:'对应专业/项目团队', kicker:'SUPPORT', desc:'该节点属于特定领域并行支线，目的是说明它与主研发主线的衔接关系。', source:'12.xlsx工作表整理说明。'})).find(n => n.title === row[0]);
-      if (!flow) return;
-       if (selectedGroup.startsWith('platform')) { renderDetailForNode(flow, focus, focusType, selectedGroup); return; }
-      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在支线中定位到该节点。</div>` : '';
-      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${flow.kicker} · 特定领域支线</div><h2>${flow.title}</h2><p>${flow.desc}</p><span class="status">牵头：${flow.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>支线输入</h3>${flow.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n示例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>支线输出</h3><ul>${flow.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>适用边界</h3><div class="gate">${flow.gate}</div></div></div><p class="source">${flow.source}</p>`;
-    }
-    function renderDetailForNode(n, focus, focusType, group) {
-      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在支线中定位到该节点，右侧展示该节点的完整文件证据链。</div>` : '';
-      const groupLabel = group.startsWith('platform') ? '平台研发主线' : '方案阶段';
-      const supports = n.supports || nodeSupports[n.id] || [];
-      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate">${n.gate}</div></div></div>${supportButtons(supports)}<p class="source">${n.source} 文件样例为沙盘整理内容，字段和数值不是实际项目数据。</p>`;
-      bindSupportHints();
-    }
 
-    function renderTypedSpine(target, list, group, prefix, filterRisk) {
-      const query = searchEl.value.trim().toLocaleLowerCase();
-      const visible = list.filter(n => {
-        const haystack = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + n.source).toLocaleLowerCase();
-        const matchesQuery = haystack.includes(query);
-        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案|鉴定|投产|决策|关口|封样/.test(n.title));
-        return matchesQuery && matchesFilter;
-      });
-      target.innerHTML = visible.length ? visible.map(n => `<article class="process ${selectedGroup === group && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === group && focused === file[0] ? 'is-focus' : ''}" data-typed-file="${group}|${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-typed-node="${group}|${n.id}"><b>${String(list.indexOf(n) + 1).padStart(2,'0')} / ${prefix}</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === group && focused === item ? 'is-focus' : ''}" data-typed-output="${group}|${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的节点</div>';
-      target.querySelectorAll('[data-typed-node]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedNode.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = ''; renderAllFlowViews(); renderDetail(); }));
-      target.querySelectorAll('[data-typed-file]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedFile.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderDetail(focused, 'input'); }));
-      target.querySelectorAll('[data-typed-output]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedOutput.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderDetail(focused, 'output'); }));
-    }
-    function renderBuild() { renderTypedSpine(buildSpineEl, buildNodes, 'build', 'BUILD'); }
-    function renderLifecycle() { renderTypedSpine(lifeSpineEl, lifecycleNodes, 'lifecycle', 'LIFE'); }
-    function renderAllFlowViews() { renderNodes(); renderPlanning(); renderPlatform(); renderBuild(); renderLifecycle(); renderSupportFlows(); updateStageCards(); }
-    function updateStageCards() {
-      jumpEls.forEach(btn => {
-        const j = btn.dataset.jump;
-        const active = (j === 'platform' || j === 'platform-dev') ? route === 'platform' || selectedGroup.startsWith('platform')
-          : j === 'planning' ? route === 'with-planning' || selectedGroup === 'planning'
-          : j === 'main' ? ['main','build'].includes(selectedGroup)
-          : j === 'lifecycle' ? selectedGroup === 'lifecycle' : false;
-        btn.classList.toggle('active', active);
-      });
-    }
+/* ===== 交付物拆解 & 共性能力 ===== */
+const artifacts = {
+  '《概念工程研究报告》': {
+    alias:['概念工程研究报告','《概念工程研究报告》'],
+    nodeIds:['plan-concept'],
+    summary:'把“做什么、为谁做、差异化是什么”沉淀成可路演决策的研究报告。',
+    parts:[
+      {
+        id:'positioning', name:'产品定位',
+        content:'目标人群、价格带、品牌/系列卡位、与竞品的区隔一句话。',
+        sources:['历史产品库（同品类/同价位机型）','年度企划大纲','竞品对标清单'],
+        platforms:['产品历史库 / PLM 产品档案','竞品情报库'],
+        methods:['品类机会扫描','定位画布（用户×场景×利益点）','竞品定位图'],
+        capability:'product-positioning'
+      },
+      {
+        id:'user-map', name:'用户使用地图',
+        content:'典型用户旅程、触点痛点、NPS/体验问题导入点、关键使用场景。',
+        sources:['用户访谈/问卷原始数据','售后/NPS问题库','导购反馈'],
+        platforms:['用户调研平台','体验问题库 / NPS 系统'],
+        methods:['用户旅程地图','场景拆解','痛点优先级（频次×严重度）'],
+        capability:'user-research'
+      },
+      {
+        id:'concept-boards', name:'概念四图',
+        content:'趋势图、用户洞察图、概念方向图、差异化卖点图（或等价四页）。',
+        sources:['趋势报告','用户洞察卡片','工业设计方向草图'],
+        platforms:['设计资产库','趋势资料库'],
+        methods:['洞察聚类','概念发散-收敛','卖点叙事框架'],
+        capability:'concept-synthesis'
+      },
+      {
+        id:'innovation-mix', name:'新概念创新组合',
+        content:'功能/体验/结构/智能化等创新点组合，及可验证假设。',
+        sources:['技术预研结论','模块/平台可复用能力','专利与竞品创新点'],
+        platforms:['技术研究库','模块库','专利检索系统'],
+        methods:['创新组合矩阵','可行性初筛','假设清单（待手板/测评验证）'],
+        capability:'innovation-portfolio'
+      }
+    ]
+  },
+  '正式《产品规划书》': {
+    alias:['正式《产品规划书》','《产品规划书》','产品规划书','修订后的正式《产品规划书》','《产品规划书》初稿'],
+    nodeIds:['plan-brief','plan-decision'],
+    summary:'把企划决策固化为开发立项输入：等级、性能/可靠性目标、成本毛利、上市批产计划等。',
+    parts:[
+      {
+        id:'plan-market', name:'市场与用户结论',
+        content:'目标市场、用户与场景结论、体验及 NPS 改善要求。',
+        sources:['概念工程研究报告','产品组合测评','体验问题闭环'],
+        platforms:['用户调研平台','体验问题库'],
+        methods:['调研结论转规格','问题闭环进规划书必填项'],
+        capability:'user-research'
+      },
+      {
+        id:'plan-targets', name:'性能 / 可靠性 / 成本目标',
+        content:'基本性能目标、可靠性目标、成本/毛利与材料边界。',
+        sources:['技术可行性评估','目标材料审批表','历史相似机型数据'],
+        platforms:['GPM/MPLM 规划书模板','成本估算工具'],
+        methods:['目标分解','对标设标','风险标注'],
+        capability:'target-setting'
+      },
+      {
+        id:'plan-id', name:'工业设计与卖点',
+        content:'外观/CMF/UXI 方向、卖点列表、结构限制。',
+        sources:['工业设计方案','设计提案','品牌共性要求'],
+        platforms:['工业设计资产库'],
+        methods:['卖点分层（必打/加分/可砍）','设计约束表'],
+        capability:'industrial-design-spec'
+      },
+      {
+        id:'plan-schedule', name:'等级 / 里程碑 / 上市批产',
+        content:'项目等级、流程框架、上市与批产计划。',
+        sources:['项目等级裁定参考','研发流程框架','事业部节奏'],
+        platforms:['GPM','流程框架配置'],
+        methods:['等级裁定','里程碑裁剪'],
+        capability:'project-framing'
+      }
+    ]
+  },
+  '《产品组合测评报告》': {
+    alias:['《产品组合测评报告》','产品组合测评报告'],
+    nodeIds:['plan-design'],
+    summary:'验证概念与外观在组合中的相对表现，输出优化意见。',
+    parts:[
+      {
+        id:'combo-task', name:'测评任务与对象',
+        content:'测评对象、产品组合、评价维度。',
+        sources:['概念方案','外观手板/效果图'],
+        platforms:['用户调研平台','测评任务系统'],
+        methods:['组合测评设计','样本配额'],
+        capability:'user-research'
+      },
+      {
+        id:'combo-result', name:'测评结论与优化',
+        content:'偏好、弃选原因、优化意见。',
+        sources:['测评原始数据'],
+        platforms:['用户调研平台'],
+        methods:['统计分析','弃选原因编码'],
+        capability:'user-research'
+      }
+    ]
+  },
+  '《技术可行性评估报告》': {
+    alias:['《技术可行性评估报告》','技术可行性评估报告','《技术可行性分析报告》'],
+    nodeIds:['plan-feasibility'],
+    summary:'技术实现、制造、成本、四新与专利风险的可行性判断。',
+    parts:[
+      {
+        id:'tech-path', name:'技术方案与难度',
+        content:'实现路径、新技术/材料/工艺、难度评级。',
+        sources:['产品构想','预研结论','历史问题'],
+        platforms:['技术研究库','历史问题库'],
+        methods:['难度矩阵','风险登记'],
+        capability:'tech-feasibility'
+      },
+      {
+        id:'supply-cost', name:'供应与成本风险',
+        content:'供方、产能、目标材料与成本估价。',
+        sources:['新物料清单','目标材料审批表'],
+        platforms:['供应链系统','成本工具'],
+        methods:['双供方原则','成本对标'],
+        capability:'supply-cost'
+      }
+    ]
+  },
+  '《手板摸底测试报告》': {
+    alias:['《手板摸底测试报告》','手板摸底测试报告'],
+    nodeIds:['prototype','platform-dev-verify'],
+    summary:'用手板验证装配、性能与体验是否成立。',
+    parts:[
+      {
+        id:'proto-test', name:'测试项目与结果',
+        content:'测试条件、结果、问题清单。',
+        sources:['手板摸底测试方案','产品规格书'],
+        platforms:['测试管理系统','问题库'],
+        methods:['摸底测试矩阵','问题分级'],
+        capability:'test-evaluation'
+      },
+      {
+        id:'proto-ux', name:'体验问题导入',
+        content:'可用性/导购测评问题与整改。',
+        sources:['体验测评任务'],
+        platforms:['用户调研平台','体验问题库'],
+        methods:['体验问题闭环','模具前 B 类关闭规则'],
+        capability:'user-research'
+      }
+    ]
+  },
+  '正式产品规划书': {
+    alias:['正式产品规划书'],
+    nodeIds:['launch'],
+    summary:'开发立项的正式输入版本。',
+    parts:[
+      {
+        id:'formal-plan-user', name:'用户与定位字段',
+        content:'用户、定位、卖点、区域。',
+        sources:['企划决策材料'],
+        platforms:['MPLM 规划书'],
+        methods:['字段齐套检查'],
+        capability:'user-research'
+      },
+      {
+        id:'formal-plan-targets', name:'目标与约束字段',
+        content:'性能、可靠性、成本、等级、节奏。',
+        sources:['可行性与决策结论'],
+        platforms:['MPLM','GPM'],
+        methods:['立项字段校验'],
+        capability:'target-setting'
+      }
+    ]
+  }
+};
 
-    function renderDetail(focus, focusType) {
-      const pool = selectedGroup === 'planning' ? planningNodes : selectedGroup === 'build' ? buildNodes : selectedGroup === 'lifecycle' ? lifecycleNodes : nodes;
-      const n = pool.find(item => item.id === selected);
-      if (!n) return;
-      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在鱼骨图中定位到本节点，右侧展示该节点的完整文件证据链。</div>` : '';
-      const groupLabel = selectedGroup === 'planning' ? '单产品企划' : selectedGroup === 'build' ? '试制试产投产' : selectedGroup === 'lifecycle' ? '上市与生命周期' : '方案阶段';
-      const supports = n.supports || nodeSupports[n.id] || [];
-      const red = ['gate','plan-decision','production-gate','launch-decision'].includes(n.id);
-      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate ${red ? 'red' : ''}">${n.gate}</div></div></div>${supportButtons(supports)}<p class="source">${n.source} 文件样例为沙盘演示内容，字段和数值不是实际项目数据。本页汇整控制程序与项目管理指南，正式执行以受控文件和系统为准。</p>`;
-      bindSupportHints();
+const capabilities = {
+  'user-research': {
+    title:'用户调研与体验洞察',
+    why:'概念工程、产品规划书、组合测评、手板体验等多处都依赖同一套用户证据链。',
+    platforms:['用户调研平台','体验问题库 / NPS 系统','导购反馈入口'],
+    methods:['用户旅程地图','场景拆解','组合测评','体验问题闭环'],
+    assets:['标准访谈提纲','场景卡片模板','痛点优先级表','体验问题编码表'],
+    reuse:'建设统一用户证据池：一次调研可同时服务概念报告、规划书必填项与体验闭环，减少重复进场。'
+  },
+  'product-positioning': {
+    title:'产品定位与卡位',
+    why:'平台规划与单产品企划都要回答“卖给谁、打什么位”。',
+    platforms:['产品历史库 / PLM','竞品情报库'],
+    methods:['定位画布','竞品定位图','品类机会扫描'],
+    assets:['历史机型标签体系','竞品参数与卖点卡'],
+    reuse:'沉淀可检索的历史定位标签，新产品定位先检索再创造。'
+  },
+  'concept-synthesis': {
+    title:'概念综合与叙事',
+    why:'把趋势、洞察、设计方向收敛成可决策概念。',
+    platforms:['设计资产库','趋势资料库'],
+    methods:['洞察聚类','概念发散-收敛','卖点叙事框架'],
+    assets:['概念四图模板','卖点叙事页'],
+    reuse:'标准“概念四图”模板跨项目复用，评审口径一致。'
+  },
+  'innovation-portfolio': {
+    title:'创新组合管理',
+    why:'连接预研、模块、专利与单品概念。',
+    platforms:['技术研究库','模块库','专利检索系统'],
+    methods:['创新组合矩阵','可行性初筛','假设清单'],
+    assets:['模块能力目录','创新假设卡'],
+    reuse:'模块/预研能力目录化后，概念创新先组合已有能力。'
+  },
+  'target-setting': {
+    title:'目标设标（性能/可靠/成本）',
+    why:'规划书与开发规格书共用目标语言。',
+    platforms:['GPM/MPLM','成本估算工具'],
+    methods:['对标设标','目标分解','风险标注'],
+    assets:['目标字段字典','对标样本包'],
+    reuse:'统一目标字段字典，避免企划与开发各写一套。'
+  },
+  'industrial-design-spec': {
+    title:'工业设计规格化',
+    why:'从效果图到规格书，服务企划与方案阶段。',
+    platforms:['工业设计资产库'],
+    methods:['卖点分层','设计约束表','品牌共性检查'],
+    assets:['ID 需求书模板','共性元素检查表'],
+    reuse:'ID 规格组件化，派生项目可差分继承。'
+  },
+  'project-framing': {
+    title:'项目等级与节奏成帧',
+    why:'决定流程深度与里程碑。',
+    platforms:['GPM','流程框架配置'],
+    methods:['等级裁定','里程碑裁剪'],
+    assets:['等级参考表','流程框架'],
+    reuse:'等级-任务包自动推荐，减少每次手工裁剪。'
+  },
+  'tech-feasibility': {
+    title:'技术可行性评估',
+    why:'企划决策与方案风险评审的共同前置。',
+    platforms:['技术研究库','历史问题库'],
+    methods:['难度矩阵','风险登记'],
+    assets:['可行性报告模板','四新检查单'],
+    reuse:'历史难度与失败案例自动带入相似项目。'
+  },
+  'supply-cost': {
+    title:'供应与成本评估',
+    why:'贯穿可行性、新物料、试产封样。',
+    platforms:['供应链系统','成本工具'],
+    methods:['双供方原则','成本对标'],
+    assets:['新物料清单字段','目标材料审批表'],
+    reuse:'物料风险画像在企划与开发间共享。'
+  },
+  'test-evaluation': {
+    title:'测试评价与问题分级',
+    why:'手板、试制、试产共用测试与问题语言。',
+    platforms:['测试管理系统','问题库'],
+    methods:['测试矩阵','问题分级 A/B/C'],
+    assets:['摸底测试方案模板','问题编码'],
+    reuse:'测试项与问题等级标准库化，转阶段规则可自动校验。'
+  }
+};
+
+function sampleText(f){ return (f[2]||'') + (f[3] ? ('\n\n样例：\n' + f[3]) : ''); }
+function normalizeName(s){
+  return String(s||'').replace(/[《》\s]/g,'').replace(/报告$/,'报告');
+}
+
+function findArtifact(outputName){
+  const n = normalizeName(outputName);
+  for (const [key, art] of Object.entries(artifacts)){
+    const keys = [key, ...(art.alias||[])].map(normalizeName);
+    if (keys.some(k => n.includes(k) || k.includes(n))) return {key, ...art};
+  }
+  return null;
+}
+
+function artifactUsage(capId){
+  const hits = [];
+  Object.entries(artifacts).forEach(([doc, art]) => {
+    art.parts.forEach(p => {
+      if (p.capability === capId) hits.push({doc, part:p.name, nodeIds:art.nodeIds||[]});
+    });
+  });
+  return hits;
+}
+
+let viewMode = 'flow';
+let selectedArtifactKey = null;
+let selectedPartId = null;
+let selectedCapability = null;
+const capPanel = document.getElementById('capPanel');
+const capGrid = document.getElementById('capGrid');
+const supportStrip = document.getElementById('supportStrip');
+
+
+
+const lanes = [
+  {
+    id:'plat-plan', lane:'plat', cls:'plat', code:'01 PLATFORM', title:'平台规划',
+    items: platformPlanningNodes
+  },
+  {
+    id:'plat-dev', lane:'plat', cls:'plat', code:'02 PLATFORM', title:'平台开发',
+    items: platformDevelopmentNodes
+  },
+  {
+    id:'plan', lane:'plan', cls:'plan', code:'03 PLANNING', title:'单产品企划',
+    items: planningNodes
+  },
+  {
+    id:'design', lane:'dev', cls:'dev', code:'04a DESIGN', title:'方案阶段',
+    items: nodes
+  },
+  {
+    id:'build', lane:'dev', cls:'dev', code:'04b BUILD', title:'试制·试产·投产',
+    items: buildNodes
+  },
+  {
+    id:'life', lane:'life', cls:'life', code:'05 LIFE', title:'上市与生命周期',
+    items: lifecycleNodes
+  }
+];
+
+const stagesEl = document.getElementById('stages');
+const supportPillsEl = document.getElementById('supportPills');
+const supportMiniEl = document.getElementById('supportMini');
+const drawer = document.getElementById('drawer');
+const drawerMeta = document.getElementById('drawerMeta');
+const drawerBody = document.getElementById('drawerBody');
+const backdrop = document.getElementById('backdrop');
+const canvas = document.getElementById('canvas');
+const viewport = document.getElementById('viewport');
+const searchEl = document.getElementById('search');
+const nodeCountEl = document.getElementById('nodeCount');
+
+let scale = 1;
+let selected = null; // {group, id}
+let activeSupport = null;
+let laneFilter = 'all';
+let query = '';
+
+function allMainNodes(){
+  return lanes.flatMap(l => l.items.map(n => ({...n, group:l.id, lane:l.lane})));
+}
+
+function matchesQuery(n){
+  if(!query) return true;
+  const hay = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + (n.source||'')).toLowerCase();
+  return hay.includes(query);
+}
+
+function renderStages(){
+  const total = lanes.reduce((s,l)=>s+l.items.length,0);
+  nodeCountEl.textContent = String(total);
+  stagesEl.innerHTML = lanes.map(lane => {
+    const hidden = laneFilter !== 'all' && lane.lane !== laneFilter;
+    const items = lane.items.filter(matchesQuery);
+    return `<section class="stage ${lane.cls}" data-lane="${lane.lane}" style="${hidden?'opacity:.28;filter:grayscale(.7)':''}">
+      <div class="stage-h"><b>${lane.code}</b><strong>${lane.title}</strong></div>
+      <div class="stage-body">
+        ${items.map((n,i)=>`
+          <button type="button" class="step ${selected && selected.group===lane.id && selected.id===n.id ? 'active':''} ${query && matchesQuery(n)?'hit':''}"
+            data-group="${lane.id}" data-id="${n.id}">
+            <span class="idx">${String(i+1).padStart(2,'0')}</span>
+            <span class="title">${n.title}</span>
+            <div class="io"><span>入 ${n.inputs.length}</span><span>出 ${n.outputs.length}</span></div>
+          </button>`).join('') || '<div class="empty-drawer" style="padding:8px;font-size:11px">无匹配</div>'}
+      </div>
+    </section>`;
+  }).join('');
+
+  stagesEl.querySelectorAll('.step').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selected = {group: btn.dataset.group, id: btn.dataset.id};
+      renderStages();
+      openDrawer();
+    });
+  });
+}
+
+function renderSupportPills(){
+  supportPillsEl.innerHTML = supportFlows.map(f =>
+    `<button type="button" class="pill ${activeSupport===f.id?'active':''}" data-support="${f.id}">${f.tag} · ${f.title}</button>`
+  ).join('');
+  supportPillsEl.querySelectorAll('[data-support]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSupport = activeSupport === btn.dataset.support ? null : btn.dataset.support;
+      renderSupportPills();
+      renderSupportMini();
+    });
+  });
+}
+
+function renderSupportMini(){
+  const flow = supportFlows.find(f => f.id === activeSupport);
+  if(!flow){
+    supportMiniEl.classList.remove('show');
+    supportMiniEl.innerHTML = '';
+    return;
+  }
+  supportMiniEl.classList.add('show');
+  supportMiniEl.innerHTML = `<div class="mini-h">${flow.tag} · ${flow.title}<br><span style="font-weight:500;color:#667781;font-size:11px">${flow.intro || ''} · 挂载：${flow.stage || '按项目裁剪'}</span></div>` +
+    flow.nodes.map((row,i) => `
+      <button type="button" class="snode ${selected && selected.group==='support:'+flow.id && selected.id===row[0]?'active':''}"
+        data-sgroup="support:${flow.id}" data-sid="${row[0]}">
+        <b>${String(i+1).padStart(2,'0')}</b>
+        <strong>${row[0]}</strong>
+        <small>入：${row[1]}</small>
+        <small>出：${row[2]}</small>
+      </button>`).join('');
+  supportMiniEl.querySelectorAll('.snode').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selected = {group: btn.dataset.sgroup, id: btn.dataset.sid};
+      renderSupportMini();
+      openDrawer();
+    });
+  });
+}
+
+function findSelected(){
+  if(!selected) return null;
+  if(selected.group.startsWith('support:')){
+    const fid = selected.group.slice(8);
+    const flow = supportFlows.find(f => f.id === fid);
+    const row = flow && flow.nodes.find(r => r[0] === selected.id);
+    if(!row) return null;
+    return {
+      kicker: 'SUPPORT · ' + flow.tag,
+      title: row[0],
+      desc: flow.intro || '并行分流程节点',
+      owner: '对应专业 / 项目团队',
+      source: flow.source || '',
+      inputs: [[row[1], '支线输入', row[1], row[1]]],
+      outputs: [row[2]],
+      gate: '具体审批、时限与角色需回到原工作表 / 系统确认。',
+      supports: []
+    };
+  }
+  const lane = lanes.find(l => l.id === selected.group);
+  const n = lane && lane.items.find(item => item.id === selected.id);
+  if(!n) return null;
+  return {
+    ...n,
+    kicker: (n.kicker || selected.group) + ' · ' + (lane.title || ''),
+    supports: n.supports || nodeSupports[n.id] || []
+  };
+}
+
+function openDrawer(){
+  const n = findSelected();
+  if(!n){
+    drawer.classList.remove('open');
+    backdrop.classList.remove('show');
+    return;
+  }
+  const red = /GATE|投产鉴定|上市决策|产品策划决策|综合方案评审/.test(n.title + (n.kicker||''));
+  drawerMeta.innerHTML = `
+    <div class="kicker">${n.kicker}</div>
+    <h2>${n.title}</h2>
+    <p>${n.desc || ''}</p>
+    <span class="status">牵头：${n.owner || '—'}</span>`;
+
+  const outArts = (n.outputs||[]).map(o => ({name:o, art:findArtifact(o)}));
+  const firstArt = outArts.find(x => x.art)?.art || (selectedArtifactKey ? {key:selectedArtifactKey, ...artifacts[selectedArtifactKey]} : null);
+  if (firstArt && !selectedArtifactKey) selectedArtifactKey = firstArt.key || Object.keys(artifacts).find(k => artifacts[k]===firstArt);
+
+  drawerBody.innerHTML = `
+    <div class="tabs">
+      <button type="button" class="active" data-dtab="io">输入 / 输出</button>
+      <button type="button" data-dtab="break">交付物怎么来的</button>
+      <button type="button" data-dtab="cap">相关共性能力</button>
+    </div>
+    <div data-dpanel="io">
+      <div class="block"><h3>输入文件</h3>
+        ${(n.inputs||[]).map(f => `<div class="file"><strong>${f[0]}</strong><small>${f[1]||''}</small>
+          <div class="sample">${sampleText(f)}</div></div>`).join('') || '<div class="empty-drawer">无</div>'}
+      </div>
+      <div class="block"><h3>输出产物（点击可拆解）</h3>
+        ${(n.outputs||[]).map(o => {
+          const a = findArtifact(o);
+          return `<button type="button" class="out-btn" data-open-art="${a ? (a.key||o) : ''}" ${a?'':'disabled'}>
+            <strong>${o}</strong>
+            <small>${a ? '可拆解为 ' + a.parts.length + ' 个内容块 · 查看来源 / 平台 / 方法' : '尚未建拆解（可后续补充）'}</small>
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="block"><h3>下一节点前要确认</h3>
+        <div class="gate ${red?'red':''}">${n.gate || '—'}</div>
+      </div>
+    </div>
+    <div data-dpanel="break" hidden></div>
+    <div data-dpanel="cap" hidden></div>
+    <p class="source">${n.source || ''} 拆解与能力映射为业务梳理模型，便于找共性、建公共能力；正式字段以受控模板为准。</p>`;
+
+  const breakPanel = drawerBody.querySelector('[data-dpanel="break"]');
+  const capPanelD = drawerBody.querySelector('[data-dpanel="cap"]');
+  renderBreakPanel(breakPanel, n);
+  renderNodeCapPanel(capPanelD, n);
+
+  drawerBody.querySelectorAll('[data-dtab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      drawerBody.querySelectorAll('[data-dtab]').forEach(b => b.classList.toggle('active', b===btn));
+      drawerBody.querySelectorAll('[data-dpanel]').forEach(p => p.hidden = p.getAttribute('data-dpanel') !== btn.dataset.dtab);
+    });
+  });
+  drawerBody.querySelectorAll('[data-open-art]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!btn.dataset.openArt) return;
+      selectedArtifactKey = btn.dataset.openArt;
+      drawerBody.querySelectorAll('[data-dtab]').forEach(b => b.classList.toggle('active', b.dataset.dtab==='break'));
+      drawerBody.querySelectorAll('[data-dpanel]').forEach(p => p.hidden = p.getAttribute('data-dpanel') !== 'break');
+      renderBreakPanel(breakPanel, n);
+    });
+  });
+
+  drawer.classList.add('open');
+  backdrop.classList.add('show');
+}
+
+function renderBreakPanel(el, n){
+  // prefer artifact linked to this node or selected
+  let artEntry = null;
+  if (selectedArtifactKey && artifacts[selectedArtifactKey]) {
+    artEntry = {key:selectedArtifactKey, ...artifacts[selectedArtifactKey]};
+  } else {
+    for (const o of (n.outputs||[])) {
+      const a = findArtifact(o);
+      if (a) { artEntry = a; selectedArtifactKey = a.key; break; }
     }
-     searchEl.addEventListener('input', renderAllFlowViews);
-     routeEls.forEach(button => button.addEventListener('click', () => { route = button.dataset.route; routeEls.forEach(item => item.classList.toggle('active', item === button)); routeStatusEl.textContent = route === 'with-planning' ? '当前路径：完整单产品路径。正式产品规划书由单产品企划输出，再进入方案→试制→试产→投产→上市。' : route === 'platform' ? '当前路径：平台优先。先看平台规划→平台开发；平台交付后再衔接单产品企划或产品开发主线。' : '当前路径：跳过企划。已有正式产品规划书或派生/模块等上游输入，直接进入产品开发全链路。'; if (route !== 'with-planning' && selectedGroup === 'planning') { selected = 'launch'; selectedGroup = 'main'; focused = ''; } if (route !== 'platform' && selectedGroup.startsWith('platform')) { selected = 'launch'; selectedGroup = 'main'; focused = ''; } platformPanelEl.hidden = route !== 'platform'; planningPanelEl.hidden = route !== 'with-planning'; renderAllFlowViews(); renderDetail(); }));
-     jumpEls.forEach(button => button.addEventListener('click', () => {
-       const j = button.dataset.jump;
-       if (j === 'platform' || j === 'platform-dev') { route = 'platform'; routeEls.forEach(item => item.classList.toggle('active', item.dataset.route === 'platform')); platformPanelEl.hidden = false; planningPanelEl.hidden = true; selectedGroup = j === 'platform' ? 'platform-planning' : 'platform-development'; selected = j === 'platform' ? 'platform-need' : 'platform-dev-launch'; routeStatusEl.textContent = '当前路径：平台优先。已跳转到平台研发主线。'; }
-       else if (j === 'planning') { route = 'with-planning'; routeEls.forEach(item => item.classList.toggle('active', item.dataset.route === 'with-planning')); planningPanelEl.hidden = false; selectedGroup = 'planning'; selected = 'plan-brief'; routeStatusEl.textContent = '当前路径：完整单产品路径。已跳转到单产品企划。'; }
-       else if (j === 'main') { selectedGroup = 'main'; selected = 'launch'; document.getElementById('design-panel').scrollIntoView({behavior:'smooth', block:'start'}); }
-       else if (j === 'lifecycle') { selectedGroup = 'lifecycle'; selected = 'launch-decision'; document.getElementById('life-panel').scrollIntoView({behavior:'smooth', block:'start'}); }
-       focused = '';
-       renderAllFlowViews();
-       if (selectedGroup.startsWith('platform')) {
-         const n = [...platformPlanningNodes, ...platformDevelopmentNodes].find(item => item.id === selected);
-         if (n) renderDetailForNode(n, '', '', selectedGroup);
-       } else { renderDetail(); }
-       if (j === 'platform') document.getElementById('platform-panel').scrollIntoView({behavior:'smooth', block:'start'});
-       if (j === 'platform-dev') document.getElementById('platform-development-spine').scrollIntoView({behavior:'smooth', block:'start'});
-       if (j === 'planning') document.getElementById('planning-panel').scrollIntoView({behavior:'smooth', block:'start'});
-     }));
-     supportClearEl.addEventListener('click', () => { selectedSupports = []; renderSupportOptions(); renderSupportFlows(); });
-     filterEls.forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; filterEls.forEach(item => item.classList.toggle('active', item === button)); renderAllFlowViews(); }));
-     renderSupportOptions();
-     renderAllFlowViews();
-     renderDetail();
-  
-  </script>
+    if (!artEntry) {
+      for (const [key, art] of Object.entries(artifacts)) {
+        if ((art.nodeIds||[]).includes(selected?.id)) { artEntry = {key, ...art}; selectedArtifactKey = key; break; }
+      }
+    }
+  }
+  if (!artEntry) {
+    el.innerHTML = `<div class="empty-drawer">当前节点输出尚未建“内容块拆解”。可先从「概念工程研究报告」「产品规划书」等节点体验完整链路。</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="block">
+      <h3>${artEntry.key}</h3>
+      <p style="margin:0 0 8px;font-size:12px;color:#667781">${artEntry.summary||''}</p>
+      ${artEntry.parts.map(p => `
+        <div class="part" id="part-${p.id}">
+          <h4>${p.name}</h4>
+          <div style="font-size:12px;color:#40545e">${p.content||''}</div>
+          <div class="meta">
+            <div><span style="font-size:10px;color:#667781">读哪些来源</span><div class="tagrow">${(p.sources||[]).map(s=>`<span class="tag src">${s}</span>`).join('')}</div></div>
+            <div><span style="font-size:10px;color:#667781">访问哪些平台</span><div class="tagrow">${(p.platforms||[]).map(s=>`<span class="tag plat">${s}</span>`).join('')}</div></div>
+            <div><span style="font-size:10px;color:#667781">用什么方法论生产</span><div class="tagrow">${(p.methods||[]).map(s=>`<span class="tag method">${s}</span>`).join('')}</div></div>
+            <div><span style="font-size:10px;color:#667781">归属共性能力</span><div class="tagrow">
+              <button type="button" class="tag cap" data-jump-cap="${p.capability}">${capabilities[p.capability]?.title || p.capability}</button>
+            </div></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  el.querySelectorAll('[data-jump-cap]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedCapability = btn.dataset.jumpCap;
+      viewMode = 'capability';
+      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode==='capability'));
+      applyViewMode();
+      renderCapGrid();
+      openCapabilityDrawer(selectedCapability);
+    });
+  });
+}
+
+function renderNodeCapPanel(el, n){
+  const caps = new Set();
+  (n.outputs||[]).forEach(o => {
+    const a = findArtifact(o);
+    if (a) a.parts.forEach(p => caps.add(p.capability));
+  });
+  Object.entries(artifacts).forEach(([key, art]) => {
+    if ((art.nodeIds||[]).includes(selected?.id)) art.parts.forEach(p => caps.add(p.capability));
+  });
+  if (!caps.size) {
+    el.innerHTML = `<div class="empty-drawer">暂无映射到共性能力。可在交付物拆解中补充。</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="block"><h3>本节点相关共性能力</h3>
+    ${[...caps].map(id => {
+      const c = capabilities[id];
+      const usage = artifactUsage(id);
+      return `<button type="button" class="cap-card" data-open-cap="${id}" style="width:100%;margin-bottom:6px">
+        <b>CAPABILITY</b><strong>${c?.title||id}</strong>
+        <small>出现在 ${usage.length} 处交付内容块 · ${c?.why||''}</small>
+      </button>`;
+    }).join('')}</div>`;
+  el.querySelectorAll('[data-open-cap]').forEach(btn => {
+    btn.addEventListener('click', () => openCapabilityDrawer(btn.dataset.openCap));
+  });
+}
+
+function openCapabilityDrawer(capId){
+  const c = capabilities[capId];
+  if (!c) return;
+  selectedCapability = capId;
+  const usage = artifactUsage(capId);
+  drawerMeta.innerHTML = `
+    <div class="kicker">COMMON CAPABILITY</div>
+    <h2>${c.title}</h2>
+    <p>${c.why}</p>
+    <span class="status">跨 ${usage.length} 处内容块复用</span>`;
+  drawerBody.innerHTML = `
+    <div class="block"><h3>为什么值得沉淀成公共能力</h3>
+      <p style="margin:0;font-size:12px;color:#40545e">${c.reuse}</p></div>
+    <div class="block"><h3>统一平台</h3><div class="tagrow">${c.platforms.map(x=>`<span class="tag plat">${x}</span>`).join('')}</div></div>
+    <div class="block"><h3>统一方法</h3><div class="tagrow">${c.methods.map(x=>`<span class="tag method">${x}</span>`).join('')}</div></div>
+    <div class="block"><h3>可沉淀资产</h3><div class="tagrow">${c.assets.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>
+    <div class="block"><h3>在全流程中的出现位置</h3>
+      <ul class="linklist">${usage.map(u => `<li><strong>${u.doc}</strong> → ${u.part}</li>`).join('')}</ul>
+    </div>
+    <p class="source">找到共性后，优先建公共平台字段、方法模板与资产，而不是每个节点各自生产一份。</p>`;
+  drawer.classList.add('open');
+  backdrop.classList.add('show');
+  renderCapGrid();
+}
+
+function renderCapGrid(){
+  capGrid.innerHTML = Object.entries(capabilities).map(([id,c]) => {
+    const usage = artifactUsage(id);
+    return `<button type="button" class="cap-card ${selectedCapability===id?'active':''}" data-cap="${id}">
+      <b>出现 ${usage.length} 处</b>
+      <strong>${c.title}</strong>
+      <small>${usage.slice(0,2).map(u=>u.doc.replace(/[《》]/g,'')+'/'+u.part).join(' · ')}${usage.length>2?' …':''}</small>
+    </button>`;
+  }).join('');
+  capGrid.querySelectorAll('[data-cap]').forEach(btn => {
+    btn.addEventListener('click', () => openCapabilityDrawer(btn.dataset.cap));
+  });
+}
+
+function applyViewMode(){
+  if (viewMode === 'capability') {
+    capPanel.classList.add('show');
+    supportStrip.style.display = 'none';
+    renderCapGrid();
+  } else {
+    capPanel.classList.remove('show');
+    supportStrip.style.display = '';
+  }
+}
+
+function closeDrawer(){
+  drawer.classList.remove('open');
+  backdrop.classList.remove('show');
+}
+
+function applyScale(){
+  canvas.style.transform = `scale(${scale})`;
+}
+
+function fitToScreen(){
+  // reset first to measure natural size
+  scale = 1;
+  applyScale();
+  const shell = document.getElementById('mapShell');
+  const pad = 28;
+  const availW = viewport.clientWidth - pad;
+  const availH = viewport.clientHeight - pad;
+  const needW = shell.scrollWidth;
+  const needH = shell.scrollHeight;
+  const s = Math.min(availW / needW, availH / needH, 1);
+  scale = Math.max(0.45, Math.min(1.15, s * 0.98));
+  applyScale();
+  // center scroll
+  requestAnimationFrame(() => {
+    const rect = canvas.getBoundingClientRect();
+    const vr = viewport.getBoundingClientRect();
+    viewport.scrollLeft = Math.max(0, (canvas.scrollWidth * scale - viewport.clientWidth) / 2);
+    viewport.scrollTop = Math.max(0, (canvas.scrollHeight * scale - viewport.clientHeight) / 2);
+  });
+}
+
+document.getElementById('zoomIn').onclick = () => { scale = Math.min(1.8, scale + 0.1); applyScale(); };
+document.getElementById('zoomOut').onclick = () => { scale = Math.max(0.4, scale - 0.1); applyScale(); };
+document.getElementById('fitBtn').onclick = fitToScreen;
+document.getElementById('closeDrawer').onclick = closeDrawer;
+backdrop.onclick = closeDrawer;
+
+document.querySelectorAll('[data-lane]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    laneFilter = btn.dataset.lane;
+    document.querySelectorAll('.filter-group [data-lane]').forEach(b => b.classList.toggle('active', b===btn));
+    renderStages();
+  });
+});
+
+searchEl.addEventListener('input', () => {
+  query = searchEl.value.trim().toLowerCase();
+  renderStages();
+});
+
+// wheel zoom
+viewport.addEventListener('wheel', (e) => {
+  if(!(e.ctrlKey || e.metaKey)) return;
+  e.preventDefault();
+  scale = Math.min(1.8, Math.max(0.4, scale + (e.deltaY < 0 ? 0.06 : -0.06)));
+  applyScale();
+}, {passive:false});
+
+// drag pan
+let dragging=false, sx=0, sy=0, sl=0, st=0;
+viewport.addEventListener('pointerdown', e => {
+  if(e.target.closest('button,input,a,.drawer')) return;
+  dragging = true;
+  canvas.classList.add('dragging');
+  sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
+  viewport.setPointerCapture(e.pointerId);
+});
+viewport.addEventListener('pointermove', e => {
+  if(!dragging) return;
+  viewport.scrollLeft = sl - (e.clientX - sx);
+  viewport.scrollTop = st - (e.clientY - sy);
+});
+viewport.addEventListener('pointerup', () => { dragging=false; canvas.classList.remove('dragging'); });
+
+document.querySelectorAll('[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    viewMode = btn.dataset.mode;
+    document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b===btn));
+    applyViewMode();
+    if (viewMode === 'capability') fitToScreen();
+  });
+});
+
+renderStages();
+renderSupportPills();
+renderSupportMini();
+renderCapGrid();
+applyViewMode();
+window.addEventListener('load', () => setTimeout(fitToScreen, 60));
+window.addEventListener('resize', () => { clearTimeout(window.__fitT); window.__fitT=setTimeout(fitToScreen, 120); });
+</script>
 </body>
 </html>
