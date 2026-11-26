@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>方案阶段沙盘｜QMB-GB.0025-2025</title>
+  <title>冰箱研发全流程沙盘｜平台·企划·开发·量产</title>
   <style>
     :root { --ink:#172a2f; --muted:#60757a; --navy:#102f38; --teal:#087f78; --mint:#e5f3ee; --paper:#f4f7f4; --line:#d8e5df; --amber:#c97936; --red:#aa443b; --white:#fff; }
     * { box-sizing:border-box; }
@@ -71,7 +71,7 @@
     .spine-scroll { overflow-x:auto; padding:2px 4px 20px; }
     .spine { display:grid; grid-template-columns:repeat(8, minmax(260px, 1fr)); min-width:2100px; position:relative; }
     .spine::before { background:#80bfb3; content:""; height:4px; left:100px; position:absolute; right:100px; top:262px; }
-    .process { display:grid; grid-template-rows:250px 58px 250px; min-width:0; position:relative; }
+    .process { display:grid; grid-template-rows:minmax(250px,auto) 58px minmax(250px,auto); min-width:0; position:relative; }
     .process::after { background:#80bfb3; border-radius:50%; content:""; height:14px; left:calc(50% - 7px); position:absolute; top:255px; width:14px; z-index:2; }
     .process.active .process-card { border-color:var(--teal); box-shadow:0 8px 20px #0b81791c; }
     .process-card { background:#fbfdfb; border:1px solid var(--line); border-radius:9px; margin:0 8px; min-width:0; padding:13px; transition:.15s ease; }
@@ -135,26 +135,84 @@
     .empty { color:var(--muted); padding:30px 8px; text-align:center; }
     @media (max-width:900px) { .board { grid-template-columns:1fr; } .map, .planning-panel, .platform-panel, .detail { grid-column:auto; grid-row:auto; } .detail { position:static; } }
     @media (max-width:620px) { .hero { padding:39px 20px 32px; } .shell { padding:19px 14px 45px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input { min-width:0; width:100%; } .detail { padding:17px; } .detail-head h2 { font-size:24px; } .wide { grid-column:auto; } }
+
+    .overview { background:#fff; border:1px solid var(--line); border-radius:10px; margin-bottom:20px; padding:18px; }
+    .overview h2 { color:var(--navy); font-size:19px; margin:0 0 6px; }
+    .overview p { color:var(--muted); font-size:13px; margin:0 0 14px; }
+    .stage-rail { display:grid; gap:10px; grid-template-columns:repeat(5,minmax(0,1fr)); }
+    .stage-card { background:#f7fbf8; border:1px solid #c5ddd5; border-radius:8px; color:var(--ink); cursor:pointer; padding:14px; text-align:left; }
+    .stage-card:hover, .stage-card.active { background:var(--mint); border-color:var(--teal); box-shadow:0 5px 14px #0b817915; }
+    .stage-card b { color:var(--teal); display:block; font-size:11px; letter-spacing:.12em; }
+    .stage-card strong { color:var(--navy); display:block; font-size:15px; margin-top:6px; }
+    .stage-card small { color:var(--muted); display:block; font-size:12px; margin-top:6px; line-height:1.45; }
+    .stage-card .subs { color:#315b57; font-size:11px; margin-top:8px; }
+    .build-panel { background:#f8fafc; border:1px solid #d5dde8; border-radius:10px; grid-column:1 / -1; margin:0 0 18px; padding:18px; }
+    .build-panel h2 { color:#243b55; font-size:19px; margin:0 0 5px; }
+    .build-spine { grid-template-columns:repeat(4, minmax(260px, 1fr)); min-width:1100px; }
+    .build-spine::before { background:#7aa0c4; }
+    .build-spine .process::after { background:#7aa0c4; }
+    .build-spine .process-core { background:#243b55; }
+    .build-spine .process-core:hover, .build-spine .process.active .process-core { background:#3d6ea0; }
+    .life-panel { background:#fbf8ff; border:1px solid #e0d5ef; border-radius:10px; grid-column:1 / -1; margin:0 0 18px; padding:18px; }
+    .life-panel h2 { color:#4a3568; font-size:19px; margin:0 0 5px; }
+    .life-spine { grid-template-columns:repeat(2, minmax(260px, 1fr)); min-width:560px; }
+    .life-spine::before { background:#b59ad4; }
+    .life-spine .process::after { background:#b59ad4; }
+    .life-spine .process-core { background:#4a3568; }
+    .life-spine .process-core:hover, .life-spine .process.active .process-core { background:#6d4f96; }
+    .support-hint { background:#eef7f3; border-left:3px solid var(--teal); color:#315b57; font-size:13px; margin-top:12px; padding:9px 12px; }
+    .support-hint button { background:transparent; border:0; color:var(--teal); cursor:pointer; font-weight:700; padding:0 2px; text-decoration:underline; }
+    .map-section-label { color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.12em; margin:18px 0 8px; }
+    @media (max-width:1100px) { .stage-rail { grid-template-columns:1fr 1fr; } }
+    @media (max-width:620px) { .stage-rail { grid-template-columns:1fr; } }
     @media print { .hero { padding:24px; } .toolbar, .map, .sequence { display:none; } .shell { padding:15px; } .board { display:block; } .detail { border:0; padding:0; } .card { break-inside:avoid; } }
   </style>
 </head>
 <body>
   <header class="hero">
-    <div class="eyebrow">QMB-GB.0025-2025 · SCHEME DESIGN SIMULATOR</div>
-    <h1>方案阶段沙盘</h1>
-     <p>把“正式规划书 → 专业方案 → 专项评审 → 手板验证 → 模具首样 → 综合方案评审”串成一条可追溯的主干。每个流程上下展开输入与输出，点击分支即可查看文件证据链；它是理解工具，不是审批授权文件。</p>
-    <div class="chips"><span>8个工作包</span><span>输入文件 + 文件样例</span><span>离线页面</span><span>项目等级需裁剪</span><span>原文与整理说明分开</span></div>
+    <div class="eyebrow">REFRIGERATOR · FULL R&amp;D FLOW · QMB-GB.0025-2025 × 12.xlsx</div>
+    <h1>冰箱研发全流程沙盘</h1>
+    <p>汇整《新产品设计开发控制程序》与《冰箱项目管理流程指南》：平台规划 → 平台开发 → 单产品企划 → 产品开发（方案/试制/试产/投产）→ 上市与生命周期。主流程每个环节带输入输出文档；下方可挂载支撑主线的专业分流程。</p>
+    <div class="chips"><span>主线五段</span><span>方案八工作包</span><span>试制试产投产</span><span>分流程嵌套</span><span>输入输出证据链</span><span>离线页面</span></div>
   </header>
   <main class="shell">
-    <section class="route-choice" aria-labelledby="route-title"><h2 id="route-title">先选择研发主路径</h2><p>不同产品可能从单产品规划进入，也可能从已有规划书直接进入；平台类项目还要先经过平台规划和平台开发。这里选择的是沙盘展示路径，不替代项目等级裁定、GPM/MPLM任务或受控流程。</p><div class="choice-row" role="group" aria-label="产品路径选择"><button class="choice active" data-route="with-planning"><b>单产品路径：需要单产品规划</b><small>年度/内外销企划大纲 → 概念工程 → 工业设计/测评 → 技术可行性 → 产品策划决策 → 方案阶段。</small></button><button class="choice" data-route="without-planning"><b>单产品路径：不需要单产品规划</b><small>已有正式产品规划书，或属于已完成上游规划的派生/模块/其他适用路径，直接进入方案阶段。</small></button><button class="choice" data-route="platform"><b>平台路径：平台规划 → 平台开发</b><small>平台需求和规划 → MIS1/平台路演 → 平台规划书 → 平台产品开发 → 平台综合方案评审/平台交付。</small></button></div><div class="route-status" id="route-status">当前路径：需要单产品规划。方案阶段的“正式产品规划书”由上游单产品规划输出。</div></section>
-    <div class="toolbar"><strong>沿主干从左向右推进，点击上下分支查看证据链</strong><div class="filters" role="group" aria-label="流程筛选"><button class="active" data-filter="all">全部流程</button><button data-filter="input">只看输入</button><button data-filter="output">只看输出</button><button data-filter="risk">只看评审关口</button></div><input id="search" type="search" placeholder="搜索节点、文件、样例，例如：专利、模具、DFMEA" aria-label="搜索沙盘节点"></div>
-    <section class="upstream-panel planning-panel" id="planning-panel"><h2>可选上游：单产品规划</h2><p class="map-intro">这条支线不是方案阶段内部节点，而是部分产品进入方案阶段前必须完成的上游流程。选择“平台路径”或“不需要单产品规划”时，本支线收起。</p><div class="spine-scroll"><div class="spine planning-spine" id="planning-spine"></div></div><div class="handoff"><strong>交接点：</strong>单产品规划通过产品策划决策并下发正式产品规划书后，交给方案阶段的“项目立项及启动”。单产品规划阶段AB类问题应在产品规划书下发前关闭。</div></section>
-    <section class="upstream-panel platform-panel" id="platform-panel"><h2>可选上游：平台研发主线</h2><p class="map-intro">平台路径把工作簿中的“平台规划项目”和“平台产品开发项目”放在方案阶段沙盘的上游。平台开发自身包含方案设计、专业评审、模具、验证和平台交付，不应与单产品项目的全部节点机械合并。</p><h3>平台规划</h3><div class="spine-scroll"><div class="spine planning-spine" id="platform-planning-spine"></div></div><h3>平台开发</h3><div class="spine-scroll"><div class="spine platform-dev-spine" id="platform-development-spine"></div></div><div class="handoff"><strong>平台交接点：</strong>平台规划输出平台规划书、SKU/配置边界和规划结论；平台开发完成平台综合方案评审、首基准/平台验证及平台交付后，相关平台能力、接口和复用边界才能作为后续产品方案输入。具体项目是否还需单产品规划，以项目类型和系统任务确认。</div></section>
+
+    <section class="overview" aria-labelledby="overview-title">
+      <h2 id="overview-title">完整主线：从平台到产品再到生命周期</h2>
+      <p>下面是跨《项目管理流程指南》与正式控制程序整理的典型关系。点击阶段可跳到对应沙盘；派生、转产、海外差异化等特殊路径请在下方分流程中启用。</p>
+      <div class="stage-rail" role="group" aria-label="主线五段">
+        <button class="stage-card" type="button" data-jump="platform"><b>01 · PLATFORM PLANNING</b><strong>平台规划</strong><small>需求、MIS1论证、工业设计原型、平台路演与规划下发</small><div class="subs">支撑：工业设计专项 · 技术研究</div></button>
+        <button class="stage-card" type="button" data-jump="platform-dev"><b>02 · PLATFORM DEV</b><strong>平台开发</strong><small>立项、方案设计、手板模具验证、平台综合方案评审与交付</small><div class="subs">支撑：模块开发 · 开模改模 · 可靠性</div></button>
+        <button class="stage-card" type="button" data-jump="planning"><b>03 · PRODUCT PLANNING</b><strong>单产品企划</strong><small>企划大纲、概念工程、工业设计测评、可行性、产品策划决策</small><div class="subs">支撑：工业设计专项 · 技术研究</div></button>
+        <button class="stage-card" type="button" data-jump="main"><b>04 · PRODUCT DEV</b><strong>产品开发</strong><small>方案阶段 → 试制 → 试产 → 投产鉴定与结项</small><div class="subs">支撑：图纸BOM变更 · 开模改模 · 可靠性 · 模块</div></button>
+        <button class="stage-card" type="button" data-jump="lifecycle"><b>05 · MARKET &amp; LIFE</b><strong>上市与生命周期</strong><small>上市决策、在销/退市/停售等状态管理</small><div class="subs">支撑：特殊业务路径 · 工程变更</div></button>
+      </div>
+    </section>
+    <section class="route-choice" aria-labelledby="route-title"><h2 id="route-title">先选择研发主路径（控制沙盘展开范围）</h2><p>完整冰箱研发主线通常是：平台规划 → 平台开发 → 单产品企划 → 产品开发 → 上市与生命周期。这里选择的是沙盘展示侧重，不替代项目等级裁定、GPM/MPLM任务或受控流程。</p><div class="choice-row" role="group" aria-label="产品路径选择"><button class="choice active" data-route="with-planning"><b>完整单产品路径：含企划</b><small>企划大纲 → 概念工程 → 工业设计/测评 → 可行性 → 产品策划决策 → 方案/试制/试产/投产 → 上市。</small></button><button class="choice" data-route="without-planning"><b>单产品路径：跳过企划</b><small>已有正式产品规划书，或派生/模块等已完成上游规划，直接进入产品开发主线。</small></button><button class="choice" data-route="platform"><b>平台优先路径</b><small>先展开平台规划与平台开发；平台交付后再衔接单产品企划或产品开发。</small></button></div><div class="route-status" id="route-status">当前路径：完整单产品路径。正式产品规划书由上游单产品企划输出，再进入方案→试制→试产→投产。</div></section>
+    <div class="toolbar"><strong>沿完整主线推进：企划/平台 → 方案 → 试制试产投产 → 上市；点击上下分支查看证据链</strong><div class="filters" role="group" aria-label="流程筛选"><button class="active" data-filter="all">全部流程</button><button data-filter="input">只看输入</button><button data-filter="output">只看输出</button><button data-filter="risk">只看评审关口</button></div><input id="search" type="search" placeholder="搜索节点、文件、样例，例如：试制、封样、平台规划、DFMEA" aria-label="搜索沙盘节点"></div>
+    <section class="upstream-panel planning-panel" id="planning-panel"><h2>03 · 单产品企划主线</h2><p class="map-intro">来自控制程序 6.1 与项目管理指南“产品企划类”。核心是证明做什么、为什么做、能不能做，输出正式产品规划书交给产品开发。</p><div class="spine-scroll"><div class="spine planning-spine" id="planning-spine"></div></div><div class="handoff"><strong>交接点：</strong>单产品企划通过产品策划决策并下发正式产品规划书后，交给产品开发“项目立项及启动”。企划阶段 A/B 类问题应在规划书下发前关闭。支撑分流程：工业设计专项、技术研究与成果转化。</div></section>
+    <section class="upstream-panel platform-panel" id="platform-panel"><h2>01–02 · 平台研发主线</h2><p class="map-intro">来自项目管理指南“(新)平台规划项目 / (新)平台产品开发项目”。平台开发自身含方案、评审、模具、验证和交付，不应与单产品全部节点机械合并。</p><h3>平台规划</h3><div class="spine-scroll"><div class="spine planning-spine" id="platform-planning-spine"></div></div><h3>平台开发</h3><div class="spine-scroll"><div class="spine platform-dev-spine" id="platform-development-spine"></div></div><div class="handoff"><strong>平台交接点：</strong>平台规划输出平台规划书、SKU/配置边界；平台开发完成综合方案评审与平台交付后，接口和复用边界才能作为后续产品方案输入。支撑分流程：模块开发、开模与改模、可靠性设计专项、工业设计专项。</div></section>
+    <section class="build-panel" id="design-panel">
+      <h2>04a · 产品开发｜方案阶段</h2>
+      <p class="map-intro">把正式规划书变成可评审、可制造、可验证的方案。上方输入、下方输出；点击节点查看文件证据链。支撑分流程：图纸/BOM/工程变更、开模与改模、可靠性设计、模块开发、工业设计。</p>
+      <div class="spine-scroll"><div class="spine" id="spine" style="grid-template-columns:repeat(8, minmax(260px, 1fr)); min-width:2100px;"></div></div>
+    </section>
+    <section class="build-panel" id="build-panel">
+      <h2>04b · 产品开发｜试制 · 试产 · 投产 · 结项</h2>
+      <p class="map-intro">来自控制程序 6.3–6.5 与项目管理指南产品开发类。试制验证设计方案，试产验证生产组织，投产鉴定是量产准入门，结项关闭项目。</p>
+      <div class="spine-scroll"><div class="spine build-spine" id="build-spine"></div></div>
+      <div class="handoff"><strong>阶段门摘要：</strong>方案→试制：A 类关闭；试制→试产：测试合格 + BOM 制造发放 + 封样要求；投产鉴定：A/B/C 关闭，体验与基本性能不可条件通过。</div>
+    </section>
+    <section class="life-panel" id="life-panel">
+      <h2>05 · 上市与生命周期</h2>
+      <p class="map-intro">来自控制程序 6.6/6.8 与新品评审地图、生命周期变更表。上市决策 ≠ 投产鉴定；生命周期表是状态变更审批索引，不要求所有状态依次经过。</p>
+      <div class="spine-scroll"><div class="spine life-spine" id="life-spine"></div></div>
+    </section>
     <div class="board">
-       <section class="map"><h2>方案阶段流程鱼骨图</h2><p class="map-intro">主干是流程顺序；上方分支是进入本节点的输入，下方分支是本节点产生的输出。点击圆形节点看完整说明，点击分支直接聚焦文件或产物。</p><div class="spine-scroll"><div class="spine" id="spine"></div></div><p class="route-note">横向滚动查看全流程。搜索或筛选后，主干保留顺序，便于识别被过滤的工作包。</p><div class="legend"><span><i class="pdf"></i>PDF明确</span><span><i class="guide"></i>整理示例</span><span><i class="confirm"></i>待确认</span></div></section>
+       <section class="map"><h2>节点详情与证据链</h2><p class="map-intro">在任意鱼骨图中点击圆形节点或上下分支；右侧展示完整输入样例、输出产物、关口要求和可挂载的支撑分流程。</p><div class="legend"><span><i class="pdf"></i>程序/PDF明确</span><span><i class="guide"></i>工作簿整理</span><span><i class="confirm"></i>待系统确认</span></div></section>
        <section class="detail" id="detail" aria-live="polite"></section>
     </div>
-    <section class="support-panel" id="support-panel"><div class="support-head"><div><h2>可选并行支线：特定领域流程</h2><p>这些流程来自冰箱项目管理流程指南的专业、工程和特殊业务工作表。它们通常与主线并行，不默认全部启用；选择后会在下方展开对应鱼骨图，点击节点或输入输出可查看说明。</p></div><button class="support-clear" id="support-clear" type="button">清空选择</button></div><div class="support-options" id="support-options"></div><div class="support-flows" id="support-flows"></div></section>
+    <section class="support-panel" id="support-panel"><div class="support-head"><div><h2>主流程下的分流程（并行支撑）</h2><p>这些流程来自《冰箱项目管理流程指南》的专业、工程、治理和特殊业务工作表。它们嵌套在主线各阶段之下并行开展，不默认全部启用；选择后展开鱼骨图，查看为支撑主线交付而存在的子流程输入输出。</p></div><button class="support-clear" id="support-clear" type="button">清空选择</button></div><div class="support-options" id="support-options"></div><div class="support-flows" id="support-flows"></div></section>
   </main>
   <script>
      const nodes = [
@@ -186,15 +244,53 @@
         { id:'platform-dev-verify', title:'平台手板、模具与验证', short:'验证平台共性和首基准', kicker:'PD3 / VERIFY', desc:'平台开发进入手板摸底、模具和样件验证，按平台产品群测试/认证借用规则识别可借用内容和必须新增的验证。', owner:'平台开发项目经理；测试评价；模具；品质；供应链', source:'12.xlsx《3-(新)平台产品开发项目》；附件20–21、附件25–26。', inputs:[['平台方案、图纸和可投模清单','样件/模具输入','平台结构图纸、首基准、可投模范围、模具规格和供应路线','平台图纸\n可投模零部件\n模具设计评审资料'],['平台测试/认证借用规则','验证裁剪输入','基准产品群、可借用测试/认证项目、差异化验证边界','附件20平台产品群认证借用规则\n附件21平台产品群测试借用规则']], outputs:['手板摸底测试报告','平台模具/首样和问题闭环','平台产品群测试与认证清单','平台共性问题和差异化问题整改项'], gate:'借用规则必须先确认适用范围；平台测试和认证清单不能直接套用于全部产品。'},
         { id:'platform-dev-gate', title:'平台综合方案评审与交付', short:'平台能力可复用、可交付', kicker:'PD4 / GATE', desc:'以平台综合方案评审为开模和平台交付前的重要关口，汇总平台规格、首基准验证、成本、问题、测试认证和复用边界，形成平台交付。', owner:'平台开发项目经理；设计可靠性；平台企划；各专业和价值链', source:'12.xlsx《3-(新)平台产品开发项目》；平台综合方案评审和平台交付节点。', inputs:[['平台综合评审资料包','平台评审输入','专业评审、手板/模具验证、可靠性、成本、专利、测试认证和问题矩阵','平台综合方案评审资料\n问题关闭矩阵\n借用边界'],['平台规划结论与首基准状态','交付判断输入','规划书、首基准、配置表、平台接口和储备/开发状态','平台交付清单\n首基准状态\n平台复用约束']], outputs:['平台综合方案评审结论','平台规格/接口/选项交付','平台产品群测试认证交付','平台开发结项或转产品开发输入'], gate:'平台综合方案评审位于开模前的综合评审位置；规划结论均为储备时，原表存在自动触发结项提示，实际条件需回到当前工作表确认。'}
       ];
-      const supportFlows = [
-        { id:'research', title:'技术研究与成果转化', tag:'技术能力', intro:'适用于先行研究、技术成熟度提升和成果转入产品开发的项目。', source:'12.xlsx《8-研究项目流程分权手册》', nodes:[['R1 需求与技术立项','研究需求、技术情报、战略规划','技术需求、研究立项、团队与计划'],['R2 方案研究与验证','技术方案、样机/试验条件、TRL目标','方案验证报告、可靠性结论、FBD/DFMEA、设计标准初稿'],['R3 技术验收','研究成果、测试数据、问题整改','技术验收结论、封样/图纸/成本资料'],['R4 成果转化与结项','验收结论、搭载产品条件','成果转化关联项目、结项记录']] },
-        { id:'module', title:'模块开发', tag:'平台能力', intro:'模块项目形成可复用模块，需求评估、方案、开模封样、交付评审和结项是核心链条。', source:'12.xlsx《9-模块项目流程分权》', nodes:[['M1 模块需求评估','模块需求、对标、标准化、技术/成本分析','需求评估结论、模块立项建议'],['M2 模块方案设计','模块需求、平台接口、选项和成本边界','模块方案、评审结论、图纸和测试计划'],['M3 开模封样与验证','模块图纸、可投模清单、测试方案','模具/样件、封样测试、A类关闭和B类闭环'],['M4 模块交付与结项','测试、问题库、新物料封样、系统资料','模块交付评审结论、模块标准化/复用资料、结项']] },
-        { id:'industrial', title:'工业设计专项', tag:'设计能力', intro:'工业设计项目可作为平台或单产品的专业能力支线，覆盖需求、调研、效果图、手板评审和规格书输出。', source:'12.xlsx《13-工业设计项目分权》', nodes:[['ID1 需求与立项','工业设计需求、品牌/区域、产品定位','设计任务、团队和计划'],['ID2 调研与效果图提案','趋势、用户、竞品、品牌共性','调研结论、效果图提案、ID评审意见'],['ID3 手板/样品评审','2D/3D、手板、CMF/UXI任务','手板评审、优化意见、外观样件结论'],['ID4 规格书与结项','优化方案、封样/测评结论','工业设计规格书、CMF/ID/UI方案、结项资料']] },
-        { id:'reliability', title:'可靠性设计专项', tag:'质量能力', intro:'可靠性设计专项与产品自身的可靠性规划、FMEA和测试链并行，不能互相替代。', source:'12.xlsx《23-可靠性设计类》', nodes:[['R1 可靠性立项','可靠性需求、历史问题、目标和资源','R1立项、目标和计划'],['R2 可行性评估','可靠性目标、技术方案、环境/寿命条件','可行性评估、风险和资源结论'],['R3 技术方案实施','可靠性方案、试验、FBD/DFMEA、问题整改','验证数据、设计改进和评审结论'],['R4 结项评审','验证完成、问题闭环、资料包','可靠性结项评审、标准/经验沉淀']] },
-        { id:'engineering', title:'图纸、BOM、物料与工程变更', tag:'工程数据', intro:'工程数据支线控制送样、图纸发放、EBOM/MBOM、物料编码及ECR/ECO/MCO等变更。', source:'12.xlsx《14-变更、新增图纸或零部件、其他类》', nodes:[['E1 新增物料/零部件','设计需求、样品、标准化和供应资料','物料编码、送样/试用申请、新增件资料'],['E2 图纸与BOM发放','设计图纸、EBOM、工艺和制造需求','图纸发放、EBOM/MBOM、标准化审查'],['E3 工程变更评审','变更原因、影响分析、问题和会议纪要','ECR/ECO/MCO审批、变更实施记录'],['E4 封样与状态闭环','样品确认、封样要求、系统任务','正式/临时封样资料、状态同步和问题关闭']] },
-        { id:'mold-change', title:'开模与改模', tag:'制造准备', intro:'新品开模、有费用改模、无费用改模是不同业务类别，具体审批链应按原表分类。', source:'12.xlsx《15-开模流程类》', nodes:[['T1 开模/改模需求','图纸、可投模清单、改模原因、费用和周期','开模或改模申请'],['T2 方案与供应商评审','模具规格、供应路线、供应商和预算','招标/供应商结论、模具方案'],['T3 模具结构评审','分型、进胶、冷却、顶出、排气和外观要求','模具评审结论、锁图和制作任务'],['T4 试模/验收与闭环','试模样件、问题和改模记录','首样/验收、改模闭环和交付状态']] },
-        { id:'special-projects', title:'特殊业务项目路径', tag:'特殊路径', intro:'海外差异化、派生/定制、转产、泰国本地化、东芝日本向和92编码需按适用条件选择，不是一个统一串行流程。', source:'12.xlsx《6、10、11、12、18、19、20、21》', nodes:[['S1 适用性判定','项目来源、市场/品牌、母机/平台、工厂和编码条件','项目类型与适用工作表'],['S2 需求与差异评估','差异化需求、BOM/配置、认证、母机问题','差异清单、配置/认证/测试范围'],['S3 项目开发与评审','对应专表的设计、认证、试制/试产节点','项目评审、测试/认证和问题闭环'],['S4 结项/上市决策','结项资料、状态、上市或转产条件','结项、上市/转产或后续生命周期任务']] }
+
+      const buildNodes = [
+        { id:'trial-build', title:'产品试制与样机鉴定', short:'验证设计方案，不是提前量产', kicker:'09 / TRIAL BUILD', desc:'试制由研发项目组主导，生产线员工组装。重点验证产品方案：物料齐套、上线试制、装配小结、整机测试、五感评审和样机鉴定。支撑分流程：图纸/BOM/工程变更、开模与改模、可靠性测试链。', owner:'项目经理；研发各专业；工厂制造/新品工艺；测试评价；品质', source:'PDF第12–16页6.3.1–6.3.7；12.xlsx产品开发类试制节点。', supports:['engineering','mold-change','reliability'], inputs:[['E-BOM设计发放与测试方案','试制准入输入','试制申请前完成E-BOM设计发放；确定测试方案和样机数量；工厂申请完成后10天内完成试制','E-BOM发放记录\n试制申请单\n测试方案：性能/结构/安规'],['物料齐套与借用/新增清单','物料准备输入','正式试制前1天物料到位；研发提供借用和新增物料清单；新增外协物料提前2天进中试仓库','借用物料清单\n新增物料清单\n供方/制件厂家确认'],['装配与发泡前条件','上线确认输入','试制前1天空箱体试装；确认物料齐套、基本装配和发泡前条件','预装配确认\n小件部装确认\n总装物料汇总']], outputs:['试制记录与装配问题清单','PLM问题模块记录与责任判定','《整机测试报告》与五感评审结论','样机鉴定结论','转试产前置：A类关闭、测试合格、BOM制造发放'], gate:'试制转试产硬条件：A类问题必须关闭；试制测试完成且合格；问题项有整改方案；BOM完成制造发放。样机鉴定前需BOM完成制造发放。' },
+        { id:'trial-run', title:'产品试产与封样', short:'验证生产组织与量产可行性', kicker:'10 / PILOT RUN', desc:'试产由首产地工程部主导，研发项目经理协助，按《试产SOP》执行。重点验证生产组织、M-BOM、工艺交底、试产测试和整机BOM物料封样。', owner:'首产地工程部；项目经理；新品工艺；品质；供应链；测试评价', source:'PDF第16–20页6.4.1–6.4.9；12.xlsx产品开发类试产节点。', supports:['engineering','mold-change','reliability'], inputs:[['试制整改后的设计发放与M-BOM','试产准入输入','根据试制验证修正设计发放版本；完成M-BOM制造发放；归档电控、工艺、质控交底和供方装配指引','M-BOM制造发放\n试产SOP\n工艺/质控交底'],['试产测试方案与物料配套','上线准备输入','制定试产测试方案；上线前1天完成配套；进货检验合格后上线；禁止项目工程师直接带物料上线','试产测试方案\n配套确认记录\n进货检验合格'],['空箱体/发泡/总装条件','产线确认输入','上线前1天确认空箱体、零部件齐套、发泡及总装条件；各专业到场跟进','空箱体确认\n发泡条件确认\n总装条件确认']], outputs:['试产作业与异常追溯记录','性能/结构/五感/可靠性/安规测试报告','BOM一致性确认与装配小结','整机BOM物料封样进度（目标100%）','投产鉴定准备资料包'], gate:'T/I/II/III开模项目最后一次试产要求100%正式封样；特殊未引入物料可线下清单确认，但投产鉴定前必须补齐BOM。二次试产按需执行。' },
+        { id:'production-gate', title:'投产鉴定', short:'量产准入，不可条件通过', kicker:'11 / PRODUCTION', desc:'投产鉴定确认零重大问题、资料齐套、正式样品确认和失败案例转化。基本性能、安全合规、A/B/C问题和用户体验均可一票否决。', owner:'项目经理；设计可靠性；品质；制造；认证；售后；相关专业', source:'PDF第18–20、22–24页6.4.8–6.4.9、6.7.3–6.7.6；12.xlsx DR4投产鉴定。', supports:['engineering','reliability','special-projects'], inputs:[['投产鉴定资料包','鉴定输入','说明书、维修手册、爆炸图、认证报告、整机测试报告、电控资料、可靠性更新、“四新”设计规范和降额评审报告','资料目录齐套检查表\n认证报告\n可靠性更新资料'],['问题关闭与正式封样','准入证据','前置任务完成、问题关闭、正式样品确认、测试合格、失败案例转化确认','A/B/C：0未关闭\n量产机型封样100%\n其中正式封样≥85%'],['体验与基本性能结论','一票否决输入','基本性能对比、用户体验测评结论、安全/合规状态','基本性能：优于竞品/平台\n体验测评：通过\n安全合规：关闭']], outputs:['投产鉴定会议纪要/结论','量产准入决策','正式封样与资料齐套证据','首批产启动条件','失败案例/PPH沉淀确认'], gate:'红线：基本性能未通过、安全/合规未解决、A/B/C未关闭、用户体验未通过 → 一票否决。投产鉴定不适用“条件通过”。' },
+        { id:'project-close', title:'首批产与项目结项', short:'量产起步并关闭开发项目', kicker:'12 / CLOSE', desc:'投产鉴定后工厂15天内完成首批产；项目经理提交结项。PD类还需满足首批产合格及稳定量产两个批次等要求。支撑分流程：工程变更、特殊路径、项目管理变更。', owner:'项目经理；工厂制造；品质；供应链；项目管理', source:'PDF第20页；第25页第8章；12.xlsx产品开发结项条件。', supports:['engineering','pm-change','special-projects'], inputs:[['投产鉴定通过结论','结项前置','投产鉴定通过、量产准入条件和首批产计划','投产鉴定结论\n首批产计划：15天内'],['首批产质量与稳定量产证据','结项证据','首批产合格、稳定量产批次、遗留问题关闭和资料归档','首批产合格记录\n稳定量产批次：按项目类型'],['项目资料与问题库闭环','归档输入','设计/工艺/质量/售后资料、问题库、失败案例和系统任务关闭','结项资料清单\n问题库100%闭环要求按项目类型']], outputs:['首批产完成记录','项目结项流程与结论','归档资料包','遗留事项移交（如有）','后续生命周期监控输入'], gate:'项目结项是控制动作；不同等级/项目类型结项条件不同，需按系统任务和分权手册确认。延期考核按《年度项目激励方案》执行。' }
       ];
+
+      const lifecycleNodes = [
+        { id:'launch-decision', title:'上市决策', short:'进入市场前的产品决策', kicker:'L1 / LAUNCH', desc:'产品企划应在产品规格书要求的计划时间前提交上市决策。上市决策不是投产鉴定的同义词：投产鉴定是开发和制造准入，上市决策是进入市场前的决策节点。', owner:'产品企划；事业部产委会/决策者；项目经理；市场/销售相关角色', source:'PDF第20页6.6；12.xlsx新品评审地图上市路演/上市决策。', supports:['special-projects','pm-change'], inputs:[['产品规格书与上市计划','上市时机输入','规格书要求的计划上市时间、销售区域、渠道准备和产品定位','规格书上市计划\n区域：内销/外销\n渠道准备：待确认'],['投产/量产准入与资料状态','上市前置输入','投产鉴定结论、认证、说明书/售后资料、封样和供货准备','投产鉴定通过\n认证报告齐套\n售后资料归档'],['市场与风险结论','决策输入','市场机会、竞品、成本/毛利、遗留风险和生命周期预案','上市路演材料\n风险与应对']], outputs:['上市决策会议纪要/结论','上市批准或退回整改项','市场导入计划','生命周期监控起点'], gate:'上市决策应按规格书计划时间前提交；是否与投产鉴定合并召开，以当前评审地图和系统任务为准。' },
+        { id:'lifecycle-mgmt', title:'生命周期与退市管理', short:'在销到退市的状态管控', kicker:'L2 / LIFECYCLE', desc:'产品企划根据市场监控数据分析产品表现，确定生命周期状态并组织事业部产委会决策；再综合售后、渠道和物料库存管理退市。状态包括在销售、退市启动、制造终止、总部停售、退市、冻结及逆向变更。', owner:'产品企划；售后；渠道；供应链；制造；决策者', source:'PDF第25页6.8.1–6.8.2；12.xlsx《17-生命周期变更》。', supports:['engineering','special-projects','pm-change'], inputs:[['市场监控与产品表现','状态判定输入','销量、质量、售后、NPS、竞品和经营表现','市场监控报告\n售后问题趋势\n经营表现'],['库存、渠道与售后维护','退市约束输入','渠道库存、物料库存、售后维护周期和替代机型','库存结构\n售后维护计划\n替代机型'],['状态变更申请与审批资料','变更输入','目标状态、原因、影响分析和1年内新品退市等特殊条件','生命周期变更申请\n1年内退市：增加审批人员']], outputs:['生命周期状态决策','退市/停售/冻结等变更记录','库存与售后协同计划','逆向状态变更记录（如适用）'], gate:'生命周期表是变更审批索引，不意味着所有状态必须依次经过；1年内新品退市须增加相应审批人员。' }
+      ];
+      const supportFlows = [
+        { id:'research', title:'技术研究与成果转化', tag:'技术能力', stage:'平台规划 / 单产品企划 / 方案前期', intro:'适用于先行研究、技术成熟度提升和成果转入产品开发。研究验收不等于已量产应用。', source:'12.xlsx《8-研究项目流程分权手册》', nodes:[['R1 需求与技术立项','研究需求、技术情报、战略规划','技术需求、研究立项、团队与计划'],['R2 方案研究与验证','技术方案、样机/试验条件、TRL目标','方案验证报告、可靠性结论、FBD/DFMEA、设计标准初稿'],['R3 技术验收','研究成果、测试数据、问题整改','技术验收结论、封样/图纸/成本资料'],['R4 成果转化与结项','验收结论、搭载产品条件','成果转化关联项目、结项记录']] },
+        { id:'module', title:'模块开发', tag:'平台能力', stage:'平台开发 / 产品开发方案阶段', intro:'形成可复用模块：需求评估 → 方案 → 开模封样 → 交付评审 → 结项。方案转阶段要求 A 类全关、B 类闭环率≥85%。', source:'12.xlsx《9-模块项目流程分权》', nodes:[['M1 模块需求评估','模块需求、对标、标准化、技术/成本分析','需求评估结论、模块立项建议'],['M2 模块方案设计','模块需求、平台接口、选项和成本边界','模块方案、评审结论、图纸和测试计划'],['M3 开模封样与验证','模块图纸、可投模清单、测试方案','模具/样件、封样测试、A类关闭和B类闭环'],['M4 模块交付与结项','测试、问题库、新物料封样、系统资料','模块交付评审结论、模块标准化/复用资料、结项']] },
+        { id:'industrial', title:'工业设计专项', tag:'设计能力', stage:'平台规划 / 单产品企划 / 方案阶段', intro:'从需求到规格书：调研、效果图、手板评审、CMF/ID/UI 输出，为平台及单产品提供工业设计输入。', source:'12.xlsx《13-工业设计项目分权》', nodes:[['ID1 需求与立项','工业设计需求、品牌/区域、产品定位','设计任务、团队和计划'],['ID2 调研与效果图提案','趋势、用户、竞品、品牌共性','调研结论、效果图提案、ID评审意见'],['ID3 手板/样品评审','2D/3D、手板、CMF/UXI任务','手板评审、优化意见、外观样件结论'],['ID4 规格书与结项','优化方案、封样/测评结论','工业设计规格书、CMF/ID/UI方案、结项资料']] },
+        { id:'reliability', title:'可靠性设计专项', tag:'质量能力', stage:'平台开发 / 方案 / 试制试产', intro:'R1–R4 专项与产品自身的可靠性规划、FMEA、测试并行，不能互相替代。', source:'12.xlsx《23-可靠性设计类》', nodes:[['R1 可靠性立项','可靠性需求、历史问题、目标和资源','R1立项、目标和计划'],['R2 可行性评估','可靠性目标、技术方案、环境/寿命条件','可行性评估、风险和资源结论'],['R3 技术方案实施','可靠性方案、试验、FBD/DFMEA、问题整改','验证数据、设计改进和评审结论'],['R4 结项评审','验证完成、问题闭环、资料包','可靠性结项评审、标准/经验沉淀']] },
+        { id:'engineering', title:'图纸、BOM、物料与工程变更', tag:'工程数据', stage:'方案 / 试制 / 试产 / 投产', intro:'送样、图纸发放、EBOM/MBOM、物料编码及 ECR/ECO/MCO。通用件变更若体现在上层 BOM/图纸，需同时启动 ECR。', source:'12.xlsx《14-变更、新增图纸或零部件、其他类》', nodes:[['E1 新增物料/零部件','设计需求、样品、标准化和供应资料','物料编码、送样/试用申请、新增件资料'],['E2 图纸与BOM发放','设计图纸、EBOM、工艺和制造需求','图纸发放、EBOM/MBOM、标准化审查'],['E3 工程变更评审','变更原因、影响分析、问题和会议纪要','ECR/ECO/MCO审批、变更实施记录'],['E4 封样与状态闭环','样品确认、封样要求、系统任务','正式/临时封样资料、状态同步和问题关闭']] },
+        { id:'mold-change', title:'开模与改模', tag:'制造准备', stage:'平台开发 / 方案 / 试制', intro:'新品开模、有费用改模、无费用改模分审批。平台综合方案评审位于开吸发模具之前。', source:'12.xlsx《15-开模流程类》', nodes:[['T1 开模/改模需求','图纸、可投模清单、改模原因、费用和周期','开模或改模申请'],['T2 方案与供应商评审','模具规格、供应路线、供应商和预算','招标/供应商结论、模具方案'],['T3 模具结构评审','分型、进胶、冷却、顶出、排气和外观要求','模具评审结论、锁图和制作任务'],['T4 试模/验收与闭环','试模样件、问题和改模记录','首样/验收、改模闭环和交付状态']] },
+        { id:'pm-change', title:'项目管理变更', tag:'项目控制', stage:'全主线', intro:'里程碑、项目经理、等级、终止/暂停等变更；模块项目另有成本变更。先确认项目类型再查对应分权。', source:'12.xlsx《7-开发项目变更分权》及相关研究/模块/可靠性变更表', nodes:[['C1 变更事项识别','里程碑/经理/等级/终止暂停/成本','变更类型与适用工作表'],['C2 材料与会议准备','会议纪要、评审材料、影响分析','变更申请包'],['C3 分权审批','按项目类型的审核链','变更批准记录'],['C4 系统同步与闭环','GPM/MPLM计划与任务调整','变更生效与任务重配']] },
+        { id:'standards', title:'技术标准治理', tag:'制度治理', stage:'平台 / 方案 / 量产准备', intro:'企业标准规划 → 征求意见 → 终稿；另有废弃和临时修订。该表是标准治理分权，不是标准条文全文。', source:'12.xlsx《16-技术标准系统流程分权》', nodes:[['ST1 标准规划','标准需求、专业范围、主笔','标准规划立项'],['ST2 征求意见','征求意见稿、分委会意见','意见汇总与修订'],['ST3 终稿与发布','终稿、投票、例会结论','标准发布记录'],['ST4 废弃/临时修订','变更原因、影响范围','废弃或临时修订生效']] },
+        { id:'special-projects', title:'特殊业务项目路径', tag:'特殊路径', stage:'按条件裁剪主线', intro:'海外差异化、派生/定制、转产、泰国本地化、东芝日本向和92编码按适用条件选择，不是统一串行流程。', source:'12.xlsx《6、10、11、12、18、19、20、21》', nodes:[['S1 适用性判定','项目来源、市场/品牌、母机/平台、工厂和编码条件','项目类型与适用工作表'],['S2 需求与差异评估','差异化需求、BOM/配置、认证、母机问题','差异清单、配置/认证/测试范围'],['S3 项目开发与评审','对应专表的设计、认证、试制/试产节点','项目评审、测试/认证和问题闭环'],['S4 结项/上市决策','结项资料、状态、上市或转产条件','结项、上市/转产或后续生命周期任务']] }
+      ];
+
+      const nodeSupports = {
+        'launch':['pm-change','research'],
+        'design-input':['industrial','module','engineering','reliability'],
+        'risk':['reliability','standards'],
+        'patent':['engineering'],
+        'prototype':['industrial','reliability'],
+        'mold':['mold-change','engineering'],
+        'review':['reliability','engineering'],
+        'gate':['reliability','mold-change','pm-change'],
+        'plan-brief':['research'],
+        'plan-concept':['industrial','research'],
+        'plan-design':['industrial'],
+        'plan-feasibility':['reliability','research'],
+        'plan-decision':['pm-change'],
+        'platform-need':['research'],
+        'platform-mis1':['industrial','research'],
+        'platform-design':['industrial','module'],
+        'platform-roadshow':['pm-change'],
+        'platform-dev-launch':['pm-change','module'],
+        'platform-dev-design':['reliability','module','engineering'],
+        'platform-dev-verify':['mold-change','reliability'],
+        'platform-dev-gate':['mold-change','module','pm-change']
+      };
      const spineEl = document.getElementById('spine');
      const detailEl = document.getElementById('detail');
      const searchEl = document.getElementById('search');
@@ -209,18 +305,48 @@
       const supportOptionsEl = document.getElementById('support-options');
       const supportFlowsEl = document.getElementById('support-flows');
       const supportClearEl = document.getElementById('support-clear');
+      const buildSpineEl = document.getElementById('build-spine');
+      const lifeSpineEl = document.getElementById('life-spine');
+      const designPanelEl = document.getElementById('design-panel');
+      const buildPanelEl = document.getElementById('build-panel');
+      const lifePanelEl = document.getElementById('life-panel');
+      const jumpEls = document.querySelectorAll('[data-jump]');
       let selected = 'launch';
       let selectedGroup = 'main';
       let filter = 'all';
       let focused = '';
       let route = 'with-planning';
       let selectedSupports = [];
+      function supportButtons(ids) {
+        const list = (ids || []).map(id => supportFlows.find(f => f.id === id)).filter(Boolean);
+        if (!list.length) return '';
+        return `<div class="support-hint"><strong>可挂载支撑分流程：</strong>${list.map(f => `<button type="button" data-open-support="${f.id}">${f.tag}·${f.title}</button>`).join('　')}</div>`;
+      }
+      function bindSupportHints() {
+        detailEl.querySelectorAll('[data-open-support]').forEach(btn => btn.addEventListener('click', () => {
+          const id = btn.dataset.openSupport;
+          if (!selectedSupports.includes(id)) selectedSupports = [...selectedSupports, id];
+          renderSupportOptions();
+          renderSupportFlows();
+          document.getElementById('support-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+        }));
+      }
+      function allTypedNodes() {
+        return [
+          ...nodes.map(n => ({...n, group:'main'})),
+          ...planningNodes.map(n => ({...n, group:'planning'})),
+          ...buildNodes.map(n => ({...n, group:'build'})),
+          ...lifecycleNodes.map(n => ({...n, group:'lifecycle'})),
+          ...platformPlanningNodes.map(n => ({...n, group:'platform-planning'})),
+          ...platformDevelopmentNodes.map(n => ({...n, group:'platform-development'}))
+        ];
+      }
     function renderNodes() {
       const query = searchEl.value.trim().toLocaleLowerCase();
       const filtered = nodes.filter(n => {
         const haystack = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + n.source).toLocaleLowerCase();
         const matchesQuery = haystack.includes(query);
-        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案/.test(n.title));
+        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案|鉴定|投产|决策|关口|封样/.test(n.title));
         return matchesQuery && matchesFilter;
       });
       spineEl.innerHTML = filtered.length ? filtered.map(n => `<article class="process ${selectedGroup === 'main' && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === 'main' && focused === file[0] ? 'is-focus' : ''}" data-file="${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-node="${n.id}"><b>${String(nodes.indexOf(n) + 1).padStart(2,'0')} / FLOW</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === 'main' && focused === item ? 'is-focus' : ''}" data-output="${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的节点</div>';
@@ -262,7 +388,7 @@
      function renderSupportFlows() {
        const selectedFlows = supportFlows.filter(flow => selectedSupports.includes(flow.id));
        const query = searchEl.value.trim().toLocaleLowerCase();
-       supportFlowsEl.innerHTML = selectedFlows.length ? selectedFlows.map(flow => `<article class="support-flow"><h3>${flow.tag} · ${flow.title}</h3><p>${flow.intro}</p><div class="spine-scroll"><div class="spine" id="support-${flow.id}"></div></div><p class="source">${flow.source}。此处为沙盘整理，不替代原工作表和当前系统流程。</p></article>`).join('') : '<p class="empty">请选择一个或多个特定领域流程，查看它们如何并行支撑方案阶段。</p>';
+       supportFlowsEl.innerHTML = selectedFlows.length ? selectedFlows.map(flow => `<article class="support-flow"><h3>${flow.tag} · ${flow.title}</h3><p>${flow.intro}<br><strong>主要挂载主线：</strong>${flow.stage || '按项目裁剪'}</p><div class="spine-scroll"><div class="spine" id="support-${flow.id}"></div></div><p class="source">${flow.source}。此处为沙盘整理，不替代原工作表和当前系统流程。</p></article>`).join('') : '<p class="empty">请选择一个或多个分流程，查看它们如何嵌套支撑主线各阶段的输入输出。</p>';
        selectedFlows.forEach(flow => { const target = document.getElementById(`support-${flow.id}`); const flowMatches = matchesSearch([flow.title, flow.tag, flow.intro, flow.source], query); const rows = (flowMatches ? flow.nodes : flow.nodes.filter(row => matchesSearch(row, query))).map(row => [row[0], [row[1]], '支线节点', [row[2]]]); renderProcessSpine(target, rows, 'SUPPORT', `support:${flow.id}`, ''); });
     }
     function renderFlowDetail(row, focus, focusType) {
@@ -275,25 +401,71 @@
     function renderDetailForNode(n, focus, focusType, group) {
       const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在支线中定位到该节点，右侧展示该节点的完整文件证据链。</div>` : '';
       const groupLabel = group.startsWith('platform') ? '平台研发主线' : '方案阶段';
-      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate">${n.gate}</div></div></div><p class="source">${n.source} 文件样例为沙盘整理内容，字段和数值不是实际项目数据。</p>`;
+      const supports = n.supports || nodeSupports[n.id] || [];
+      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate">${n.gate}</div></div></div>${supportButtons(supports)}<p class="source">${n.source} 文件样例为沙盘整理内容，字段和数值不是实际项目数据。</p>`;
+      bindSupportHints();
     }
-    function renderAllFlowViews() { renderNodes(); renderPlanning(); renderPlatform(); renderSupportFlows(); }
+
+    function renderTypedSpine(target, list, group, prefix, filterRisk) {
+      const query = searchEl.value.trim().toLocaleLowerCase();
+      const visible = list.filter(n => {
+        const haystack = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + n.source).toLocaleLowerCase();
+        const matchesQuery = haystack.includes(query);
+        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案|鉴定|投产|决策|关口|封样/.test(n.title));
+        return matchesQuery && matchesFilter;
+      });
+      target.innerHTML = visible.length ? visible.map(n => `<article class="process ${selectedGroup === group && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === group && focused === file[0] ? 'is-focus' : ''}" data-typed-file="${group}|${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-typed-node="${group}|${n.id}"><b>${String(list.indexOf(n) + 1).padStart(2,'0')} / ${prefix}</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === group && focused === item ? 'is-focus' : ''}" data-typed-output="${group}|${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的节点</div>';
+      target.querySelectorAll('[data-typed-node]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedNode.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = ''; renderAllFlowViews(); renderDetail(); }));
+      target.querySelectorAll('[data-typed-file]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedFile.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderDetail(focused, 'input'); }));
+      target.querySelectorAll('[data-typed-output]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.typedOutput.split('|'); selectedGroup = parts[0]; selected = parts[1]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderDetail(focused, 'output'); }));
+    }
+    function renderBuild() { renderTypedSpine(buildSpineEl, buildNodes, 'build', 'BUILD'); }
+    function renderLifecycle() { renderTypedSpine(lifeSpineEl, lifecycleNodes, 'lifecycle', 'LIFE'); }
+    function renderAllFlowViews() { renderNodes(); renderPlanning(); renderPlatform(); renderBuild(); renderLifecycle(); renderSupportFlows(); updateStageCards(); }
+    function updateStageCards() {
+      jumpEls.forEach(btn => {
+        const j = btn.dataset.jump;
+        const active = (j === 'platform' || j === 'platform-dev') ? route === 'platform' || selectedGroup.startsWith('platform')
+          : j === 'planning' ? route === 'with-planning' || selectedGroup === 'planning'
+          : j === 'main' ? ['main','build'].includes(selectedGroup)
+          : j === 'lifecycle' ? selectedGroup === 'lifecycle' : false;
+        btn.classList.toggle('active', active);
+      });
+    }
+
     function renderDetail(focus, focusType) {
-      const n = (selectedGroup === 'planning' ? planningNodes : nodes).find(item => item.id === selected);
+      const pool = selectedGroup === 'planning' ? planningNodes : selectedGroup === 'build' ? buildNodes : selectedGroup === 'lifecycle' ? lifecycleNodes : nodes;
+      const n = pool.find(item => item.id === selected);
       if (!n) return;
       const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在鱼骨图中定位到本节点，右侧展示该节点的完整文件证据链。</div>` : '';
-      const groupLabel = selectedGroup === 'planning' ? '单产品规划' : '方案阶段';
-      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate ${n.id === 'gate' || n.id === 'plan-decision' ? 'red' : ''}">${n.gate}</div></div></div><p class="source">${n.source} 文件样例为沙盘演示内容，字段和数值不是实际项目数据。</p>`;
+      const groupLabel = selectedGroup === 'planning' ? '单产品企划' : selectedGroup === 'build' ? '试制试产投产' : selectedGroup === 'lifecycle' ? '上市与生命周期' : '方案阶段';
+      const supports = n.supports || nodeSupports[n.id] || [];
+      const red = ['gate','plan-decision','production-gate','launch-decision'].includes(n.id);
+      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate ${red ? 'red' : ''}">${n.gate}</div></div></div>${supportButtons(supports)}<p class="source">${n.source} 文件样例为沙盘演示内容，字段和数值不是实际项目数据。本页汇整控制程序与项目管理指南，正式执行以受控文件和系统为准。</p>`;
+      bindSupportHints();
     }
      searchEl.addEventListener('input', renderAllFlowViews);
-    filterEls.forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; filterEls.forEach(item => item.classList.toggle('active', item === button)); renderNodes(); }));
-     routeEls.forEach(button => button.addEventListener('click', () => { route = button.dataset.route; routeEls.forEach(item => item.classList.toggle('active', item === button)); routeStatusEl.textContent = route === 'with-planning' ? '当前路径：需要单产品规划。方案阶段的“正式产品规划书”由上游单产品规划输出。' : route === 'platform' ? '当前路径：平台规划 → 平台开发。平台规划书、配置边界和平台交付作为后续产品方案的上游输入。' : '当前路径：不需要单产品规划。项目从已有正式产品规划书、平台/模块/派生路径或其他已确认输入进入方案阶段。'; if (route !== 'with-planning' && selectedGroup === 'planning') { selected = 'launch'; selectedGroup = 'main'; focused = ''; } if (route !== 'platform' && selectedGroup.startsWith('platform')) { selected = 'launch'; selectedGroup = 'main'; focused = ''; } renderAllFlowViews(); renderDetail(); }));
+     routeEls.forEach(button => button.addEventListener('click', () => { route = button.dataset.route; routeEls.forEach(item => item.classList.toggle('active', item === button)); routeStatusEl.textContent = route === 'with-planning' ? '当前路径：完整单产品路径。正式产品规划书由单产品企划输出，再进入方案→试制→试产→投产→上市。' : route === 'platform' ? '当前路径：平台优先。先看平台规划→平台开发；平台交付后再衔接单产品企划或产品开发主线。' : '当前路径：跳过企划。已有正式产品规划书或派生/模块等上游输入，直接进入产品开发全链路。'; if (route !== 'with-planning' && selectedGroup === 'planning') { selected = 'launch'; selectedGroup = 'main'; focused = ''; } if (route !== 'platform' && selectedGroup.startsWith('platform')) { selected = 'launch'; selectedGroup = 'main'; focused = ''; } platformPanelEl.hidden = route !== 'platform'; planningPanelEl.hidden = route !== 'with-planning'; renderAllFlowViews(); renderDetail(); }));
+     jumpEls.forEach(button => button.addEventListener('click', () => {
+       const j = button.dataset.jump;
+       if (j === 'platform' || j === 'platform-dev') { route = 'platform'; routeEls.forEach(item => item.classList.toggle('active', item.dataset.route === 'platform')); platformPanelEl.hidden = false; planningPanelEl.hidden = true; selectedGroup = j === 'platform' ? 'platform-planning' : 'platform-development'; selected = j === 'platform' ? 'platform-need' : 'platform-dev-launch'; routeStatusEl.textContent = '当前路径：平台优先。已跳转到平台研发主线。'; }
+       else if (j === 'planning') { route = 'with-planning'; routeEls.forEach(item => item.classList.toggle('active', item.dataset.route === 'with-planning')); planningPanelEl.hidden = false; selectedGroup = 'planning'; selected = 'plan-brief'; routeStatusEl.textContent = '当前路径：完整单产品路径。已跳转到单产品企划。'; }
+       else if (j === 'main') { selectedGroup = 'main'; selected = 'launch'; document.getElementById('design-panel').scrollIntoView({behavior:'smooth', block:'start'}); }
+       else if (j === 'lifecycle') { selectedGroup = 'lifecycle'; selected = 'launch-decision'; document.getElementById('life-panel').scrollIntoView({behavior:'smooth', block:'start'}); }
+       focused = '';
+       renderAllFlowViews();
+       if (selectedGroup.startsWith('platform')) {
+         const n = [...platformPlanningNodes, ...platformDevelopmentNodes].find(item => item.id === selected);
+         if (n) renderDetailForNode(n, '', '', selectedGroup);
+       } else { renderDetail(); }
+       if (j === 'platform') document.getElementById('platform-panel').scrollIntoView({behavior:'smooth', block:'start'});
+       if (j === 'platform-dev') document.getElementById('platform-development-spine').scrollIntoView({behavior:'smooth', block:'start'});
+       if (j === 'planning') document.getElementById('planning-panel').scrollIntoView({behavior:'smooth', block:'start'});
+     }));
      supportClearEl.addEventListener('click', () => { selectedSupports = []; renderSupportOptions(); renderSupportFlows(); });
+     filterEls.forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; filterEls.forEach(item => item.classList.toggle('active', item === button)); renderAllFlowViews(); }));
      renderSupportOptions();
-     renderSupportFlows();
-     renderNodes();
-     renderPlanning();
-     renderPlatform();
+     renderAllFlowViews();
      renderDetail();
   </script>
 </body>
