@@ -3,336 +3,188 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>冰箱研发全流程一屏图｜交付拆解与能力复用</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<title>冰箱研发流程 · 点开即扩</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f3f5f7; --panel:#fff; --ink:#1a242b; --muted:#667781; --line:#d5dee4;
-  --teal:#0f7f78; --teal-soft:#e6f4f2; --amber:#b86a2b; --amber-soft:#fff3e8;
-  --blue:#2a6285; --blue-soft:#e8f2f8; --violet:#5a4d7a; --violet-soft:#f1eef7;
-  --red:#a94442; --shadow:0 8px 28px rgba(26,36,43,.08);
-  --font:"IBM Plex Sans SC","IBM Plex Sans","PingFang SC",sans-serif;
+  --bg:#f4f6f8; --ink:#1b262d; --muted:#6a7c86; --line:#d7e0e6;
+  --teal:#0f7f78; --teal2:#e7f5f3; --amber:#b86a2b; --amber2:#fff1e4;
+  --blue:#2a6285; --blue2:#e7f1f7; --vio:#5a4d7a; --panel:#fff;
+  --font:"IBM Plex Sans SC","PingFang SC",sans-serif;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{
-  font-family:var(--font); color:var(--ink); background:var(--bg);
-  display:grid; grid-template-rows:52px minmax(0,1fr); overflow:hidden;
-}
-button,input{font:inherit}
-button{cursor:pointer}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);display:grid;grid-template-rows:48px 1fr;overflow:hidden}
+button{font:inherit;cursor:pointer}
+.top{display:flex;align-items:center;gap:12px;padding:0 14px;background:#123039;color:#e8f4f2}
+.top b{font-size:14px}
+.top span{font-size:11px;color:#8fbdb7}
+.top .sp{flex:1}
+.top button{border:1px solid #2d4b55;background:#183940;color:#d8ebe7;border-radius:6px;padding:5px 10px;font-size:12px}
+.top button:hover{background:var(--teal);border-color:var(--teal)}
 
-/* top bar */
-.topbar{
-  display:flex; align-items:center; gap:12px; padding:0 14px;
-  background:#102833; color:#e8f4f2; border-bottom:1px solid #0a1b22;
-  z-index:5;
-}
-.brand{font-weight:700; letter-spacing:.04em; font-size:14px; white-space:nowrap}
-.brand small{display:block; font-weight:500; color:#8fc9c2; font-size:10px; letter-spacing:.12em; margin-top:1px}
-.topbar .spacer{flex:1}
-.zoom-group,.filter-group{display:flex; gap:4px; align-items:center}
-.zoom-group button,.filter-group button,#fitBtn{
-  border:1px solid #2d4b55; background:#17343e; color:#d7ebe7;
-  border-radius:6px; padding:5px 9px; font-size:12px; min-width:32px;
-}
-.zoom-group button:hover,.filter-group button:hover,#fitBtn:hover,
-.filter-group button.active{background:var(--teal); border-color:var(--teal); color:#fff}
-#search{
-  width:min(280px,28vw); border:1px solid #2d4b55; background:#0c222a; color:#e8f4f2;
-  border-radius:6px; padding:6px 10px; font-size:12px;
-}
-#search:focus{outline:1px solid var(--teal)}
-.hint{color:#7ea8a2; font-size:11px; white-space:nowrap}
+.workspace{position:relative;min-height:0;overflow:auto}
+.stage{max-width:1200px;margin:0 auto;padding:18px 16px 40px}
 
-/* workspace */
-.workspace{position:relative; min-height:0; overflow:hidden; background:
-  linear-gradient(#eef2f4,#f3f5f7);
-}
-.viewport{
-  position:absolute; inset:0; overflow:auto;
-  display:grid; place-items:center;
-}
-.canvas{
-  transform-origin:center center;
-  transition:transform .18s ease;
-  padding:18px 20px 28px;
-  width:max-content; min-width:100%;
-}
-.canvas.dragging{transition:none; cursor:grabbing}
+.hint{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
 
-.map-shell{
-  background:var(--panel); border:1px solid var(--line); border-radius:12px;
-  box-shadow:var(--shadow); padding:12px 12px 10px; width:fit-content; margin:0 auto;
+/* ===== Level 0: points on a spine ===== */
+.flow{
+  position:relative; background:var(--panel); border:1px solid var(--line);
+  border-radius:12px; padding:18px 12px 14px; box-shadow:0 6px 20px rgba(0,0,0,.04);
 }
+.flow-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin:0 0 12px}
+.spine-wrap{overflow-x:auto;padding:8px 4px 6px}
+.spine{
+  display:flex; align-items:flex-start; gap:0; min-width:max-content;
+  position:relative; padding:0 8px 8px;
+}
+.spine::before{
+  content:""; position:absolute; left:28px; right:28px; top:24px; height:3px;
+  background:linear-gradient(90deg,#9ec9c4,#2a6285,#0f7f78,#b86a2b,#5a4d7a);
+  border-radius:2px;
+}
+.seg{display:flex; flex-direction:column; align-items:center; width:86px; position:relative; z-index:1}
+.seg .lane{
+  font-size:9px; color:var(--muted); margin-bottom:6px; height:14px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:74px; text-align:center;
+}
+.dot{
+  width:32px; height:32px; border-radius:50%; border:3px solid #fff;
+  background:var(--teal); box-shadow:0 0 0 2px #9ec9c4, 0 4px 10px rgba(15,127,120,.25);
+  padding:0;
+}
+.dot.plat{background:var(--blue); box-shadow:0 0 0 2px #9bbfd4, 0 4px 10px rgba(42,98,133,.25)}
+.dot.plan{background:var(--amber); box-shadow:0 0 0 2px #e0b78a, 0 4px 10px rgba(184,106,43,.25)}
+.dot.dev{background:var(--teal)}
+.dot.life{background:var(--vio); box-shadow:0 0 0 2px #b5a8d0, 0 4px 10px rgba(90,77,122,.25)}
+.dot:hover{transform:scale(1.12)}
+.dot.active{transform:scale(1.18); box-shadow:0 0 0 3px #123039, 0 6px 14px rgba(0,0,0,.2)}
+.seg .name{
+  margin-top:8px; font-size:11px; font-weight:600; text-align:center;
+  line-height:1.25; width:74px; color:var(--ink);
+}
+.seg .count{font-size:9px;color:var(--muted);margin-top:2px}
 
-.legend-row{
-  display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center;
-  margin:0 0 10px; padding:0 2px; color:var(--muted); font-size:11px;
+/* ===== Expand panels ===== */
+.expand{
+  display:none; margin-top:14px; border:1px solid var(--line); border-radius:10px;
+  background:#fbfcfd; padding:12px;
 }
-.legend-row i{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:middle}
-.l-plat{background:var(--blue)} .l-plan{background:var(--amber)} .l-dev{background:var(--teal)}
-.l-life{background:var(--violet)} .l-sup{background:#6b7c86}
+.expand.show{display:block}
+.expand h3{margin:0 0 4px; font-size:14px}
+.expand .sub{margin:0 0 10px; color:var(--muted); font-size:12px}
 
-/* main stages row */
-.stages{
-  display:grid;
-  grid-template-columns:repeat(6, minmax(148px, 168px));
-  gap:8px;
-  align-items:stretch;
-}
-.stage{
-  border:1px solid var(--line); border-radius:10px; background:#fbfcfd;
-  display:flex; flex-direction:column; min-width:0; overflow:hidden;
-}
-.stage-h{
-  padding:7px 8px 6px; border-bottom:1px solid var(--line);
-  display:flex; flex-direction:column; gap:1px;
-}
-.stage-h b{
-  font-size:10px; letter-spacing:.08em; font-weight:700;
-}
-.stage-h strong{font-size:13px; line-height:1.25}
-.stage.plat .stage-h{background:var(--blue-soft); color:var(--blue)}
-.stage.plat .stage-h strong{color:#17384a}
-.stage.plan .stage-h{background:var(--amber-soft); color:var(--amber)}
-.stage.plan .stage-h strong{color:#6a3d14}
-.stage.dev .stage-h{background:var(--teal-soft); color:var(--teal)}
-.stage.dev .stage-h strong{color:#0c4f4a}
-.stage.life .stage-h{background:var(--violet-soft); color:var(--violet)}
-.stage.life .stage-h strong{color:#3d3458}
-.stage-body{padding:6px; display:flex; flex-direction:column; gap:4px; flex:1}
+.crumbs{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; font-size:11px; color:var(--muted)}
+.crumbs button{border:0;background:transparent;color:var(--teal);font-weight:600;padding:0;text-decoration:underline}
 
-.step{
-  border:1px solid #e1e8ec; background:#fff; border-radius:7px;
-  padding:5px 7px; text-align:left; color:var(--ink);
-  transition:border-color .12s, background .12s, transform .12s;
-  width:100%;
+.grid-items{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px}
+.item{
+  text-align:left; border:1px solid var(--line); background:#fff; border-radius:9px;
+  padding:10px; transition:.12s;
 }
-.step:hover{border-color:#9fc9c4; background:#f4fbfa}
-.step.active{border-color:var(--teal); background:var(--teal-soft); box-shadow:inset 3px 0 0 var(--teal)}
-.step .idx{
-  font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--muted);
-}
-.step .title{display:block; font-size:11.5px; font-weight:600; line-height:1.25; margin-top:1px}
-.step .io{
-  display:flex; gap:6px; margin-top:3px; font-size:9.5px; color:var(--muted);
-}
-.step .io span{white-space:nowrap}
-.step.hit{outline:2px solid #f0a35a; outline-offset:1px}
+.item:hover{border-color:var(--teal); background:var(--teal2)}
+.item.active{border-color:var(--teal); box-shadow:inset 3px 0 0 var(--teal)}
+.item .k{font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--muted)}
+.item .k.subflow{color:var(--blue)}
+.item .k.artifact{color:var(--amber)}
+.item strong{display:block; margin-top:3px; font-size:12.5px; line-height:1.3}
+.item small{display:block; margin-top:4px; color:var(--muted); font-size:11px; line-height:1.35}
 
-/* connectors between stages */
-.stages{position:relative}
-.stage{position:relative}
-.stage:not(:last-child)::after{
-  content:""; position:absolute; right:-7px; top:28px; width:6px; height:2px;
-  background:#9db0ba; z-index:2;
-}
+/* subprocess dots */
+.subflow-line{display:flex; gap:0; overflow-x:auto; padding:8px 0}
+.subflow-line .seg{width:100px}
+.subflow-line .dot{width:24px;height:24px;background:#2a6285}
+.subflow-line .name{width:96px;font-size:10px}
 
-/* support strip */
-.support-strip{
-  margin-top:10px; border-top:1px dashed #d0d9df; padding-top:8px;
+/* composition */
+.parts{display:flex; flex-wrap:wrap; gap:8px}
+.part-chip{
+  border:1px dashed #c5d3da; background:#fff; border-radius:999px;
+  padding:7px 12px; font-size:12px; font-weight:600;
 }
-.support-strip .label{
-  font-size:11px; color:var(--muted); margin:0 0 6px; font-weight:600;
-}
-.support-pills{display:flex; flex-wrap:wrap; gap:5px}
-.pill{
-  border:1px solid #d5dee4; background:#f7f9fa; color:#40545e;
-  border-radius:999px; padding:4px 9px; font-size:11px;
-}
-.pill:hover,.pill.active{background:#102833; color:#e8f4f2; border-color:#102833}
-.support-mini{
-  display:none; margin-top:8px; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:6px; padding:8px; background:#f7f9fa; border:1px solid var(--line); border-radius:8px;
-}
-.support-mini.show{display:grid}
-.support-mini .mini-h{grid-column:1/-1; font-size:12px; font-weight:600; color:#102833; margin:0}
-.snode{
-  border:1px solid #dde5ea; background:#fff; border-radius:6px; padding:5px 7px; text-align:left;
-}
-.snode:hover,.snode.active{border-color:var(--teal); background:var(--teal-soft)}
-.snode b{display:block; font-size:10px; color:var(--muted)}
-.snode strong{display:block; font-size:11px; margin-top:1px; line-height:1.25}
-.snode small{display:block; font-size:10px; color:var(--muted); margin-top:2px}
+.part-chip:hover,.part-chip.active{border-style:solid;border-color:var(--amber);background:var(--amber2)}
 
-/* detail drawer */
-.drawer{
-  position:absolute; top:0; right:0; bottom:0; width:min(400px,92vw);
-  background:#fff; border-left:1px solid var(--line); box-shadow:-12px 0 30px rgba(0,0,0,.08);
-  transform:translateX(105%); transition:transform .22s ease; z-index:8;
-  display:flex; flex-direction:column; min-height:0;
+/* ===== Fishbone ===== */
+.bone-wrap{overflow-x:auto; padding:8px 0 4px}
+.bone{
+  display:grid; grid-template-columns:1fr 110px 1fr; gap:8px; align-items:center;
+  min-width:640px; position:relative; padding:8px 0;
 }
-.drawer.open{transform:translateX(0)}
-.drawer-h{
-  display:flex; align-items:flex-start; gap:10px; padding:12px 14px;
-  border-bottom:1px solid var(--line); background:#f8fafb;
+.bone::before{
+  content:""; position:absolute; left:22%; right:22%; top:50%; height:3px;
+  background:linear-gradient(90deg,#9ec9c4,var(--teal),#e0b78a); border-radius:2px;
 }
-.drawer-h .meta{flex:1; min-width:0}
-.drawer-h .kicker{font-size:10px; letter-spacing:.1em; color:var(--teal); font-weight:700}
-.drawer-h h2{margin:3px 0 4px; font-size:18px; line-height:1.25}
-.drawer-h p{margin:0; color:var(--muted); font-size:12px}
-#closeDrawer{
-  border:1px solid var(--line); background:#fff; border-radius:6px; width:30px; height:30px;
+.bone-side{display:flex; flex-direction:column; gap:8px; position:relative; z-index:1}
+.bone-side.left{align-items:flex-end}
+.bone-side.right{align-items:flex-start}
+.bone-card{
+  width:min(100%,260px); background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px;
 }
-.drawer-body{padding:12px 14px 20px; overflow:auto; flex:1}
-.block{margin:0 0 12px}
-.block h3{margin:0 0 6px; font-size:12px; letter-spacing:.04em; color:#40545e}
-.file{
-  border:1px solid var(--line); border-left:3px solid var(--teal);
-  border-radius:0 8px 8px 0; padding:7px 9px; margin:0 0 6px; background:#fbfcfd;
+.bone-card h4{margin:0 0 4px; font-size:11px; color:var(--muted); letter-spacing:.06em}
+.bone-card ul{margin:0; padding-left:16px; font-size:12px}
+.bone-card li{margin:2px 0}
+.bone-core{
+  position:relative; z-index:2; justify-self:center;
+  width:96px; height:96px; border-radius:50%; border:3px solid #fff;
+  background:radial-gradient(circle at 30% 25%, #4db8ae, #0f7f78 70%);
+  color:#fff; display:grid; place-content:center; text-align:center;
+  box-shadow:0 8px 18px rgba(15,127,120,.28); padding:8px;
 }
-.file strong{display:block; font-size:12px}
-.file small{display:block; color:var(--muted); font-size:11px; margin-top:2px}
-.sample{
-  margin-top:5px; padding:7px 8px; border-radius:6px; background:#102833; color:#c9e8e3;
-  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:10.5px;
-  white-space:pre-wrap; line-height:1.5;
-}
-.out-list{margin:0; padding-left:16px; font-size:12px}
-.out-list li{margin:3px 0}
-.gate{
-  background:var(--amber-soft); border-left:3px solid var(--amber);
-  padding:8px 10px; border-radius:0 8px 8px 0; font-size:12px; color:#6a3d14;
-}
-.gate.red{background:#fdecec; border-left-color:var(--red); color:#7a2e2c}
-.status{
-  display:inline-block; margin-top:6px; font-size:10px; font-weight:700;
-  background:var(--teal-soft); color:var(--teal); border-radius:999px; padding:2px 8px;
-}
-.source{color:var(--muted); font-size:11px; margin-top:10px}
-.support-hint{margin-top:10px; font-size:12px; color:#355}
-.support-hint button{
-  border:0; background:transparent; color:var(--teal); font-weight:700;
-  text-decoration:underline; padding:0 2px;
-}
-.empty-drawer{color:var(--muted); font-size:13px; padding:24px 8px; text-align:center}
+.bone-core b{font-size:9px; letter-spacing:.1em; opacity:.85}
+.bone-core strong{font-size:12px; line-height:1.25; margin-top:3px}
 
-.backdrop{
-  position:absolute; inset:0; background:rgba(16,40,51,.18); opacity:0; pointer-events:none;
-  transition:opacity .2s; z-index:7;
-}
-.backdrop.show{opacity:1; pointer-events:auto}
-
-@media (max-width:900px){
-  body{grid-template-rows:auto minmax(0,1fr); overflow:auto}
-  .topbar{flex-wrap:wrap; height:auto; padding:8px 10px; gap:8px}
-  .hint{display:none}
-  #search{width:100%}
-  .workspace{min-height:70vh}
-}
-
-/* artifact & capability */
-.mode-group{display:flex;gap:4px;align-items:center}
-.mode-group button{
-  border:1px solid #2d4b55; background:#17343e; color:#d7ebe7;
-  border-radius:6px; padding:5px 9px; font-size:12px;
-}
-.mode-group button.active,.mode-group button:hover{background:var(--teal); border-color:var(--teal); color:#fff}
-.cap-panel{
-  display:none; margin-top:10px; border:1px solid var(--line); border-radius:10px;
-  background:#fbfcfd; padding:10px;
-}
-.cap-panel.show{display:block}
-.cap-panel h3{margin:0 0 8px; font-size:13px}
-.cap-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px}
-.cap-card{
-  border:1px solid #dde5ea; background:#fff; border-radius:8px; padding:8px; text-align:left;
-}
-.cap-card:hover,.cap-card.active{border-color:var(--teal); background:var(--teal-soft)}
-.cap-card b{display:block; font-size:10px; color:var(--muted); letter-spacing:.06em}
-.cap-card strong{display:block; font-size:12px; margin-top:2px}
-.cap-card small{display:block; font-size:10px; color:var(--muted); margin-top:4px; line-height:1.35}
-.part{
-  border:1px solid var(--line); border-radius:8px; padding:8px 9px; margin:0 0 8px; background:#fff;
-}
-.part h4{margin:0 0 4px; font-size:12.5px}
-.part .meta{display:grid; gap:4px; margin-top:6px}
-.tagrow{display:flex; flex-wrap:wrap; gap:4px}
-.tag{
-  font-size:10px; border-radius:999px; padding:2px 7px; border:1px solid #d5dee4; background:#f7f9fa; color:#40545e;
-}
-.tag.src{background:#e8f2f8; border-color:#c5dbe8; color:#2a6285}
-.tag.plat{background:#e6f4f2; border-color:#b9ded9; color:#0f7f78}
-.tag.method{background:#fff3e8; border-color:#efd2b3; color:#b86a2b}
-.tag.cap{background:#f1eef7; border-color:#d9d0ea; color:#5a4d7a; cursor:pointer}
-.out-btn{
-  display:block; width:100%; text-align:left; border:1px solid #e1e8ec; background:#fff;
-  border-radius:7px; padding:6px 8px; margin:0 0 5px; font-size:12px;
-}
-.out-btn:hover,.out-btn.active{border-color:var(--teal); background:var(--teal-soft)}
-.out-btn small{display:block; color:var(--muted); font-size:10px; margin-top:2px}
-.tabs{display:flex; gap:4px; margin:0 0 10px}
-.tabs button{
-  border:1px solid var(--line); background:#f7f9fa; border-radius:6px; padding:4px 8px; font-size:11px; color:#40545e;
-}
-.tabs button.active{background:#102833; color:#e8f4f2; border-color:#102833}
-.linklist{margin:6px 0 0; padding-left:16px; font-size:11px; color:#40545e}
-.linklist li{margin:3px 0}
-
+.empty{color:var(--muted); font-size:12px; padding:16px; text-align:center}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
 </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">冰箱研发全流程一屏图<small>ONE-SCREEN PROCESS MAP</small></div>
-    <div class="filter-group" role="group" aria-label="主线过滤">
-      <button class="active" data-lane="all">全部</button>
-      <button data-lane="plat">平台</button>
-      <button data-lane="plan">企划</button>
-      <button data-lane="dev">开发</button>
-      <button data-lane="life">上市</button>
-    </div>
-    <div class="mode-group" role="group" aria-label="视图模式">
-      <button class="active" data-mode="flow">流程全貌</button>
-      <button data-mode="capability">共性能力</button>
-    </div>
-    <input id="search" type="search" placeholder="搜索节点 / 输入 / 输出…" aria-label="搜索">
-    <div class="spacer"></div>
-    <span class="hint">滚轮缩放 · 拖动画布 · 点击节点看详情</span>
-    <div class="zoom-group">
-      <button type="button" id="zoomOut" title="缩小">−</button>
-      <button type="button" id="fitBtn" title="一屏适配">适配一屏</button>
-      <button type="button" id="zoomIn" title="放大">+</button>
-    </div>
-  </header>
+<header class="top">
+  <div><b>点 → 扩交互物 → 再扩组成 / 子流程 → 鱼骨</b><br><span>按层级展开，不靠侧栏说明书</span></div>
+  <div class="sp"></div>
+  <button type="button" id="resetBtn">回到主线圆点</button>
+</header>
+<main class="workspace">
+  <div class="stage">
+    <p class="hint">① 点击主线上的<strong>圆点</strong> → 展开该节点的<strong>交互物</strong>（交付物 / 子流程）。② 再点交互物：若是子流程就展开子流程圆点；若是交付物就展开<strong>组成</strong>。③ 再点组成块 → 出现<strong>鱼骨图</strong>（来源 / 平台 / 方法 / 产出）。</p>
 
-  <div class="workspace">
-    <div class="viewport" id="viewport">
-      <div class="canvas" id="canvas">
-        <div class="map-shell" id="mapShell">
-          <div class="legend-row">
-            <span><i class="l-plat"></i>平台</span>
-            <span><i class="l-plan"></i>单产品企划</span>
-            <span><i class="l-dev"></i>产品开发</span>
-            <span><i class="l-life"></i>上市与生命周期</span>
-            <span><i class="l-sup"></i>下方可展开分流程</span>
-            <span>共 <b id="nodeCount">0</b> 个主节点 · 一屏看全貌 · 点输出拆内容块 / 来源 / 方法 · 再抽共性能力</span>
-          </div>
-          <div class="stages" id="stages"></div>
-          <div class="support-strip" id="supportStrip">
-            <div class="label">并行分流程（点击展开，不占主线视线）</div>
-            <div class="support-pills" id="supportPills"></div>
-            <div class="support-mini" id="supportMini"></div>
-          </div>
-          <div class="cap-panel" id="capPanel">
-            <h3>跨节点共性能力 · 点击查看复用机会</h3>
-            <p style="margin:0 0 8px;font-size:11px;color:#667781">同一能力若在多个交付物中重复出现，可沉淀为公共平台 / 方法 / 资产，提升复用与方案产出效率。</p>
-            <div class="cap-grid" id="capGrid"></div>
-          </div>
-        </div>
+    <section class="flow">
+      <div class="flow-title">主线圆点 · 一屏全流程</div>
+      <div class="spine-wrap"><div class="spine" id="mainSpine"></div></div>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>平台</span>
+        <span><i style="background:var(--amber)"></i>企划</span>
+        <span><i style="background:var(--teal)"></i>开发</span>
+        <span><i style="background:var(--vio)"></i>上市</span>
       </div>
-    </div>
-    <div class="backdrop" id="backdrop"></div>
-    <aside class="drawer" id="drawer" aria-live="polite">
-      <div class="drawer-h">
-        <div class="meta" id="drawerMeta"><div class="empty-drawer">点击任意节点，查看输入 / 输出与关口</div></div>
-        <button type="button" id="closeDrawer" aria-label="关闭">✕</button>
-      </div>
-      <div class="drawer-body" id="drawerBody"></div>
-    </aside>
+    </section>
+
+    <!-- L1: 交互物 -->
+    <section class="expand" id="level1">
+      <div class="crumbs" id="crumbs1"></div>
+      <h3 id="l1title"></h3>
+      <p class="sub" id="l1sub"></p>
+      <div class="grid-items" id="l1items"></div>
+    </section>
+
+    <!-- L2: 子流程 or 组成 -->
+    <section class="expand" id="level2">
+      <div class="crumbs" id="crumbs2"></div>
+      <h3 id="l2title"></h3>
+      <p class="sub" id="l2sub"></p>
+      <div id="l2body"></div>
+    </section>
+
+    <!-- L3: 鱼骨 -->
+    <section class="expand" id="level3">
+      <div class="crumbs" id="crumbs3"></div>
+      <h3 id="l3title"></h3>
+      <p class="sub" id="l3sub"></p>
+      <div class="bone-wrap" id="l3body"></div>
+    </section>
   </div>
+</main>
 
 <script>
 const platformPlanningNodes = [
@@ -385,761 +237,329 @@ const supportFlows = [
         { id:'standards', title:'技术标准治理', tag:'制度治理', stage:'平台 / 方案 / 量产准备', intro:'企业标准规划 → 征求意见 → 终稿；另有废弃和临时修订。该表是标准治理分权，不是标准条文全文。', source:'12.xlsx《16-技术标准系统流程分权》', nodes:[['ST1 标准规划','标准需求、专业范围、主笔','标准规划立项'],['ST2 征求意见','征求意见稿、分委会意见','意见汇总与修订'],['ST3 终稿与发布','终稿、投票、例会结论','标准发布记录'],['ST4 废弃/临时修订','变更原因、影响范围','废弃或临时修订生效']] },
         { id:'special-projects', title:'特殊业务项目路径', tag:'特殊路径', stage:'按条件裁剪主线', intro:'海外差异化、派生/定制、转产、泰国本地化、东芝日本向和92编码按适用条件选择，不是统一串行流程。', source:'12.xlsx《6、10、11、12、18、19、20、21》', nodes:[['S1 适用性判定','项目来源、市场/品牌、母机/平台、工厂和编码条件','项目类型与适用工作表'],['S2 需求与差异评估','差异化需求、BOM/配置、认证、母机问题','差异清单、配置/认证/测试范围'],['S3 项目开发与评审','对应专表的设计、认证、试制/试产节点','项目评审、测试/认证和问题闭环'],['S4 结项/上市决策','结项资料、状态、上市或转产条件','结项、上市/转产或后续生命周期任务']] }
       ];
-const nodeSupports = {
-        'launch':['pm-change','research'],
-        'design-input':['industrial','module','engineering','reliability'],
-        'risk':['reliability','standards'],
-        'patent':['engineering'],
-        'prototype':['industrial','reliability'],
-        'mold':['mold-change','engineering'],
-        'review':['reliability','engineering'],
-        'gate':['reliability','mold-change','pm-change'],
-        'plan-brief':['research'],
-        'plan-concept':['industrial','research'],
-        'plan-design':['industrial'],
-        'plan-feasibility':['reliability','research'],
-        'plan-decision':['pm-change'],
-        'platform-need':['research'],
-        'platform-mis1':['industrial','research'],
-        'platform-design':['industrial','module'],
-        'platform-roadshow':['pm-change'],
-        'platform-dev-launch':['pm-change','module'],
-        'platform-dev-design':['reliability','module','engineering'],
-        'platform-dev-verify':['mold-change','reliability'],
-        'platform-dev-gate':['mold-change','module','pm-change']
-      };
 
-/* ===== 交付物拆解 & 共性能力 ===== */
-const artifacts = {
+/* 主线：圆点序列 */
+const mainPoints = [
+  ...platformPlanningNodes.map(n => ({...n, lane:'plat', laneName:'平台规划'})),
+  ...platformDevelopmentNodes.map(n => ({...n, lane:'plat', laneName:'平台开发'})),
+  ...planningNodes.map(n => ({...n, lane:'plan', laneName:'单产品企划'})),
+  ...nodes.map(n => ({...n, lane:'dev', laneName:'方案阶段'})),
+  ...buildNodes.map(n => ({...n, lane:'dev', laneName:'试制试产投产'})),
+  ...lifecycleNodes.map(n => ({...n, lane:'life', laneName:'上市生命周期'}))
+];
+
+/* 交付物组成（你举的概念工程例子 + 关键交付物） */
+const compositions = {
   '《概念工程研究报告》': {
-    alias:['概念工程研究报告','《概念工程研究报告》'],
-    nodeIds:['plan-concept'],
-    summary:'把“做什么、为谁做、差异化是什么”沉淀成可路演决策的研究报告。',
+    summary:'概念工程的核心交互物：先看由哪几块组成，再点开看每块怎么生产。',
     parts:[
-      {
-        id:'positioning', name:'产品定位',
-        content:'目标人群、价格带、品牌/系列卡位、与竞品的区隔一句话。',
-        sources:['历史产品库（同品类/同价位机型）','年度企划大纲','竞品对标清单'],
+      {id:'positioning', name:'产品定位',
+        sources:['历史产品库（同品类/同价位）','年度企划大纲','竞品对标清单'],
         platforms:['产品历史库 / PLM 产品档案','竞品情报库'],
         methods:['品类机会扫描','定位画布（用户×场景×利益点）','竞品定位图'],
-        capability:'product-positioning'
-      },
-      {
-        id:'user-map', name:'用户使用地图',
-        content:'典型用户旅程、触点痛点、NPS/体验问题导入点、关键使用场景。',
-        sources:['用户访谈/问卷原始数据','售后/NPS问题库','导购反馈'],
-        platforms:['用户调研平台','体验问题库 / NPS 系统'],
+        outputs:['一句话定位','价格带与系列卡位','与竞品区隔点']},
+      {id:'user-map', name:'用户使用地图',
+        sources:['用户访谈/问卷','售后/NPS 问题库','导购反馈'],
+        platforms:['用户调研平台','体验问题库 / NPS'],
         methods:['用户旅程地图','场景拆解','痛点优先级（频次×严重度）'],
-        capability:'user-research'
-      },
-      {
-        id:'concept-boards', name:'概念四图',
-        content:'趋势图、用户洞察图、概念方向图、差异化卖点图（或等价四页）。',
+        outputs:['旅程与触点图','痛点清单','体验/NPS 导入点']},
+      {id:'concept-boards', name:'概念四图',
         sources:['趋势报告','用户洞察卡片','工业设计方向草图'],
         platforms:['设计资产库','趋势资料库'],
         methods:['洞察聚类','概念发散-收敛','卖点叙事框架'],
-        capability:'concept-synthesis'
-      },
-      {
-        id:'innovation-mix', name:'新概念创新组合',
-        content:'功能/体验/结构/智能化等创新点组合，及可验证假设。',
+        outputs:['趋势图','用户洞察图','概念方向图','差异化卖点图']},
+      {id:'innovation-mix', name:'新概念创新组合',
         sources:['技术预研结论','模块/平台可复用能力','专利与竞品创新点'],
         platforms:['技术研究库','模块库','专利检索系统'],
-        methods:['创新组合矩阵','可行性初筛','假设清单（待手板/测评验证）'],
-        capability:'innovation-portfolio'
-      }
+        methods:['创新组合矩阵','可行性初筛','假设清单'],
+        outputs:['创新组合方案','待验证假设','预研/模块搭载建议']}
     ]
   },
   '正式《产品规划书》': {
-    alias:['正式《产品规划书》','《产品规划书》','产品规划书','修订后的正式《产品规划书》','《产品规划书》初稿'],
-    nodeIds:['plan-brief','plan-decision'],
-    summary:'把企划决策固化为开发立项输入：等级、性能/可靠性目标、成本毛利、上市批产计划等。',
+    summary:'企划决策固化后的开发输入交互物。',
     parts:[
-      {
-        id:'plan-market', name:'市场与用户结论',
-        content:'目标市场、用户与场景结论、体验及 NPS 改善要求。',
-        sources:['概念工程研究报告','产品组合测评','体验问题闭环'],
-        platforms:['用户调研平台','体验问题库'],
-        methods:['调研结论转规格','问题闭环进规划书必填项'],
-        capability:'user-research'
-      },
-      {
-        id:'plan-targets', name:'性能 / 可靠性 / 成本目标',
-        content:'基本性能目标、可靠性目标、成本/毛利与材料边界。',
-        sources:['技术可行性评估','目标材料审批表','历史相似机型数据'],
-        platforms:['GPM/MPLM 规划书模板','成本估算工具'],
-        methods:['目标分解','对标设标','风险标注'],
-        capability:'target-setting'
-      },
-      {
-        id:'plan-id', name:'工业设计与卖点',
-        content:'外观/CMF/UXI 方向、卖点列表、结构限制。',
-        sources:['工业设计方案','设计提案','品牌共性要求'],
-        platforms:['工业设计资产库'],
-        methods:['卖点分层（必打/加分/可砍）','设计约束表'],
-        capability:'industrial-design-spec'
-      },
-      {
-        id:'plan-schedule', name:'等级 / 里程碑 / 上市批产',
-        content:'项目等级、流程框架、上市与批产计划。',
-        sources:['项目等级裁定参考','研发流程框架','事业部节奏'],
-        platforms:['GPM','流程框架配置'],
-        methods:['等级裁定','里程碑裁剪'],
-        capability:'project-framing'
-      }
+      {id:'mkt', name:'市场与用户结论', sources:['概念工程研究报告','组合测评','体验闭环'], platforms:['用户调研平台','体验问题库'], methods:['调研结论转规格'], outputs:['用户/场景结论','体验改善要求']},
+      {id:'tgt', name:'性能/可靠/成本目标', sources:['技术可行性','目标材料审批表'], platforms:['GPM/MPLM','成本工具'], methods:['对标设标','目标分解'], outputs:['性能目标','可靠性目标','成本/毛利边界']},
+      {id:'id', name:'工业设计与卖点', sources:['工业设计方案','设计提案'], platforms:['工业设计资产库'], methods:['卖点分层','设计约束表'], outputs:['卖点列表','外观/CMF/UXI 方向']},
+      {id:'frame', name:'等级/里程碑/节奏', sources:['等级裁定参考','流程框架'], platforms:['GPM'], methods:['等级裁定','里程碑裁剪'], outputs:['项目等级','上市/批产计划']}
     ]
   },
   '《产品组合测评报告》': {
-    alias:['《产品组合测评报告》','产品组合测评报告'],
-    nodeIds:['plan-design'],
-    summary:'验证概念与外观在组合中的相对表现，输出优化意见。',
+    summary:'验证概念与外观组合表现。',
     parts:[
-      {
-        id:'combo-task', name:'测评任务与对象',
-        content:'测评对象、产品组合、评价维度。',
-        sources:['概念方案','外观手板/效果图'],
-        platforms:['用户调研平台','测评任务系统'],
-        methods:['组合测评设计','样本配额'],
-        capability:'user-research'
-      },
-      {
-        id:'combo-result', name:'测评结论与优化',
-        content:'偏好、弃选原因、优化意见。',
-        sources:['测评原始数据'],
-        platforms:['用户调研平台'],
-        methods:['统计分析','弃选原因编码'],
-        capability:'user-research'
-      }
-    ]
-  },
-  '《技术可行性评估报告》': {
-    alias:['《技术可行性评估报告》','技术可行性评估报告','《技术可行性分析报告》'],
-    nodeIds:['plan-feasibility'],
-    summary:'技术实现、制造、成本、四新与专利风险的可行性判断。',
-    parts:[
-      {
-        id:'tech-path', name:'技术方案与难度',
-        content:'实现路径、新技术/材料/工艺、难度评级。',
-        sources:['产品构想','预研结论','历史问题'],
-        platforms:['技术研究库','历史问题库'],
-        methods:['难度矩阵','风险登记'],
-        capability:'tech-feasibility'
-      },
-      {
-        id:'supply-cost', name:'供应与成本风险',
-        content:'供方、产能、目标材料与成本估价。',
-        sources:['新物料清单','目标材料审批表'],
-        platforms:['供应链系统','成本工具'],
-        methods:['双供方原则','成本对标'],
-        capability:'supply-cost'
-      }
+      {id:'task', name:'测评任务与对象', sources:['概念方案','手板/效果图'], platforms:['用户调研平台'], methods:['组合测评设计'], outputs:['测评任务书']},
+      {id:'result', name:'测评结论与优化', sources:['测评原始数据'], platforms:['用户调研平台'], methods:['统计分析','弃选原因编码'], outputs:['偏好结论','优化意见']}
     ]
   },
   '《手板摸底测试报告》': {
-    alias:['《手板摸底测试报告》','手板摸底测试报告'],
-    nodeIds:['prototype','platform-dev-verify'],
-    summary:'用手板验证装配、性能与体验是否成立。',
+    summary:'用手板验证方案是否成立。',
     parts:[
-      {
-        id:'proto-test', name:'测试项目与结果',
-        content:'测试条件、结果、问题清单。',
-        sources:['手板摸底测试方案','产品规格书'],
-        platforms:['测试管理系统','问题库'],
-        methods:['摸底测试矩阵','问题分级'],
-        capability:'test-evaluation'
-      },
-      {
-        id:'proto-ux', name:'体验问题导入',
-        content:'可用性/导购测评问题与整改。',
-        sources:['体验测评任务'],
-        platforms:['用户调研平台','体验问题库'],
-        methods:['体验问题闭环','模具前 B 类关闭规则'],
-        capability:'user-research'
-      }
-    ]
-  },
-  '正式产品规划书': {
-    alias:['正式产品规划书'],
-    nodeIds:['launch'],
-    summary:'开发立项的正式输入版本。',
-    parts:[
-      {
-        id:'formal-plan-user', name:'用户与定位字段',
-        content:'用户、定位、卖点、区域。',
-        sources:['企划决策材料'],
-        platforms:['MPLM 规划书'],
-        methods:['字段齐套检查'],
-        capability:'user-research'
-      },
-      {
-        id:'formal-plan-targets', name:'目标与约束字段',
-        content:'性能、可靠性、成本、等级、节奏。',
-        sources:['可行性与决策结论'],
-        platforms:['MPLM','GPM'],
-        methods:['立项字段校验'],
-        capability:'target-setting'
-      }
+      {id:'test', name:'测试项目与结果', sources:['摸底测试方案','规格书'], platforms:['测试管理系统','问题库'], methods:['摸底测试矩阵','问题分级'], outputs:['测试结果','问题清单']},
+      {id:'ux', name:'体验问题导入', sources:['体验测评任务'], platforms:['用户调研平台'], methods:['体验问题闭环'], outputs:['体验问题与整改']}
     ]
   }
 };
 
-const capabilities = {
-  'user-research': {
-    title:'用户调研与体验洞察',
-    why:'概念工程、产品规划书、组合测评、手板体验等多处都依赖同一套用户证据链。',
-    platforms:['用户调研平台','体验问题库 / NPS 系统','导购反馈入口'],
-    methods:['用户旅程地图','场景拆解','组合测评','体验问题闭环'],
-    assets:['标准访谈提纲','场景卡片模板','痛点优先级表','体验问题编码表'],
-    reuse:'建设统一用户证据池：一次调研可同时服务概念报告、规划书必填项与体验闭环，减少重复进场。'
-  },
-  'product-positioning': {
-    title:'产品定位与卡位',
-    why:'平台规划与单产品企划都要回答“卖给谁、打什么位”。',
-    platforms:['产品历史库 / PLM','竞品情报库'],
-    methods:['定位画布','竞品定位图','品类机会扫描'],
-    assets:['历史机型标签体系','竞品参数与卖点卡'],
-    reuse:'沉淀可检索的历史定位标签，新产品定位先检索再创造。'
-  },
-  'concept-synthesis': {
-    title:'概念综合与叙事',
-    why:'把趋势、洞察、设计方向收敛成可决策概念。',
-    platforms:['设计资产库','趋势资料库'],
-    methods:['洞察聚类','概念发散-收敛','卖点叙事框架'],
-    assets:['概念四图模板','卖点叙事页'],
-    reuse:'标准“概念四图”模板跨项目复用，评审口径一致。'
-  },
-  'innovation-portfolio': {
-    title:'创新组合管理',
-    why:'连接预研、模块、专利与单品概念。',
-    platforms:['技术研究库','模块库','专利检索系统'],
-    methods:['创新组合矩阵','可行性初筛','假设清单'],
-    assets:['模块能力目录','创新假设卡'],
-    reuse:'模块/预研能力目录化后，概念创新先组合已有能力。'
-  },
-  'target-setting': {
-    title:'目标设标（性能/可靠/成本）',
-    why:'规划书与开发规格书共用目标语言。',
-    platforms:['GPM/MPLM','成本估算工具'],
-    methods:['对标设标','目标分解','风险标注'],
-    assets:['目标字段字典','对标样本包'],
-    reuse:'统一目标字段字典，避免企划与开发各写一套。'
-  },
-  'industrial-design-spec': {
-    title:'工业设计规格化',
-    why:'从效果图到规格书，服务企划与方案阶段。',
-    platforms:['工业设计资产库'],
-    methods:['卖点分层','设计约束表','品牌共性检查'],
-    assets:['ID 需求书模板','共性元素检查表'],
-    reuse:'ID 规格组件化，派生项目可差分继承。'
-  },
-  'project-framing': {
-    title:'项目等级与节奏成帧',
-    why:'决定流程深度与里程碑。',
-    platforms:['GPM','流程框架配置'],
-    methods:['等级裁定','里程碑裁剪'],
-    assets:['等级参考表','流程框架'],
-    reuse:'等级-任务包自动推荐，减少每次手工裁剪。'
-  },
-  'tech-feasibility': {
-    title:'技术可行性评估',
-    why:'企划决策与方案风险评审的共同前置。',
-    platforms:['技术研究库','历史问题库'],
-    methods:['难度矩阵','风险登记'],
-    assets:['可行性报告模板','四新检查单'],
-    reuse:'历史难度与失败案例自动带入相似项目。'
-  },
-  'supply-cost': {
-    title:'供应与成本评估',
-    why:'贯穿可行性、新物料、试产封样。',
-    platforms:['供应链系统','成本工具'],
-    methods:['双供方原则','成本对标'],
-    assets:['新物料清单字段','目标材料审批表'],
-    reuse:'物料风险画像在企划与开发间共享。'
-  },
-  'test-evaluation': {
-    title:'测试评价与问题分级',
-    why:'手板、试制、试产共用测试与问题语言。',
-    platforms:['测试管理系统','问题库'],
-    methods:['测试矩阵','问题分级 A/B/C'],
-    assets:['摸底测试方案模板','问题编码'],
-    reuse:'测试项与问题等级标准库化，转阶段规则可自动校验。'
-  }
+/* 节点 → 交互物：交付物 + 可挂子流程 */
+const nodeInteractives = {
+  'plan-concept': [
+    {type:'artifact', name:'《概念工程研究报告》', note:'点开看由哪四块组成'},
+    {type:'subflow', name:'工业设计专项', flowId:'industrial', note:'外观/手板支线，支撑概念可视化'},
+    {type:'subflow', name:'技术研究与成果转化', flowId:'research', note:'趋势与技术输入支线'}
+  ],
+  'plan-design': [
+    {type:'artifact', name:'《产品组合测评报告》', note:'点开看测评组成'},
+    {type:'artifact', name:'工业设计/内部专业评审会议纪要', note:'评审记录类交互物'},
+    {type:'subflow', name:'工业设计专项', flowId:'industrial', note:'效果图/手板子流程'}
+  ],
+  'plan-decision': [
+    {type:'artifact', name:'正式《产品规划书》', note:'点开看规划书组成'},
+    {type:'artifact', name:'立项路演会议纪要/决策结论', note:'决策记录'},
+    {type:'subflow', name:'项目管理变更', flowId:'pm-change', note:'等级/计划变更支线'}
+  ],
+  'plan-brief': [
+    {type:'artifact', name:'《产品规划书》初稿', note:'后续升为正式规划书'},
+    {type:'subflow', name:'技术研究与成果转化', flowId:'research', note:'情报与预研输入'}
+  ],
+  'plan-feasibility': [
+    {type:'artifact', name:'《技术可行性评估报告》', note:'技术/制造/成本判断'},
+    {type:'subflow', name:'可靠性设计专项', flowId:'reliability', note:'可靠性支线'}
+  ],
+  'prototype': [
+    {type:'artifact', name:'《手板摸底测试报告》', note:'点开看测试组成'},
+    {type:'subflow', name:'工业设计专项', flowId:'industrial', note:'手板制作协同'},
+    {type:'subflow', name:'开模与改模', flowId:'mold-change', note:'涉及开模的体验问题'}
+  ],
+  'mold': [
+    {type:'subflow', name:'开模与改模', flowId:'mold-change', note:'本节点对应的制造准备子流程'},
+    {type:'artifact', name:'模具结构评审结论与问题闭环', note:'模具评审交互物'}
+  ],
+  'design-input': [
+    {type:'subflow', name:'模块开发', flowId:'module', note:'模块方案输入'},
+    {type:'subflow', name:'图纸、BOM、物料与工程变更', flowId:'engineering', note:'图纸/物料支线'},
+    {type:'artifact', name:'各专业方案评审报告和明确结论', note:'专业方案包'}
+  ],
+  'gate': [
+    {type:'artifact', name:'综合方案评审会议纪要/结论', note:'转阶段决策交互物'},
+    {type:'subflow', name:'图纸、BOM、物料与工程变更', flowId:'engineering', note:'转试制前工程数据'}
+  ]
 };
 
-function sampleText(f){ return (f[2]||'') + (f[3] ? ('\n\n样例：\n' + f[3]) : ''); }
-function normalizeName(s){
-  return String(s||'').replace(/[《》\s]/g,'').replace(/报告$/,'报告');
+function defaultInteractives(point){
+  const outs = (point.outputs||[]).slice(0,4).map(o => ({
+    type: compositions[o] ? 'artifact' : 'artifact',
+    name: o,
+    note: compositions[o] ? '可继续展开组成' : '交付/记录类交互物'
+  }));
+  const special = nodeInteractives[point.id];
+  if (special) return special;
+  return outs.length ? outs : [{type:'artifact', name:'（待补交互物）', note:'该节点交互物尚未建模'}];
 }
 
-function findArtifact(outputName){
-  const n = normalizeName(outputName);
-  for (const [key, art] of Object.entries(artifacts)){
-    const keys = [key, ...(art.alias||[])].map(normalizeName);
-    if (keys.some(k => n.includes(k) || k.includes(n))) return {key, ...art};
+function findComp(name){
+  if (compositions[name]) return {key:name, ...compositions[name]};
+  const n = name.replace(/[《》]/g,'');
+  for (const [k,v] of Object.entries(compositions)){
+    if (k.replace(/[《》]/g,'').includes(n) || n.includes(k.replace(/[《》]/g,''))) return {key:k, ...v};
   }
+  // fuzzy for 初稿/正式
+  if (n.includes('产品规划书')) return {key:'正式《产品规划书》', ...compositions['正式《产品规划书》']};
   return null;
 }
 
-function artifactUsage(capId){
-  const hits = [];
-  Object.entries(artifacts).forEach(([doc, art]) => {
-    art.parts.forEach(p => {
-      if (p.capability === capId) hits.push({doc, part:p.name, nodeIds:art.nodeIds||[]});
-    });
-  });
-  return hits;
-}
-
-let viewMode = 'flow';
-let selectedArtifactKey = null;
+let selectedPointId = null;
+let selectedInteractive = null; // {type,name,flowId?}
 let selectedPartId = null;
-let selectedCapability = null;
-const capPanel = document.getElementById('capPanel');
-const capGrid = document.getElementById('capGrid');
-const supportStrip = document.getElementById('supportStrip');
 
+const mainSpine = document.getElementById('mainSpine');
+const level1 = document.getElementById('level1');
+const level2 = document.getElementById('level2');
+const level3 = document.getElementById('level3');
 
+function pointById(id){ return mainPoints.find(p => p.id === id); }
 
-const lanes = [
-  {
-    id:'plat-plan', lane:'plat', cls:'plat', code:'01 PLATFORM', title:'平台规划',
-    items: platformPlanningNodes
-  },
-  {
-    id:'plat-dev', lane:'plat', cls:'plat', code:'02 PLATFORM', title:'平台开发',
-    items: platformDevelopmentNodes
-  },
-  {
-    id:'plan', lane:'plan', cls:'plan', code:'03 PLANNING', title:'单产品企划',
-    items: planningNodes
-  },
-  {
-    id:'design', lane:'dev', cls:'dev', code:'04a DESIGN', title:'方案阶段',
-    items: nodes
-  },
-  {
-    id:'build', lane:'dev', cls:'dev', code:'04b BUILD', title:'试制·试产·投产',
-    items: buildNodes
-  },
-  {
-    id:'life', lane:'life', cls:'life', code:'05 LIFE', title:'上市与生命周期',
-    items: lifecycleNodes
-  }
-];
-
-const stagesEl = document.getElementById('stages');
-const supportPillsEl = document.getElementById('supportPills');
-const supportMiniEl = document.getElementById('supportMini');
-const drawer = document.getElementById('drawer');
-const drawerMeta = document.getElementById('drawerMeta');
-const drawerBody = document.getElementById('drawerBody');
-const backdrop = document.getElementById('backdrop');
-const canvas = document.getElementById('canvas');
-const viewport = document.getElementById('viewport');
-const searchEl = document.getElementById('search');
-const nodeCountEl = document.getElementById('nodeCount');
-
-let scale = 1;
-let selected = null; // {group, id}
-let activeSupport = null;
-let laneFilter = 'all';
-let query = '';
-
-function allMainNodes(){
-  return lanes.flatMap(l => l.items.map(n => ({...n, group:l.id, lane:l.lane})));
-}
-
-function matchesQuery(n){
-  if(!query) return true;
-  const hay = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + (n.source||'')).toLowerCase();
-  return hay.includes(query);
-}
-
-function renderStages(){
-  const total = lanes.reduce((s,l)=>s+l.items.length,0);
-  nodeCountEl.textContent = String(total);
-  stagesEl.innerHTML = lanes.map(lane => {
-    const hidden = laneFilter !== 'all' && lane.lane !== laneFilter;
-    const items = lane.items.filter(matchesQuery);
-    return `<section class="stage ${lane.cls}" data-lane="${lane.lane}" style="${hidden?'opacity:.28;filter:grayscale(.7)':''}">
-      <div class="stage-h"><b>${lane.code}</b><strong>${lane.title}</strong></div>
-      <div class="stage-body">
-        ${items.map((n,i)=>`
-          <button type="button" class="step ${selected && selected.group===lane.id && selected.id===n.id ? 'active':''} ${query && matchesQuery(n)?'hit':''}"
-            data-group="${lane.id}" data-id="${n.id}">
-            <span class="idx">${String(i+1).padStart(2,'0')}</span>
-            <span class="title">${n.title}</span>
-            <div class="io"><span>入 ${n.inputs.length}</span><span>出 ${n.outputs.length}</span></div>
-          </button>`).join('') || '<div class="empty-drawer" style="padding:8px;font-size:11px">无匹配</div>'}
-      </div>
-    </section>`;
-  }).join('');
-
-  stagesEl.querySelectorAll('.step').forEach(btn => {
+function renderMain(){
+  mainSpine.innerHTML = mainPoints.map(p => `
+    <div class="seg">
+      <div class="lane">${p.laneName}</div>
+      <button type="button" class="dot ${p.lane} ${selectedPointId===p.id?'active':''}" data-id="${p.id}" title="${p.title}"></button>
+      <div class="name">${p.title}</div>
+      <div class="count">${(nodeInteractives[p.id] ? nodeInteractives[p.id] : (p.outputs||[]).slice(0,4)).length} 交互物</div>
+    </div>`).join('');
+  mainSpine.querySelectorAll('.dot').forEach(btn => {
     btn.addEventListener('click', () => {
-      selected = {group: btn.dataset.group, id: btn.dataset.id};
-      renderStages();
-      openDrawer();
+      selectedPointId = btn.dataset.id;
+      selectedInteractive = null;
+      selectedPartId = null;
+      renderMain();
+      openLevel1();
+      hideLevel(2); hideLevel(3);
+      level1.scrollIntoView({behavior:'smooth', block:'start'});
     });
   });
 }
 
-function renderSupportPills(){
-  supportPillsEl.innerHTML = supportFlows.map(f =>
-    `<button type="button" class="pill ${activeSupport===f.id?'active':''}" data-support="${f.id}">${f.tag} · ${f.title}</button>`
-  ).join('');
-  supportPillsEl.querySelectorAll('[data-support]').forEach(btn => {
+function crumbs(el, items){
+  el.innerHTML = items.map((it,i) => {
+    if (!it.on) return `<span>${it.label}</span>`;
+    return `<button type="button" data-crumb="${i}">${it.label}</button>`;
+  }).join('<span> → </span>');
+  el.querySelectorAll('[data-crumb]').forEach(btn => {
+    btn.addEventListener('click', () => items[Number(btn.dataset.crumb)].on());
+  });
+}
+
+function hideLevel(n){
+  document.getElementById('level'+n).classList.remove('show');
+}
+
+function openLevel1(){
+  const p = pointById(selectedPointId);
+  if (!p) return;
+  level1.classList.add('show');
+  document.getElementById('l1title').textContent = p.title + ' · 交互物';
+  document.getElementById('l1sub').textContent = '点下面任意交互物继续展开：子流程会走出一串圆点；交付物会展开它的组成。';
+  crumbs(document.getElementById('crumbs1'), [
+    {label:'主线圆点', on:() => { document.getElementById('resetBtn').click(); }},
+    {label:p.title, on:null}
+  ]);
+  const items = defaultInteractives(p);
+  const box = document.getElementById('l1items');
+  box.innerHTML = items.map((it,idx) => `
+    <button type="button" class="item ${selectedInteractive && selectedInteractive.name===it.name?'active':''}" data-idx="${idx}">
+      <div class="k ${it.type==='subflow'?'subflow':'artifact'}">${it.type==='subflow'?'子流程':'交付物 / 交互物'} · 点击展开</div>
+      <strong>${it.name}</strong>
+      <small>${it.note||''}</small>
+    </button>`).join('');
+  box.querySelectorAll('.item').forEach(btn => {
     btn.addEventListener('click', () => {
-      activeSupport = activeSupport === btn.dataset.support ? null : btn.dataset.support;
-      renderSupportPills();
-      renderSupportMini();
+      selectedInteractive = items[Number(btn.dataset.idx)];
+      selectedPartId = null;
+      openLevel1();
+      openLevel2();
+      hideLevel(3);
+      level2.scrollIntoView({behavior:'smooth', block:'start'});
     });
   });
 }
 
-function renderSupportMini(){
-  const flow = supportFlows.find(f => f.id === activeSupport);
-  if(!flow){
-    supportMiniEl.classList.remove('show');
-    supportMiniEl.innerHTML = '';
+function openLevel2(){
+  const p = pointById(selectedPointId);
+  const it = selectedInteractive;
+  if (!p || !it) return;
+  level2.classList.add('show');
+  crumbs(document.getElementById('crumbs2'), [
+    {label:'主线', on:() => document.getElementById('resetBtn').click()},
+    {label:p.title, on:() => { selectedInteractive=null; selectedPartId=null; openLevel1(); hideLevel(2); hideLevel(3); }},
+    {label:it.name, on:null}
+  ]);
+
+  const body = document.getElementById('l2body');
+  if (it.type === 'subflow') {
+    const flow = supportFlows.find(f => f.id === it.flowId || f.title === it.name || (it.name && f.title && it.name.includes(f.title)));
+    document.getElementById('l2title').textContent = (flow?.title || it.name) + ' · 子流程圆点';
+    document.getElementById('l2sub').textContent = (flow?.intro || '这是挂在主线节点下的分流程。') + ' 再点子流程节点，可看该步输入输出（简化）。';
+    if (!flow) { body.innerHTML = '<div class="empty">未找到子流程定义</div>'; return; }
+    body.innerHTML = `<div class="subflow-line">${flow.nodes.map((row,i)=>`
+      <div class="seg">
+        <button type="button" class="dot" data-si="${i}"></button>
+        <div class="name">${row[0]}</div>
+      </div>`).join('')}</div>
+      <div id="subDetail" class="empty">点击子流程圆点，查看该步的输入 / 输出</div>`;
+    body.querySelectorAll('[data-si]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = flow.nodes[Number(btn.dataset.si)];
+        // synthesize a fishbone-like simple view for subprocess step
+        selectedPartId = 'sub:'+row[0];
+        openLevel3FromSub(row);
+      });
+    });
     return;
   }
-  supportMiniEl.classList.add('show');
-  supportMiniEl.innerHTML = `<div class="mini-h">${flow.tag} · ${flow.title}<br><span style="font-weight:500;color:#667781;font-size:11px">${flow.intro || ''} · 挂载：${flow.stage || '按项目裁剪'}</span></div>` +
-    flow.nodes.map((row,i) => `
-      <button type="button" class="snode ${selected && selected.group==='support:'+flow.id && selected.id===row[0]?'active':''}"
-        data-sgroup="support:${flow.id}" data-sid="${row[0]}">
-        <b>${String(i+1).padStart(2,'0')}</b>
-        <strong>${row[0]}</strong>
-        <small>入：${row[1]}</small>
-        <small>出：${row[2]}</small>
-      </button>`).join('');
-  supportMiniEl.querySelectorAll('.snode').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selected = {group: btn.dataset.sgroup, id: btn.dataset.sid};
-      renderSupportMini();
-      openDrawer();
-    });
-  });
-}
 
-function findSelected(){
-  if(!selected) return null;
-  if(selected.group.startsWith('support:')){
-    const fid = selected.group.slice(8);
-    const flow = supportFlows.find(f => f.id === fid);
-    const row = flow && flow.nodes.find(r => r[0] === selected.id);
-    if(!row) return null;
-    return {
-      kicker: 'SUPPORT · ' + flow.tag,
-      title: row[0],
-      desc: flow.intro || '并行分流程节点',
-      owner: '对应专业 / 项目团队',
-      source: flow.source || '',
-      inputs: [[row[1], '支线输入', row[1], row[1]]],
-      outputs: [row[2]],
-      gate: '具体审批、时限与角色需回到原工作表 / 系统确认。',
-      supports: []
-    };
-  }
-  const lane = lanes.find(l => l.id === selected.group);
-  const n = lane && lane.items.find(item => item.id === selected.id);
-  if(!n) return null;
-  return {
-    ...n,
-    kicker: (n.kicker || selected.group) + ' · ' + (lane.title || ''),
-    supports: n.supports || nodeSupports[n.id] || []
-  };
-}
-
-function openDrawer(){
-  const n = findSelected();
-  if(!n){
-    drawer.classList.remove('open');
-    backdrop.classList.remove('show');
+  // artifact composition
+  const comp = findComp(it.name);
+  document.getElementById('l2title').textContent = it.name + ' · 组成';
+  if (!comp) {
+    document.getElementById('l2sub').textContent = '该交互物尚未拆组成。可先体验《概念工程研究报告》。';
+    body.innerHTML = '<div class="empty">暂无组成模型</div>';
     return;
   }
-  const red = /GATE|投产鉴定|上市决策|产品策划决策|综合方案评审/.test(n.title + (n.kicker||''));
-  drawerMeta.innerHTML = `
-    <div class="kicker">${n.kicker}</div>
-    <h2>${n.title}</h2>
-    <p>${n.desc || ''}</p>
-    <span class="status">牵头：${n.owner || '—'}</span>`;
-
-  const outArts = (n.outputs||[]).map(o => ({name:o, art:findArtifact(o)}));
-  const firstArt = outArts.find(x => x.art)?.art || (selectedArtifactKey ? {key:selectedArtifactKey, ...artifacts[selectedArtifactKey]} : null);
-  if (firstArt && !selectedArtifactKey) selectedArtifactKey = firstArt.key || Object.keys(artifacts).find(k => artifacts[k]===firstArt);
-
-  drawerBody.innerHTML = `
-    <div class="tabs">
-      <button type="button" class="active" data-dtab="io">输入 / 输出</button>
-      <button type="button" data-dtab="break">交付物怎么来的</button>
-      <button type="button" data-dtab="cap">相关共性能力</button>
-    </div>
-    <div data-dpanel="io">
-      <div class="block"><h3>输入文件</h3>
-        ${(n.inputs||[]).map(f => `<div class="file"><strong>${f[0]}</strong><small>${f[1]||''}</small>
-          <div class="sample">${sampleText(f)}</div></div>`).join('') || '<div class="empty-drawer">无</div>'}
-      </div>
-      <div class="block"><h3>输出产物（点击可拆解）</h3>
-        ${(n.outputs||[]).map(o => {
-          const a = findArtifact(o);
-          return `<button type="button" class="out-btn" data-open-art="${a ? (a.key||o) : ''}" ${a?'':'disabled'}>
-            <strong>${o}</strong>
-            <small>${a ? '可拆解为 ' + a.parts.length + ' 个内容块 · 查看来源 / 平台 / 方法' : '尚未建拆解（可后续补充）'}</small>
-          </button>`;
-        }).join('')}
-      </div>
-      <div class="block"><h3>下一节点前要确认</h3>
-        <div class="gate ${red?'red':''}">${n.gate || '—'}</div>
-      </div>
-    </div>
-    <div data-dpanel="break" hidden></div>
-    <div data-dpanel="cap" hidden></div>
-    <p class="source">${n.source || ''} 拆解与能力映射为业务梳理模型，便于找共性、建公共能力；正式字段以受控模板为准。</p>`;
-
-  const breakPanel = drawerBody.querySelector('[data-dpanel="break"]');
-  const capPanelD = drawerBody.querySelector('[data-dpanel="cap"]');
-  renderBreakPanel(breakPanel, n);
-  renderNodeCapPanel(capPanelD, n);
-
-  drawerBody.querySelectorAll('[data-dtab]').forEach(btn => {
+  document.getElementById('l2sub').textContent = (comp.summary||'') + ' 再点任一组成块 → 鱼骨图。';
+  body.innerHTML = `<div class="parts">${comp.parts.map(part => `
+    <button type="button" class="part-chip ${selectedPartId===part.id?'active':''}" data-part="${part.id}">${part.name}</button>
+  `).join('')}</div>`;
+  body.querySelectorAll('[data-part]').forEach(btn => {
     btn.addEventListener('click', () => {
-      drawerBody.querySelectorAll('[data-dtab]').forEach(b => b.classList.toggle('active', b===btn));
-      drawerBody.querySelectorAll('[data-dpanel]').forEach(p => p.hidden = p.getAttribute('data-dpanel') !== btn.dataset.dtab);
+      selectedPartId = btn.dataset.part;
+      openLevel2();
+      openLevel3FromPart(comp, selectedPartId);
+      level3.scrollIntoView({behavior:'smooth', block:'start'});
     });
   });
-  drawerBody.querySelectorAll('[data-open-art]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!btn.dataset.openArt) return;
-      selectedArtifactKey = btn.dataset.openArt;
-      drawerBody.querySelectorAll('[data-dtab]').forEach(b => b.classList.toggle('active', b.dataset.dtab==='break'));
-      drawerBody.querySelectorAll('[data-dpanel]').forEach(p => p.hidden = p.getAttribute('data-dpanel') !== 'break');
-      renderBreakPanel(breakPanel, n);
-    });
-  });
-
-  drawer.classList.add('open');
-  backdrop.classList.add('show');
 }
 
-function renderBreakPanel(el, n){
-  // prefer artifact linked to this node or selected
-  let artEntry = null;
-  if (selectedArtifactKey && artifacts[selectedArtifactKey]) {
-    artEntry = {key:selectedArtifactKey, ...artifacts[selectedArtifactKey]};
-  } else {
-    for (const o of (n.outputs||[])) {
-      const a = findArtifact(o);
-      if (a) { artEntry = a; selectedArtifactKey = a.key; break; }
-    }
-    if (!artEntry) {
-      for (const [key, art] of Object.entries(artifacts)) {
-        if ((art.nodeIds||[]).includes(selected?.id)) { artEntry = {key, ...art}; selectedArtifactKey = key; break; }
-      }
-    }
-  }
-  if (!artEntry) {
-    el.innerHTML = `<div class="empty-drawer">当前节点输出尚未建“内容块拆解”。可先从「概念工程研究报告」「产品规划书」等节点体验完整链路。</div>`;
-    return;
-  }
-  el.innerHTML = `
-    <div class="block">
-      <h3>${artEntry.key}</h3>
-      <p style="margin:0 0 8px;font-size:12px;color:#667781">${artEntry.summary||''}</p>
-      ${artEntry.parts.map(p => `
-        <div class="part" id="part-${p.id}">
-          <h4>${p.name}</h4>
-          <div style="font-size:12px;color:#40545e">${p.content||''}</div>
-          <div class="meta">
-            <div><span style="font-size:10px;color:#667781">读哪些来源</span><div class="tagrow">${(p.sources||[]).map(s=>`<span class="tag src">${s}</span>`).join('')}</div></div>
-            <div><span style="font-size:10px;color:#667781">访问哪些平台</span><div class="tagrow">${(p.platforms||[]).map(s=>`<span class="tag plat">${s}</span>`).join('')}</div></div>
-            <div><span style="font-size:10px;color:#667781">用什么方法论生产</span><div class="tagrow">${(p.methods||[]).map(s=>`<span class="tag method">${s}</span>`).join('')}</div></div>
-            <div><span style="font-size:10px;color:#667781">归属共性能力</span><div class="tagrow">
-              <button type="button" class="tag cap" data-jump-cap="${p.capability}">${capabilities[p.capability]?.title || p.capability}</button>
-            </div></div>
-          </div>
-        </div>`).join('')}
+function openLevel3FromPart(comp, partId){
+  const part = comp.parts.find(p => p.id === partId);
+  if (!part) return;
+  level3.classList.add('show');
+  const p = pointById(selectedPointId);
+  crumbs(document.getElementById('crumbs3'), [
+    {label:'主线', on:() => document.getElementById('resetBtn').click()},
+    {label:p.title, on:() => { selectedInteractive=null; selectedPartId=null; openLevel1(); hideLevel(2); hideLevel(3); }},
+    {label:selectedInteractive.name, on:() => { selectedPartId=null; openLevel2(); hideLevel(3); }},
+    {label:part.name, on:null}
+  ]);
+  document.getElementById('l3title').textContent = part.name + ' · 鱼骨展开';
+  document.getElementById('l3sub').textContent = '左侧是“读什么 / 用什么台 / 什么方法”，中间是组成块，右侧是这块要产出什么。';
+  document.getElementById('l3body').innerHTML = `
+    <div class="bone">
+      <div class="bone-side left">
+        <div class="bone-card"><h4>来源（读什么）</h4><ul>${part.sources.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div class="bone-card"><h4>平台（用什么系统）</h4><ul>${part.platforms.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div class="bone-card"><h4>方法论</h4><ul>${part.methods.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      </div>
+      <div class="bone-core"><b>组成块</b><strong>${part.name}</strong></div>
+      <div class="bone-side right">
+        <div class="bone-card"><h4>产出</h4><ul>${part.outputs.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      </div>
     </div>`;
-  el.querySelectorAll('[data-jump-cap]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedCapability = btn.dataset.jumpCap;
-      viewMode = 'capability';
-      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode==='capability'));
-      applyViewMode();
-      renderCapGrid();
-      openCapabilityDrawer(selectedCapability);
-    });
-  });
 }
 
-function renderNodeCapPanel(el, n){
-  const caps = new Set();
-  (n.outputs||[]).forEach(o => {
-    const a = findArtifact(o);
-    if (a) a.parts.forEach(p => caps.add(p.capability));
-  });
-  Object.entries(artifacts).forEach(([key, art]) => {
-    if ((art.nodeIds||[]).includes(selected?.id)) art.parts.forEach(p => caps.add(p.capability));
-  });
-  if (!caps.size) {
-    el.innerHTML = `<div class="empty-drawer">暂无映射到共性能力。可在交付物拆解中补充。</div>`;
-    return;
-  }
-  el.innerHTML = `<div class="block"><h3>本节点相关共性能力</h3>
-    ${[...caps].map(id => {
-      const c = capabilities[id];
-      const usage = artifactUsage(id);
-      return `<button type="button" class="cap-card" data-open-cap="${id}" style="width:100%;margin-bottom:6px">
-        <b>CAPABILITY</b><strong>${c?.title||id}</strong>
-        <small>出现在 ${usage.length} 处交付内容块 · ${c?.why||''}</small>
-      </button>`;
-    }).join('')}</div>`;
-  el.querySelectorAll('[data-open-cap]').forEach(btn => {
-    btn.addEventListener('click', () => openCapabilityDrawer(btn.dataset.openCap));
-  });
+function openLevel3FromSub(row){
+  level3.classList.add('show');
+  const p = pointById(selectedPointId);
+  crumbs(document.getElementById('crumbs3'), [
+    {label:'主线', on:() => document.getElementById('resetBtn').click()},
+    {label:p.title, on:() => { selectedInteractive=null; selectedPartId=null; openLevel1(); hideLevel(2); hideLevel(3); }},
+    {label:selectedInteractive.name, on:() => { selectedPartId=null; openLevel2(); hideLevel(3); }},
+    {label:row[0], on:null}
+  ]);
+  document.getElementById('l3title').textContent = row[0] + ' · 子流程步骤鱼骨';
+  document.getElementById('l3sub').textContent = '子流程步骤同样用鱼骨看输入与输出。';
+  document.getElementById('l3body').innerHTML = `
+    <div class="bone">
+      <div class="bone-side left">
+        <div class="bone-card"><h4>输入</h4><ul><li>${row[1]}</li></ul></div>
+      </div>
+      <div class="bone-core"><b>子步骤</b><strong>${row[0]}</strong></div>
+      <div class="bone-side right">
+        <div class="bone-card"><h4>输出</h4><ul><li>${row[2]}</li></ul></div>
+      </div>
+    </div>`;
+  document.getElementById('subDetail').textContent = '当前：' + row[0];
+  level3.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function openCapabilityDrawer(capId){
-  const c = capabilities[capId];
-  if (!c) return;
-  selectedCapability = capId;
-  const usage = artifactUsage(capId);
-  drawerMeta.innerHTML = `
-    <div class="kicker">COMMON CAPABILITY</div>
-    <h2>${c.title}</h2>
-    <p>${c.why}</p>
-    <span class="status">跨 ${usage.length} 处内容块复用</span>`;
-  drawerBody.innerHTML = `
-    <div class="block"><h3>为什么值得沉淀成公共能力</h3>
-      <p style="margin:0;font-size:12px;color:#40545e">${c.reuse}</p></div>
-    <div class="block"><h3>统一平台</h3><div class="tagrow">${c.platforms.map(x=>`<span class="tag plat">${x}</span>`).join('')}</div></div>
-    <div class="block"><h3>统一方法</h3><div class="tagrow">${c.methods.map(x=>`<span class="tag method">${x}</span>`).join('')}</div></div>
-    <div class="block"><h3>可沉淀资产</h3><div class="tagrow">${c.assets.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>
-    <div class="block"><h3>在全流程中的出现位置</h3>
-      <ul class="linklist">${usage.map(u => `<li><strong>${u.doc}</strong> → ${u.part}</li>`).join('')}</ul>
-    </div>
-    <p class="source">找到共性后，优先建公共平台字段、方法模板与资产，而不是每个节点各自生产一份。</p>`;
-  drawer.classList.add('open');
-  backdrop.classList.add('show');
-  renderCapGrid();
-}
+document.getElementById('resetBtn').onclick = () => {
+  selectedPointId = null; selectedInteractive = null; selectedPartId = null;
+  renderMain(); hideLevel(1); hideLevel(2); hideLevel(3);
+};
 
-function renderCapGrid(){
-  capGrid.innerHTML = Object.entries(capabilities).map(([id,c]) => {
-    const usage = artifactUsage(id);
-    return `<button type="button" class="cap-card ${selectedCapability===id?'active':''}" data-cap="${id}">
-      <b>出现 ${usage.length} 处</b>
-      <strong>${c.title}</strong>
-      <small>${usage.slice(0,2).map(u=>u.doc.replace(/[《》]/g,'')+'/'+u.part).join(' · ')}${usage.length>2?' …':''}</small>
-    </button>`;
-  }).join('');
-  capGrid.querySelectorAll('[data-cap]').forEach(btn => {
-    btn.addEventListener('click', () => openCapabilityDrawer(btn.dataset.cap));
-  });
-}
+renderMain();
 
-function applyViewMode(){
-  if (viewMode === 'capability') {
-    capPanel.classList.add('show');
-    supportStrip.style.display = 'none';
-    renderCapGrid();
-  } else {
-    capPanel.classList.remove('show');
-    supportStrip.style.display = '';
-  }
-}
+// 默认引导：高亮概念工程点，方便理解
 
-function closeDrawer(){
-  drawer.classList.remove('open');
-  backdrop.classList.remove('show');
-}
-
-function applyScale(){
-  canvas.style.transform = `scale(${scale})`;
-}
-
-function fitToScreen(){
-  // reset first to measure natural size
-  scale = 1;
-  applyScale();
-  const shell = document.getElementById('mapShell');
-  const pad = 28;
-  const availW = viewport.clientWidth - pad;
-  const availH = viewport.clientHeight - pad;
-  const needW = shell.scrollWidth;
-  const needH = shell.scrollHeight;
-  const s = Math.min(availW / needW, availH / needH, 1);
-  scale = Math.max(0.45, Math.min(1.15, s * 0.98));
-  applyScale();
-  // center scroll
-  requestAnimationFrame(() => {
-    const rect = canvas.getBoundingClientRect();
-    const vr = viewport.getBoundingClientRect();
-    viewport.scrollLeft = Math.max(0, (canvas.scrollWidth * scale - viewport.clientWidth) / 2);
-    viewport.scrollTop = Math.max(0, (canvas.scrollHeight * scale - viewport.clientHeight) / 2);
-  });
-}
-
-document.getElementById('zoomIn').onclick = () => { scale = Math.min(1.8, scale + 0.1); applyScale(); };
-document.getElementById('zoomOut').onclick = () => { scale = Math.max(0.4, scale - 0.1); applyScale(); };
-document.getElementById('fitBtn').onclick = fitToScreen;
-document.getElementById('closeDrawer').onclick = closeDrawer;
-backdrop.onclick = closeDrawer;
-
-document.querySelectorAll('[data-lane]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    laneFilter = btn.dataset.lane;
-    document.querySelectorAll('.filter-group [data-lane]').forEach(b => b.classList.toggle('active', b===btn));
-    renderStages();
-  });
-});
-
-searchEl.addEventListener('input', () => {
-  query = searchEl.value.trim().toLowerCase();
-  renderStages();
-});
-
-// wheel zoom
-viewport.addEventListener('wheel', (e) => {
-  if(!(e.ctrlKey || e.metaKey)) return;
-  e.preventDefault();
-  scale = Math.min(1.8, Math.max(0.4, scale + (e.deltaY < 0 ? 0.06 : -0.06)));
-  applyScale();
-}, {passive:false});
-
-// drag pan
-let dragging=false, sx=0, sy=0, sl=0, st=0;
-viewport.addEventListener('pointerdown', e => {
-  if(e.target.closest('button,input,a,.drawer')) return;
-  dragging = true;
-  canvas.classList.add('dragging');
-  sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
-  viewport.setPointerCapture(e.pointerId);
-});
-viewport.addEventListener('pointermove', e => {
-  if(!dragging) return;
-  viewport.scrollLeft = sl - (e.clientX - sx);
-  viewport.scrollTop = st - (e.clientY - sy);
-});
-viewport.addEventListener('pointerup', () => { dragging=false; canvas.classList.remove('dragging'); });
-
-document.querySelectorAll('[data-mode]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    viewMode = btn.dataset.mode;
-    document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b===btn));
-    applyViewMode();
-    if (viewMode === 'capability') fitToScreen();
-  });
-});
-
-renderStages();
-renderSupportPills();
-renderSupportMini();
-renderCapGrid();
-applyViewMode();
-window.addEventListener('load', () => setTimeout(fitToScreen, 60));
-window.addEventListener('resize', () => { clearTimeout(window.__fitT); window.__fitT=setTimeout(fitToScreen, 120); });
 </script>
 </body>
 </html>
