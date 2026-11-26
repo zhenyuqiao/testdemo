@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>方案阶段沙盘｜QMB-GB.0025-2025</title>
+  <style>
+    :root { --ink:#172a2f; --muted:#60757a; --navy:#102f38; --teal:#087f78; --mint:#e5f3ee; --paper:#f4f7f4; --line:#d8e5df; --amber:#c97936; --red:#aa443b; --white:#fff; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:"Microsoft YaHei", "PingFang SC", sans-serif; line-height:1.65; }
+    button, input { font:inherit; }
+    button { cursor:pointer; }
+    .hero { background:var(--navy); color:#fff; padding:54px max(5vw, calc((100vw - 1380px)/2)) 42px; }
+    .eyebrow { color:#87d9ce; font-size:12px; font-weight:700; letter-spacing:.15em; }
+    h1 { font-size:clamp(30px, 4.5vw, 58px); line-height:1.16; margin:14px 0 12px; }
+    .hero p { color:#c9dfdc; margin:0; max-width:870px; font-size:16px; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:23px; }
+    .chips span { border:1px solid #ffffff38; border-radius:99px; color:#d5e8e5; font-size:12px; padding:4px 11px; }
+    .shell { max-width:1380px; margin:auto; padding:28px 24px 70px; }
+    .toolbar { align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-bottom:20px; padding:13px 15px; }
+    .toolbar strong { color:var(--navy); }
+    .toolbar input { border:1px solid #bed4cc; border-radius:6px; min-width:260px; padding:9px 11px; }
+    .toolbar input:focus { outline:2px solid #8bcfc2; }
+    .filters { display:flex; flex-wrap:wrap; gap:6px; }
+    .filters button, .jump { background:#f7fbf8; border:1px solid #c5ddd5; border-radius:99px; color:var(--muted); font-size:12px; padding:6px 11px; }
+    .filters button:hover, .filters button.active, .jump:hover { background:var(--mint); border-color:#72bcb0; color:var(--navy); }
+    .route-choice { background:#fff; border:1px solid var(--line); border-radius:10px; margin-bottom:20px; padding:18px; }
+    .route-choice h2 { color:var(--navy); font-size:19px; margin:0 0 5px; }
+    .route-choice p { color:var(--muted); font-size:13px; margin:0 0 14px; }
+    .choice-row { display:flex; flex-wrap:wrap; gap:10px; }
+    .choice { background:#f7fbf8; border:1px solid #c5ddd5; border-radius:8px; color:var(--ink); cursor:pointer; flex:1 1 280px; padding:13px 15px; text-align:left; }
+    .choice:hover, .choice.active { background:var(--mint); border-color:var(--teal); box-shadow:0 5px 14px #0b817915; }
+    .choice b { color:var(--navy); display:block; font-size:14px; }
+    .choice small { color:var(--muted); display:block; font-size:12px; margin-top:3px; }
+    .route-status { background:#eef7f3; border-left:3px solid var(--teal); color:#315b57; font-size:13px; margin-top:13px; padding:9px 12px; }
+    .optional { color:var(--amber); font-size:11px; font-weight:700; margin-left:5px; }
+    .board { display:grid; gap:18px; grid-template-columns:minmax(0,1fr) 360px; align-items:start; }
+    .map, .detail { background:#fff; border:1px solid var(--line); border-radius:10px; }
+    .map { min-width:0; padding:18px; overflow:hidden; }
+    .map h2, .detail h2 { font-size:19px; margin:0 0 13px; }
+    .map-intro { color:var(--muted); font-size:13px; margin:0 0 14px; }
+    .node-list { display:none; }
+    .node { background:#f8fbf9; border:1px solid #d7e7e0; border-radius:8px; color:var(--ink); padding:12px; text-align:left; width:100%; }
+    .node:hover, .node.active { background:var(--mint); border-color:#72bcb0; }
+    .node .num { color:var(--teal); font-size:11px; font-weight:700; letter-spacing:.12em; }
+    .node b { display:block; font-size:14px; margin-top:3px; }
+    .node small { color:var(--muted); display:block; font-size:11px; margin-top:3px; }
+    .connector { border-left:2px solid #a8d3c9; height:10px; margin-left:22px; }
+    .detail { min-width:0; padding:20px; position:sticky; top:16px; }
+    .detail-head { border-bottom:1px solid var(--line); margin-bottom:20px; padding-bottom:17px; }
+    .detail-head .kicker { color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.13em; }
+    .detail-head h2 { font-size:29px; margin:5px 0 8px; }
+    .detail-head p { color:var(--muted); margin:0; }
+    .status { display:inline-block; background:#e5f3ee; border-radius:99px; color:#08746d; font-size:11px; font-weight:700; margin-top:13px; padding:3px 9px; }
+    .grid { display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .card { background:#fbfdfb; border:1px solid var(--line); border-radius:8px; padding:16px; min-width:0; }
+    .card h3 { font-size:16px; margin:0 0 9px; }
+    .card p { font-size:14px; margin:0; }
+    .card ul { font-size:14px; margin:7px 0 0; padding-left:20px; }
+    .card li { margin:4px 0; }
+    .wide { grid-column:1 / -1; }
+    .file { background:#fff; border-left:3px solid var(--teal); margin:10px 0; padding:11px 13px; }
+    .file strong { display:block; font-size:14px; }
+    .file small { color:var(--muted); display:block; font-size:12px; margin-top:3px; }
+    .sample { background:#172f34; border-radius:6px; color:#d8eeea; font-family:Consolas,"Microsoft YaHei",monospace; font-size:12px; line-height:1.6; margin-top:8px; overflow:auto; padding:11px 13px; white-space:pre-wrap; }
+    .gate { background:#fff1e8; border-left:3px solid var(--amber); font-size:14px; margin:18px 0 0; padding:13px 15px; }
+    .red { background:#fff0ee; border-left-color:var(--red); }
+    .source { color:var(--muted); font-size:12px; margin-top:18px; }
+    .sequence { display:none; }
+    .spine-scroll { overflow-x:auto; padding:2px 4px 20px; }
+    .spine { display:grid; grid-template-columns:repeat(8, minmax(260px, 1fr)); min-width:2100px; position:relative; }
+    .spine::before { background:#80bfb3; content:""; height:4px; left:100px; position:absolute; right:100px; top:262px; }
+    .process { display:grid; grid-template-rows:250px 58px 250px; min-width:0; position:relative; }
+    .process::after { background:#80bfb3; border-radius:50%; content:""; height:14px; left:calc(50% - 7px); position:absolute; top:255px; width:14px; z-index:2; }
+    .process.active .process-card { border-color:var(--teal); box-shadow:0 8px 20px #0b81791c; }
+    .process-card { background:#fbfdfb; border:1px solid var(--line); border-radius:9px; margin:0 8px; min-width:0; padding:13px; transition:.15s ease; }
+    .process-card.input { align-self:end; border-bottom:3px solid #75bdae; }
+    .process-card.output { border-top:3px solid #d4945c; }
+    .process-card h3 { align-items:center; display:flex; font-size:15px; justify-content:space-between; margin:0 0 8px; }
+    .process-card ul { font-size:12px; margin:0; padding-left:17px; }
+    .process-card li { margin:3px 0; }
+    .process-card button { background:transparent; border:0; color:var(--ink); padding:0; text-align:left; width:100%; }
+    .process-card button:hover { color:var(--teal); }
+    .process-core { align-self:center; background:var(--navy); border:3px solid var(--paper); border-radius:50%; color:#fff; cursor:pointer; height:128px; justify-self:center; padding:20px 13px; position:relative; text-align:center; width:128px; z-index:3; }
+    .process-core:hover, .process.active .process-core { background:var(--teal); }
+    .process-core b { color:#8bd6cb; display:block; font-size:11px; letter-spacing:.12em; }
+    .process-core strong { display:block; font-size:15px; line-height:1.35; margin-top:7px; }
+    .process-core small { color:#cce3df; display:block; font-size:10px; margin-top:5px; }
+    .branch { color:var(--muted); display:block; font-size:11px; line-height:1.35; margin-bottom:5px; }
+    .branch::before { color:var(--teal); content:"↗ "; font-weight:700; }
+    .output .branch::before { color:var(--amber); content:"↘ "; }
+    .count { background:#e5f3ee; border-radius:99px; color:#08746d; font-size:10px; padding:2px 6px; }
+    .process-card button.is-focus { background:#fff1e8; border-radius:5px; color:var(--navy); padding:2px 4px; }
+    .process.hidden { display:none; }
+    .route-note { color:var(--muted); font-size:12px; margin:8px 0 0; }
+    .planning-panel { background:#fffdf8; border:1px solid #eadcc6; border-radius:10px; grid-column:1 / -1; grid-row:1; margin-bottom:20px; padding:18px; }
+    .planning-panel h2 { color:#704923; font-size:19px; margin:0 0 5px; }
+    .planning-panel .map-intro { margin-bottom:14px; }
+    .planning-spine { grid-template-columns:repeat(5, minmax(260px, 1fr)); min-width:1350px; }
+    .planning-spine::before { background:#d4945c; }
+    .planning-spine .process::after { background:#d4945c; }
+    .planning-spine .process-core { background:#704923; }
+    .planning-spine .process-core:hover, .planning-spine .process.active .process-core { background:#b96e32; }
+    .handoff { background:#fff1e8; border-left:3px solid var(--amber); color:#704923; font-size:13px; margin-top:5px; padding:10px 12px; }
+    .platform-panel { background:#f5fbfc; border-color:#cbe2e4; grid-row:2; }
+    .platform-panel h2, .platform-panel h3 { color:#14545a; }
+    .platform-panel h3 { font-size:16px; margin:20px 0 8px; }
+    .platform-panel .planning-spine::before { background:#4c9da0; }
+    .platform-panel .process::after { background:#4c9da0; }
+    .platform-panel .process-core { background:#14545a; }
+    .platform-panel .process-core:hover, .platform-panel .process.active .process-core { background:#25858b; }
+    .platform-dev-spine { grid-template-columns:repeat(6, minmax(260px, 1fr)); min-width:1620px; }
+    .support-panel { background:#fff; border:1px solid var(--line); border-radius:10px; margin-top:20px; padding:20px; }
+    .support-head { align-items:flex-start; display:flex; gap:14px; justify-content:space-between; }
+    .support-head h2 { color:var(--navy); font-size:20px; margin:0 0 5px; }
+    .support-head p { color:var(--muted); font-size:13px; margin:0; max-width:860px; }
+    .support-clear { background:#f7fbf8; border:1px solid #c5ddd5; border-radius:99px; color:var(--muted); cursor:pointer; font-size:12px; padding:6px 11px; white-space:nowrap; }
+    .support-clear:hover { background:var(--mint); border-color:#72bcb0; color:var(--navy); }
+    .support-options { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+    .support-option { background:#f7fbf8; border:1px solid #c5ddd5; border-radius:99px; color:var(--muted); cursor:pointer; font-size:12px; padding:7px 12px; }
+    .support-option:hover, .support-option.active { background:var(--mint); border-color:var(--teal); color:var(--navy); }
+    .support-flows { display:grid; gap:14px; margin-top:16px; }
+    .support-flow { background:#fbfdfb; border:1px solid var(--line); border-radius:8px; overflow:hidden; padding:15px; }
+    .support-flow h3 { color:var(--navy); font-size:17px; margin:0 0 3px; }
+    .support-flow > p { color:var(--muted); font-size:12px; margin:0 0 10px; }
+    .support-flow .spine { grid-template-columns:repeat(4, minmax(250px, 1fr)); min-width:1000px; }
+    .support-flow .spine::before { background:#a7c9c0; }
+    .support-flow .process::after { background:#a7c9c0; }
+    .support-flow .process-core { background:#31545a; }
+    .support-flow .process-core:hover, .support-flow .process.active .process-core { background:var(--teal); }
+    .legend { align-items:center; color:var(--muted); display:flex; flex-wrap:wrap; font-size:12px; gap:14px; margin-top:17px; }
+    .legend i { border-radius:50%; display:inline-block; height:8px; margin-right:4px; width:8px; }
+    .pdf { background:#8ccfc2; }.guide { background:#d4945c; }.confirm { background:#ba6a64; }
+    .empty { color:var(--muted); padding:30px 8px; text-align:center; }
+    @media (max-width:900px) { .board { grid-template-columns:1fr; } .map, .planning-panel, .platform-panel, .detail { grid-column:auto; grid-row:auto; } .detail { position:static; } }
+    @media (max-width:620px) { .hero { padding:39px 20px 32px; } .shell { padding:19px 14px 45px; } .toolbar { align-items:stretch; flex-direction:column; } .toolbar input { min-width:0; width:100%; } .detail { padding:17px; } .detail-head h2 { font-size:24px; } .wide { grid-column:auto; } }
+    @media print { .hero { padding:24px; } .toolbar, .map, .sequence { display:none; } .shell { padding:15px; } .board { display:block; } .detail { border:0; padding:0; } .card { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">QMB-GB.0025-2025 · SCHEME DESIGN SIMULATOR</div>
+    <h1>方案阶段沙盘</h1>
+     <p>把“正式规划书 → 专业方案 → 专项评审 → 手板验证 → 模具首样 → 综合方案评审”串成一条可追溯的主干。每个流程上下展开输入与输出，点击分支即可查看文件证据链；它是理解工具，不是审批授权文件。</p>
+    <div class="chips"><span>8个工作包</span><span>输入文件 + 文件样例</span><span>离线页面</span><span>项目等级需裁剪</span><span>原文与整理说明分开</span></div>
+  </header>
+  <main class="shell">
+    <section class="route-choice" aria-labelledby="route-title"><h2 id="route-title">先选择研发主路径</h2><p>不同产品可能从单产品规划进入，也可能从已有规划书直接进入；平台类项目还要先经过平台规划和平台开发。这里选择的是沙盘展示路径，不替代项目等级裁定、GPM/MPLM任务或受控流程。</p><div class="choice-row" role="group" aria-label="产品路径选择"><button class="choice active" data-route="with-planning"><b>单产品路径：需要单产品规划</b><small>年度/内外销企划大纲 → 概念工程 → 工业设计/测评 → 技术可行性 → 产品策划决策 → 方案阶段。</small></button><button class="choice" data-route="without-planning"><b>单产品路径：不需要单产品规划</b><small>已有正式产品规划书，或属于已完成上游规划的派生/模块/其他适用路径，直接进入方案阶段。</small></button><button class="choice" data-route="platform"><b>平台路径：平台规划 → 平台开发</b><small>平台需求和规划 → MIS1/平台路演 → 平台规划书 → 平台产品开发 → 平台综合方案评审/平台交付。</small></button></div><div class="route-status" id="route-status">当前路径：需要单产品规划。方案阶段的“正式产品规划书”由上游单产品规划输出。</div></section>
+    <div class="toolbar"><strong>沿主干从左向右推进，点击上下分支查看证据链</strong><div class="filters" role="group" aria-label="流程筛选"><button class="active" data-filter="all">全部流程</button><button data-filter="input">只看输入</button><button data-filter="output">只看输出</button><button data-filter="risk">只看评审关口</button></div><input id="search" type="search" placeholder="搜索节点、文件、样例，例如：专利、模具、DFMEA" aria-label="搜索沙盘节点"></div>
+    <section class="upstream-panel planning-panel" id="planning-panel"><h2>可选上游：单产品规划</h2><p class="map-intro">这条支线不是方案阶段内部节点，而是部分产品进入方案阶段前必须完成的上游流程。选择“平台路径”或“不需要单产品规划”时，本支线收起。</p><div class="spine-scroll"><div class="spine planning-spine" id="planning-spine"></div></div><div class="handoff"><strong>交接点：</strong>单产品规划通过产品策划决策并下发正式产品规划书后，交给方案阶段的“项目立项及启动”。单产品规划阶段AB类问题应在产品规划书下发前关闭。</div></section>
+    <section class="upstream-panel platform-panel" id="platform-panel"><h2>可选上游：平台研发主线</h2><p class="map-intro">平台路径把工作簿中的“平台规划项目”和“平台产品开发项目”放在方案阶段沙盘的上游。平台开发自身包含方案设计、专业评审、模具、验证和平台交付，不应与单产品项目的全部节点机械合并。</p><h3>平台规划</h3><div class="spine-scroll"><div class="spine planning-spine" id="platform-planning-spine"></div></div><h3>平台开发</h3><div class="spine-scroll"><div class="spine platform-dev-spine" id="platform-development-spine"></div></div><div class="handoff"><strong>平台交接点：</strong>平台规划输出平台规划书、SKU/配置边界和规划结论；平台开发完成平台综合方案评审、首基准/平台验证及平台交付后，相关平台能力、接口和复用边界才能作为后续产品方案输入。具体项目是否还需单产品规划，以项目类型和系统任务确认。</div></section>
+    <div class="board">
+       <section class="map"><h2>方案阶段流程鱼骨图</h2><p class="map-intro">主干是流程顺序；上方分支是进入本节点的输入，下方分支是本节点产生的输出。点击圆形节点看完整说明，点击分支直接聚焦文件或产物。</p><div class="spine-scroll"><div class="spine" id="spine"></div></div><p class="route-note">横向滚动查看全流程。搜索或筛选后，主干保留顺序，便于识别被过滤的工作包。</p><div class="legend"><span><i class="pdf"></i>PDF明确</span><span><i class="guide"></i>整理示例</span><span><i class="confirm"></i>待确认</span></div></section>
+       <section class="detail" id="detail" aria-live="polite"></section>
+    </div>
+    <section class="support-panel" id="support-panel"><div class="support-head"><div><h2>可选并行支线：特定领域流程</h2><p>这些流程来自冰箱项目管理流程指南的专业、工程和特殊业务工作表。它们通常与主线并行，不默认全部启用；选择后会在下方展开对应鱼骨图，点击节点或输入输出可查看说明。</p></div><button class="support-clear" id="support-clear" type="button">清空选择</button></div><div class="support-options" id="support-options"></div><div class="support-flows" id="support-flows"></div></section>
+  </main>
+  <script>
+     const nodes = [
+      { id:'launch', title:'项目立项及启动', short:'正式规划书进入开发项目', kicker:'01 / START', desc:'把单产品规划阶段形成的正式产品规划书转换为项目团队、里程碑和可执行WBS。平台或模块项目同时识别复用边界和接口输入。', owner:'项目经理；产品企划；平台企划/可靠性与标准化', source:'PDF第9页6.2.1；第11页6.2.10工作项1–2。', inputs:[['正式产品规划书','正式版规划输入','项目定位、等级、基本性能目标、可靠性目标、成本/毛利、上市/批产计划','项目号：FR-2025-001\n项目等级：I类\n目标上市：2025-11\n基本性能目标：待按规格书填写'],['项目等级与流程框架','流程裁剪依据','结构、性能、电控、外观的全新程度；适用MIS节点和评审深度','附件13《项目等级裁定参考表》\n附件14《研发流程框架》'],['平台/模块需求（如适用）','平台路径输入','平台需求、接口、功能组合、复用和新增边界','附件16《平台需求书》\n附件19《平台企划书》']], outputs:['《项目启动会会议纪要》','《项目WBS计划》','项目团队、里程碑任务和详细开发计划','T/I类MIS工作坊结论或设计MIS会议纪要闭环任务'], gate:'进入下一节点前：正式规划书有效；项目等级和流程裁剪已确认；WBS已经分解到专业评审、手板、模具和综合方案评审。'},
+      { id:'design-input', title:'设计输入展开与专业方案', short:'把规划目标拆成各专业方案', kicker:'02 / DESIGN INPUT', desc:'结构、性能、电控/电器、包装和专利等专业基于设计输入开展方案设计、DFMEA和专业评审。专业方案是后续可靠性、手板和模具工作的共同输入。', owner:'专业设计代表；项目经理；可靠性、工艺、品质、模具、供应链代表', source:'PDF第9页6.2.2；第11页6.2.10工作项3–9。', inputs:[['工业设计需求书','外观与体验设计输入','目标顾客、目标价格、产品定位、卖点、销售区域、GUI/CMF、结构限制和时间要求','附件6《工业设计需求书模板》\n目标顾客：年轻家庭\n设计类型：CMF差异化 + UXI'],['平台规格与接口规则（如适用）','平台技术输入','平台参数、部件新增/借用、接口尺寸、功能组合和区域适用性','附件18《平台规格书及接口规则（含功能组合）》\n部件：借用/新增\n接口：尺寸与装配约束'],['模块需求（如适用）','模块化输入','模块明细、选项、成本、模具费用和适用平台','附件27《模块需求书模板》\n模块名称：冷藏室风道模块\n选项：标准/升级'],['设计标准、历史问题和竞品资料','专业评审依据','最新设计规范、历史相似零部件问题、竞品结构和性能边界','专业Checklist\n历史问题清单\n竞品对标资料']], outputs:['结构、性能、电控/电器等专业方案','各专业方案评审报告和明确结论','图纸/接口/设计约束','初版《新物料清单》','专业问题、责任人、措施和完成时间'], gate:'结构专业评审完成并发放图纸后，才按MIS2/MIS3和模具规则进入开模判断；产线技改需求最晚在MIS3预评审确认。'},
+      { id:'risk', title:'可靠性与专项评审', short:'先确认风险可控，再进综合评审', kicker:'03 / RISK REVIEW', desc:'把产品目标、专业方案和历史经验转成可靠性、安规、可制造性、可维修性的专项证据。专项评审不是一个泛泛的“会”，而是对后续验证范围和风险承担方式的确认。', owner:'项目经理；设计可靠性；品质可靠性；新品工艺；售后；电器工程师', source:'PDF第9–10页6.2.3、6.2.5–6.2.6；第12页工作项15–18。', inputs:[['产品设计规格目标','可靠性目标输入','功能卖点、关键参数、目标环境、用户使用条件和可靠性目标','产品设计规格书\n目标温度、噪声、能耗、寿命等字段按项目规格填写'],['技术可行性分析报告','技术风险输入','使用情境、用户痛点、技术方案、新技术/新材料/新工艺、技术难度、预估成本','附件9《技术可行性分析报告》\n结论：可实现/需验证/存在风险'],['四新物料与历史问题','失效预防输入','新材料、新工艺、新供方、相似机型市场问题和改进经验','附件29《新物料清单》\n四新：是\n风险物料：是\n对应标准：待补'],['专业方案与DFMEA','专项评审输入','结构、电控、性能、电器方案和潜在失效模式','FBD及线上DFMEA\nII类是否强制输出需按程序和项目任务确认']], outputs:['T/I类可靠性五大交付：可靠性规划书、可靠性试验方案、产品设计规格书、FBD/线上DFMEA及企划书可靠性必填项','可制造性评审报告、工艺路线、改善方案','存储运输/安装维修性评审结论','安规安全评审结论','专项问题和整改措施'], gate:'可靠性评审通过后方可进入综合方案评审；II类及以上全新开发项目需进行可制造性评审，II类及以上需进行存储运输、安装维修性评审。'},
+      { id:'patent', title:'专利、四新物料与供应链', short:'把创新风险转成清单和计划', kicker:'04 / IP & SUPPLY', desc:'专利和供应链活动与专业设计并行推进。重点不是只形成一个文件，而是让创新点、参考方案、物料、供方、成本和送样状态可以互相追溯。', owner:'专利工程师；项目经理；供应链；部品/零部件工程中心', source:'PDF第10页6.2.4、6.2.6.1；第11页工作项3–4。', inputs:[['项目创新点与参考方案','专利检索输入','项目简介、技术创新点、竞品品牌/型号/上市时间、拟采用技术方案','附件10《各节点专利报告模板（结构化）》\n创新点：双风道独立调节\n参考竞品：品牌/型号/上市时间'],['新物料清单初稿','供应链评估输入','物料名称、材质、规格、四新属性、是否开模、模具和供方需求','附件29《新物料清单》\n新供方：是\n是否风险物料：是\n送样数量：待定'],['法规与有害物质要求','合规输入','材料法规、阻燃等级、标准符合性和供应商资质','附件29有害性/阻燃等级/对应标准字段\n供应商资质和产能证明']], outputs:['《初步专利检索分析报告》','《专利布局清单》','《专利评估报告》','初版《新物料清单》','新供方寻源和送样计划','风险物料、成本估价和供应链整改项'], gate:'专利检索应能追溯检索网址/数据库、时间、范围、检索式和结论；新物料供方原则上寻源两家以上，特殊情况需按程序备案。'},
+      { id:'prototype', title:'手板、体验与摸底测试', short:'用样件验证设计输入是否成立', kicker:'05 / PROTOTYPE', desc:'通过手板组装、体验测评和摸底测试验证方案的可装配性、基本性能、用户可感知体验和专业风险。问题必须回到系统或问题清单闭环。', owner:'项目经理；手板商务；测试评价；用户研究；设计可靠性；品质', source:'PDF第10页6.2.6.4–6.2.6.5；第11–12页工作项10–14、17。', inputs:[['设计提案与外观要求','外观体验输入','项目背景、目标人群、趋势、竞品、设计概念、2D/3D、GUI、CMF','附件2《设计提案报告参考模板》\n项目概述 → 研究综述 → 设计方案'],['手板图纸、样件和装配要求','样机验证输入','手板申请、图纸、设计约束、新物料和模块接口','手板申请单\n装配检查项：干涉、间隙、可装配性'],['手板摸底测试方案','测试输入','测试项目、方法、条件、样机、判定标准和责任人','《手板摸底测试方案》\n项目/设计可靠性/品质共同确认'],['体验测评任务','用户验证输入','典型场景、用户/导购对象、可用性任务和评价标准','《产品用户体验管理办法》\n体验问题点清单']], outputs:['手板样件和组装确认记录','《手板摸底测试报告》','《产品测试综合评价报告》','用户/导购测评和新品交叉评审问题清单','装配、设计、性能和体验整改项'], gate:'测试评价应检查测试完成情况；体验问题需达成一致并由项目组安排整改。涉及模具开发或改模的体验B类问题，必须在模具制作前关闭。'},
+      { id:'mold', title:'开模、模具评审与首样', short:'把结构方案转成模具和样件', kicker:'06 / MOLD', desc:'结构图纸和可投模零部件确认后，进入EAM开模、招标、模具设计评审、制作和首样跟进。该节点连接设计方案与后续试制样机。', owner:'项目经理；模具管理/模具工程师；模具商务；供应链；工厂模具工程师', source:'PDF第9页6.2.2；第10–11页6.2.7–6.2.8；第12页工作项19–22。', inputs:[['结构图纸与可投模零部件','开模技术输入','结构评审结论、图纸、物料清单、可投模范围、外观要求','图纸发放记录\n《可投模零部件清单》'],['模具规格书与供应路线','模具商务输入','模具规格、制件厂、外协/自制路线、预算和交期','EAM开模申请\n供应商招标资料\n制件路线：外协/自制'],['模具设计评审资料','模具质量输入','分型面、尖钢位、插穿位、段差、进胶、冷却、顶出、排气、外观要求','附件15《模具设计评审表》\n评审结论：可进行下一步/完善后再评审/重新设计']], outputs:['EAM开模申请和审批记录','模具供应商、制件厂和供应路线','模具结构评审结论与问题闭环','模具首样/试模样件','改模、首样和交期跟踪记录'], gate:'程序时限：模具立项后3天内确定开模厂，紧急项目2天；招标完成后完成模具方案初稿和锁图；模具到制件厂后3天内完成试模打样。实际时限以受控制度和项目任务为准。'},
+      { id:'review', title:'产品综合评价', short:'把分散证据汇总成评审资料包', kicker:'07 / SYNTHESIS', desc:'测试评价代表和项目经理对资料、测试、成本、专利、模具和问题状态进行总检查，把各专业输出整理成综合方案评审可用的资料包。', owner:'项目经理；测试评价；各专业和价值链代表', source:'PDF第11页6.2.9；第12页工作项23。', inputs:[['各专业评审结论','资料完整性输入','结构、电控、性能、电器、可靠性、安规、工艺和可维修性结论','专业评审报告\nChecklist\n会议纪要'],['手板/模具验证证据','样机状态输入','测试报告、体验问题、装配结论、模具首样和问题整改','《手板摸底测试报告》\n《产品测试综合评价报告》\n附件15模具评审表'],['成本、专利和问题库','决策输入','成本达标情况、专利布局、A/B/C问题、责任和验证证据','附件10专利报告\nMPLM问题库\n新物料清单']], outputs:['产品综合评价结论','综合方案评审资料目录','问题关闭矩阵','剩余风险和下一阶段验证清单','需冻结的设计、成本、物料和模具边界'], gate:'未关闭问题不能只写“后续跟进”，应有责任人、措施、验证方式和完成时间；资料包的具体清单按项目等级、流程模板和系统任务确定。'},
+       { id:'gate', title:'综合方案评审与转阶段', short:'形成方案冻结和转试制依据', kicker:'08 / GATE', desc:'设计可靠性专家预审通过后，项目经理组织综合方案评审，复盘摸底测试与规格书、专业问题、成本、专利和转阶段条件。它是方案阶段的出口。', owner:'项目经理；设计可靠性专家；各专业和价值链代表', source:'PDF第11页6.2.9–6.2.10；第21–23页6.7.2–6.7.5。', inputs:[['综合方案评审资料包','评审输入','测试与规格书对比、各专业问题、成本达标、专利布局、可靠性和专项结论','资料目录 + 评审PPT/报告\n设计可靠性专家预审记录'],['问题关闭矩阵','转阶段输入','A/B/C问题状态、整改方案、验证结果、责任和完成时间','问题库导出\nA类：关闭\nB/C类：按转阶段规则控制'],['失败案例和方案边界','知识沉淀输入','A类及重点B类问题、设计缺陷、批量风险和规避措施','失败案例/PPH沉淀\n冻结的设计、成本、物料和模具边界']], outputs:['综合方案评审会议纪要/结论','A类问题100%关闭证据','A类及重点B类失败案例转化记录','下一阶段验证计划和约束','转产品试制的系统任务或决策结果'], gate:'红线：综合方案评审出现A类问题必须关闭，否则不得进入下一阶段。基本性能应优于竞品或现有平台产品。方案转试制的A/B/C比例、体验和制造评审比例需按程序表和项目等级核对。'},
+     ];
+      const planningNodes = [
+       { id:'plan-brief', title:'企划大纲与规划立项', short:'从年度/内外销企划形成项目', kicker:'P1 / BRIEF', desc:'产品企划将年度企划大纲转成GPM/PLM中的项目和产品规划书初稿，先明确为什么做、面向谁做以及基本时间和经营边界。', owner:'产品企划；产品经理；项目团队', source:'指南对应主程序PDF第7页6.1.1–6.1.2。', inputs:[['年度/内外销企划大纲','规划立项输入','产品方向、市场区域、目标上市/批产时间、经营要求和年度机会','企划大纲\n区域：内销/外销\n目标上市：待项目确认'],['市场与产品策略资料','项目背景输入','市场机会、竞品、目标顾客、产品组合和品牌要求','市场趋势资料\n竞品对标\n目标顾客画像']], outputs:['GPM/PLM规划项目','《产品规划书》初稿','规划团队和执行计划','概念、上市/批产、成本、性能、功能、设计和可靠性目标'], gate:'项目应来源于年度/内外销企划大纲；规划书初稿需形成可供概念工程和技术可行性分析的边界。'},
+       { id:'plan-concept', title:'概念工程与用户价值', short:'证明产品做什么、为谁做', kicker:'P2 / CONCEPT', desc:'对内销T/I类及重点II类项目开展趋势、定位、竞品、用户画像、差异化和卖点研究，将体验及NPS问题导入产品概念。', owner:'产品企划；用户研究；工业设计；相关专业', source:'指南对应主程序PDF第7页6.1.3–6.1.4。', inputs:[['产品规划书初稿','概念研究输入','产品定位、目标顾客、市场区域、初始功能和经营目标','产品定位：待确认\n目标用户：待调研\n差异化卖点：待形成'],['趋势、竞品和用户研究资料','用户价值输入','趋势分析、竞品体验、用户画像、痛点、NPS问题和使用场景','用户画像\n竞品体验差异\n问题优先级']], outputs:['《概念工程研究报告》','产品概念/差异化卖点','立项路演的概念决策材料','体验及NPS改善问题输入'], gate:'适用项目应在立项路演中对概念工程研究报告进行评审和决策；项目等级和重点II类适用性需按流程任务确认。'},
+       { id:'plan-design', title:'工业设计、手板与组合测评', short:'把概念变成可感知方案', kicker:'P3 / DESIGN', desc:'完成草图、2D、3D和手板，对外观效果、品牌共性、可用性和产品组合进行评审，形成对概念的用户和内部反馈。', owner:'工业设计；用户研究；产品企划；项目团队', source:'指南对应主程序PDF第7–8页6.1.5–6.1.7。', inputs:[['概念工程研究报告','设计输入','用户洞察、竞品差异、设计方向、概念卖点和品牌要求','设计方向：待确认\n核心卖点：待转译\n品牌约束：按适用品牌核对'],['草图、2D/3D和手板','外观测评输入','外观方案、GUI/CMF、结构限制、手板制作和评审对象','附件2设计提案参考模板\n2D/3D方案\n手板版本：示例'],['产品组合与体验测评任务','测评输入','测评对象、产品组合、评价维度、体验及NPS问题','用户/导购测评任务\n评价结论：待测评']], outputs:['外观效果图和设计方案','工业设计/内部专业评审会议纪要','《产品组合测评报告》','《体验及NPS改善问题闭环情况》','优化后的产品概念与设计输入'], gate:'企划、工业设计和开发外观方案未达成共识时按程序逐级决策；测评问题需形成闭环或带入后续方案阶段。'},
+       { id:'plan-feasibility', title:'技术可行性与创新风险', short:'确认技术、制造、成本和供应风险', kicker:'P4 / FEASIBILITY', desc:'将产品构想转成技术实现、制造实现、综合成本、四新物料工艺路线、供应风险和专利方面的可行性判断。', owner:'项目经理；技术专业；供应链；专利工程师；成本/财务', source:'指南对应主程序PDF第8页6.1.8–6.1.9。', inputs:[['产品构想与设计方案','技术分析输入','功能卖点、使用情境、用户痛点、外观方案和初步规格','产品构想：示例\n核心功能：待确认\n目标成本：待估算'],['技术、制造和供应链资料','可行性输入','技术方案、制造路线、新技术/新材料/新工艺、供方、产能和成本','附件9技术可行性分析报告\n结论：可实现/需验证/存在风险'],['创新点与法规要求','专利/合规输入','项目创新点、竞品参考、专利检索、材料法规和有害物质要求','附件10专利报告\n附件29新物料清单\n目标材料审批表']], outputs:['《技术可行性评估报告》','《目标材料审批表》','《初步专利检索分析报告》','《新物料清单》','成本/供应风险及验证计划'], gate:'技术、制造、成本和供应风险不能只保留口头结论；需形成可决策的评估报告，并将待验证项带入立项路演。'},
+       { id:'plan-decision', title:'立项路演与产品策划决策', short:'决定是否进入产品开发', kicker:'P5 / DECISION', desc:'形成具体产品构想并组织立项路演和产品策划决策。通过后修订、定版并下发正式产品规划书，作为方案阶段项目立项的输入。', owner:'产品企划；事业部决策者；项目经理；相关专业', source:'指南对应主程序PDF第8–9页6.1.10–6.1.11；第22–23页6.7.5.4。', inputs:[['概念、设计和可行性资料包','路演输入','概念工程、工业设计、用户测评、技术可行性、成本、专利和物料风险','立项路演材料包\n关键问题：责任/措施/时间'],['等级与目标边界','策划决策输入','项目等级、基本性能、可靠性、成本/毛利、用户、定位、上市/批产计划','等级：待裁定\n目标性能：待规格化\n毛利：待确认']], outputs:['立项路演会议纪要/决策结论','修订后的正式《产品规划书》','产品策划决策通过记录','方案阶段项目立项输入','单产品规划阶段AB问题关闭证据'], gate:'未通过立项路演需重新规划路演；产品规划书下发前，单产品规划阶段A/B类问题必须关闭。正式规划书下发后，交给方案阶段“项目立项及启动”。'}
+      ];
+      const platformPlanningNodes = [
+        { id:'platform-need', title:'平台需求与立项', short:'定义平台方向和必要性', kicker:'PP1 / NEED', desc:'从平台需求书、品类规划和技术趋势出发，确认平台开发必要性、产品群范围、市场机会和目标边界。', owner:'平台企划；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件16《平台需求书》；附件19《平台企划书》。', inputs:[['平台需求书','平台规划输入','平台方向、目标品类、市场机会、目标产品群、关键性能和时间要求','附件16《平台需求书》\n目标品类：示例\n平台范围：待确认'],['品类/技术规划与竞品资料','平台论证输入','趋势、竞品、技术路线、用户需求和平台复用机会','平台趋势分析\n竞品对标\n技术机会清单']], outputs:['平台项目立项记录','平台需求和产品群边界','平台开发团队与计划','MIS1工作坊输入'], gate:'平台需求和目标产品群需先明确；平台规划不是所有单产品项目的必经流程。'},
+        { id:'platform-mis1', title:'概念工程与MIS1论证', short:'验证平台方向和可行性', kicker:'PP2 / MIS1', desc:'开展平台概念工程、工业设计原型、用户与竞品研究以及MIS1论证，形成平台方向、配置范围和关键风险的集体判断。', owner:'平台企划；工业设计；用户研究；开发和可靠性代表', source:'12.xlsx《2-(新)平台规划项目》；指南平台规划主线。', inputs:[['平台需求和概念方案','MIS1输入','平台定位、用户价值、产品组合、工业设计方向和技术路线','平台概念方案\n用户价值：待验证\n设计方向：示例'],['技术可行性、成本与风险资料','论证输入','技术难度、成本/投资、专利、四新物料、供应和制造风险','技术可行性分析\n成本测算\n风险清单']], outputs:['《MIS1报告》','对标诊断和结论汇总','平台产品群/配置方向','平台路演决策材料'], gate:'MIS1结论应能支撑平台是否继续、调整或储备；具体会议和系统审批角色以12.xlsx当前表单配置为准。'},
+        { id:'platform-design', title:'平台工业设计与配置规划', short:'形成平台外观和SKU边界', kicker:'PP3 / ID', desc:'将平台概念转成工业设计方向、原型和产品群配置，识别平台共性、选项、基准配置和差异化边界。', owner:'平台企划；工业设计；产品策略；相关专业', source:'12.xlsx《2-(新)平台规划项目》；附件17《平台工业设计研究趋势评估报告》；附件23–24。', inputs:[['MIS1报告与平台概念','设计输入','平台定位、用户研究、趋势、竞品、共性元素和差异化方向','MIS1结论\n平台设计方向\n品牌/区域约束'],['产品群配置和接口规则','配置输入','SKU、选项集、基准配置、平台规格和功能组合','附件18平台规格书\n附件23平台选项集\n附件24基准配置表']], outputs:['平台工业设计方案/原型','SKU配置表','基准配置和平台共性边界','平台规格及接口输入'], gate:'配置和接口边界需在平台规划书下发前稳定；具体选项和借用规则按平台项目适用性确认。'},
+        { id:'platform-roadshow', title:'平台路演与规划下发', short:'形成平台规划书并决策', kicker:'PP4 / ROADSHOW', desc:'组织平台路演和决策，修订并下发平台规划书；储备或终止结论应在系统和会议证据中清楚记录。', owner:'平台企划；事业部决策者；项目团队', source:'12.xlsx《2-(新)平台规划项目》；附件19《平台企划书》。', inputs:[['MIS1、设计和配置资料包','路演输入','MIS1报告、对标诊断、工业设计方案、SKU、成本、技术和风险结论','平台路演材料包\n问题清单与决策项'],['平台开发边界与资源计划','决策输入','平台开发项目、首基准/产品群、资源、周期和投资边界','平台开发任务包\n首基准：待确认\n资源计划：示例']], outputs:['正式《平台规划书》','平台SKU/配置边界','平台规划决策结论','平台产品开发项目触发输入'], gate:'平台规划书下发后，平台开发项目可进入立项；若规划结论均为储备，原表存在自动触发结项的规则提示，需按当前系统确认。'}
+      ];
+      const platformDevelopmentNodes = [
+        { id:'platform-dev-launch', title:'平台开发立项与启动', short:'平台规划转开发任务', kicker:'PD1 / START', desc:'平台规划结项后，系统在相应平台产品开发项目经理账户上创建平台开发立项流程，完成团队、计划和平台首基准范围确认。', owner:'平台开发项目经理；平台企划；项目团队', source:'12.xlsx《3-(新)平台产品开发项目》；平台规划与开发衔接规则。', inputs:[['平台规划书与SKU配置表','平台开发输入','平台目标、产品群、基准配置、接口、功能组合和平台边界','正式平台规划书\nSKU配置表\n基准配置表'],['平台开发任务包','项目启动输入','首基准、项目等级、里程碑、资源、成本和验证计划','平台开发WBS\n首基准清单\n里程碑计划']], outputs:['平台开发立项记录','平台开发团队和WBS','首基准/产品群开发范围','平台开发评审计划'], gate:'平台开发立项应明确首基准、平台复用边界和交付规则；多个首基准可按平台任务配置分别推进。'},
+        { id:'platform-dev-design', title:'平台方案设计与专业评审', short:'形成平台技术方案', kicker:'PD2 / DESIGN', desc:'开展平台结构、性能、电控、电器、工业设计、可靠性、专利和制造相关方案设计，形成平台共性能力与首基准差异的评审证据。', owner:'平台开发项目经理；各专业；可靠性；供应链；模具', source:'12.xlsx《3-(新)平台产品开发项目》；平台开发方案设计链。', inputs:[['平台规划书、接口和功能组合','设计输入','平台参数、借用/新增部件、接口、选项和基准配置','附件18平台规格书\n接口规则\n功能组合'],['专业方案、历史问题和平台风险','评审输入','结构/性能/电控/电器方案、DFMEA、历史问题、四新物料和专利风险','平台专业方案\nDFMEA/FBD\n平台问题清单']], outputs:['平台专业方案和评审结论','平台规格/接口冻结边界','新物料清单与供应计划','平台可靠性、专利和制造风险结论'], gate:'平台共性和首基准差异需分开记录；平台开发评审不等同于所有单产品项目的评审要求。'},
+        { id:'platform-dev-verify', title:'平台手板、模具与验证', short:'验证平台共性和首基准', kicker:'PD3 / VERIFY', desc:'平台开发进入手板摸底、模具和样件验证，按平台产品群测试/认证借用规则识别可借用内容和必须新增的验证。', owner:'平台开发项目经理；测试评价；模具；品质；供应链', source:'12.xlsx《3-(新)平台产品开发项目》；附件20–21、附件25–26。', inputs:[['平台方案、图纸和可投模清单','样件/模具输入','平台结构图纸、首基准、可投模范围、模具规格和供应路线','平台图纸\n可投模零部件\n模具设计评审资料'],['平台测试/认证借用规则','验证裁剪输入','基准产品群、可借用测试/认证项目、差异化验证边界','附件20平台产品群认证借用规则\n附件21平台产品群测试借用规则']], outputs:['手板摸底测试报告','平台模具/首样和问题闭环','平台产品群测试与认证清单','平台共性问题和差异化问题整改项'], gate:'借用规则必须先确认适用范围；平台测试和认证清单不能直接套用于全部产品。'},
+        { id:'platform-dev-gate', title:'平台综合方案评审与交付', short:'平台能力可复用、可交付', kicker:'PD4 / GATE', desc:'以平台综合方案评审为开模和平台交付前的重要关口，汇总平台规格、首基准验证、成本、问题、测试认证和复用边界，形成平台交付。', owner:'平台开发项目经理；设计可靠性；平台企划；各专业和价值链', source:'12.xlsx《3-(新)平台产品开发项目》；平台综合方案评审和平台交付节点。', inputs:[['平台综合评审资料包','平台评审输入','专业评审、手板/模具验证、可靠性、成本、专利、测试认证和问题矩阵','平台综合方案评审资料\n问题关闭矩阵\n借用边界'],['平台规划结论与首基准状态','交付判断输入','规划书、首基准、配置表、平台接口和储备/开发状态','平台交付清单\n首基准状态\n平台复用约束']], outputs:['平台综合方案评审结论','平台规格/接口/选项交付','平台产品群测试认证交付','平台开发结项或转产品开发输入'], gate:'平台综合方案评审位于开模前的综合评审位置；规划结论均为储备时，原表存在自动触发结项提示，实际条件需回到当前工作表确认。'}
+      ];
+      const supportFlows = [
+        { id:'research', title:'技术研究与成果转化', tag:'技术能力', intro:'适用于先行研究、技术成熟度提升和成果转入产品开发的项目。', source:'12.xlsx《8-研究项目流程分权手册》', nodes:[['R1 需求与技术立项','研究需求、技术情报、战略规划','技术需求、研究立项、团队与计划'],['R2 方案研究与验证','技术方案、样机/试验条件、TRL目标','方案验证报告、可靠性结论、FBD/DFMEA、设计标准初稿'],['R3 技术验收','研究成果、测试数据、问题整改','技术验收结论、封样/图纸/成本资料'],['R4 成果转化与结项','验收结论、搭载产品条件','成果转化关联项目、结项记录']] },
+        { id:'module', title:'模块开发', tag:'平台能力', intro:'模块项目形成可复用模块，需求评估、方案、开模封样、交付评审和结项是核心链条。', source:'12.xlsx《9-模块项目流程分权》', nodes:[['M1 模块需求评估','模块需求、对标、标准化、技术/成本分析','需求评估结论、模块立项建议'],['M2 模块方案设计','模块需求、平台接口、选项和成本边界','模块方案、评审结论、图纸和测试计划'],['M3 开模封样与验证','模块图纸、可投模清单、测试方案','模具/样件、封样测试、A类关闭和B类闭环'],['M4 模块交付与结项','测试、问题库、新物料封样、系统资料','模块交付评审结论、模块标准化/复用资料、结项']] },
+        { id:'industrial', title:'工业设计专项', tag:'设计能力', intro:'工业设计项目可作为平台或单产品的专业能力支线，覆盖需求、调研、效果图、手板评审和规格书输出。', source:'12.xlsx《13-工业设计项目分权》', nodes:[['ID1 需求与立项','工业设计需求、品牌/区域、产品定位','设计任务、团队和计划'],['ID2 调研与效果图提案','趋势、用户、竞品、品牌共性','调研结论、效果图提案、ID评审意见'],['ID3 手板/样品评审','2D/3D、手板、CMF/UXI任务','手板评审、优化意见、外观样件结论'],['ID4 规格书与结项','优化方案、封样/测评结论','工业设计规格书、CMF/ID/UI方案、结项资料']] },
+        { id:'reliability', title:'可靠性设计专项', tag:'质量能力', intro:'可靠性设计专项与产品自身的可靠性规划、FMEA和测试链并行，不能互相替代。', source:'12.xlsx《23-可靠性设计类》', nodes:[['R1 可靠性立项','可靠性需求、历史问题、目标和资源','R1立项、目标和计划'],['R2 可行性评估','可靠性目标、技术方案、环境/寿命条件','可行性评估、风险和资源结论'],['R3 技术方案实施','可靠性方案、试验、FBD/DFMEA、问题整改','验证数据、设计改进和评审结论'],['R4 结项评审','验证完成、问题闭环、资料包','可靠性结项评审、标准/经验沉淀']] },
+        { id:'engineering', title:'图纸、BOM、物料与工程变更', tag:'工程数据', intro:'工程数据支线控制送样、图纸发放、EBOM/MBOM、物料编码及ECR/ECO/MCO等变更。', source:'12.xlsx《14-变更、新增图纸或零部件、其他类》', nodes:[['E1 新增物料/零部件','设计需求、样品、标准化和供应资料','物料编码、送样/试用申请、新增件资料'],['E2 图纸与BOM发放','设计图纸、EBOM、工艺和制造需求','图纸发放、EBOM/MBOM、标准化审查'],['E3 工程变更评审','变更原因、影响分析、问题和会议纪要','ECR/ECO/MCO审批、变更实施记录'],['E4 封样与状态闭环','样品确认、封样要求、系统任务','正式/临时封样资料、状态同步和问题关闭']] },
+        { id:'mold-change', title:'开模与改模', tag:'制造准备', intro:'新品开模、有费用改模、无费用改模是不同业务类别，具体审批链应按原表分类。', source:'12.xlsx《15-开模流程类》', nodes:[['T1 开模/改模需求','图纸、可投模清单、改模原因、费用和周期','开模或改模申请'],['T2 方案与供应商评审','模具规格、供应路线、供应商和预算','招标/供应商结论、模具方案'],['T3 模具结构评审','分型、进胶、冷却、顶出、排气和外观要求','模具评审结论、锁图和制作任务'],['T4 试模/验收与闭环','试模样件、问题和改模记录','首样/验收、改模闭环和交付状态']] },
+        { id:'special-projects', title:'特殊业务项目路径', tag:'特殊路径', intro:'海外差异化、派生/定制、转产、泰国本地化、东芝日本向和92编码需按适用条件选择，不是一个统一串行流程。', source:'12.xlsx《6、10、11、12、18、19、20、21》', nodes:[['S1 适用性判定','项目来源、市场/品牌、母机/平台、工厂和编码条件','项目类型与适用工作表'],['S2 需求与差异评估','差异化需求、BOM/配置、认证、母机问题','差异清单、配置/认证/测试范围'],['S3 项目开发与评审','对应专表的设计、认证、试制/试产节点','项目评审、测试/认证和问题闭环'],['S4 结项/上市决策','结项资料、状态、上市或转产条件','结项、上市/转产或后续生命周期任务']] }
+      ];
+     const spineEl = document.getElementById('spine');
+     const detailEl = document.getElementById('detail');
+     const searchEl = document.getElementById('search');
+     const filterEls = document.querySelectorAll('[data-filter]');
+     const routeEls = document.querySelectorAll('[data-route]');
+      const planningPanelEl = document.getElementById('planning-panel');
+      const planningSpineEl = document.getElementById('planning-spine');
+      const platformPanelEl = document.getElementById('platform-panel');
+      const platformPlanningSpineEl = document.getElementById('platform-planning-spine');
+      const platformDevelopmentSpineEl = document.getElementById('platform-development-spine');
+      const routeStatusEl = document.getElementById('route-status');
+      const supportOptionsEl = document.getElementById('support-options');
+      const supportFlowsEl = document.getElementById('support-flows');
+      const supportClearEl = document.getElementById('support-clear');
+      let selected = 'launch';
+      let selectedGroup = 'main';
+      let filter = 'all';
+      let focused = '';
+      let route = 'with-planning';
+      let selectedSupports = [];
+    function renderNodes() {
+      const query = searchEl.value.trim().toLocaleLowerCase();
+      const filtered = nodes.filter(n => {
+        const haystack = (n.title + n.short + n.desc + JSON.stringify(n.inputs) + JSON.stringify(n.outputs) + n.source).toLocaleLowerCase();
+        const matchesQuery = haystack.includes(query);
+        const matchesFilter = filter === 'all' || (filter === 'input' && n.inputs.length) || (filter === 'output' && n.outputs.length) || (filter === 'risk' && /评审|可靠性|综合方案/.test(n.title));
+        return matchesQuery && matchesFilter;
+      });
+      spineEl.innerHTML = filtered.length ? filtered.map(n => `<article class="process ${selectedGroup === 'main' && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === 'main' && focused === file[0] ? 'is-focus' : ''}" data-file="${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-node="${n.id}"><b>${String(nodes.indexOf(n) + 1).padStart(2,'0')} / FLOW</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === 'main' && focused === item ? 'is-focus' : ''}" data-output="${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的节点</div>';
+      spineEl.querySelectorAll('[data-node]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.node; selectedGroup = 'main'; focused = ''; renderNodes(); renderDetail(); }));
+      spineEl.querySelectorAll('[data-file]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.file.split('|')[0]; selectedGroup = 'main'; focused = button.dataset.file.split('|')[1]; renderNodes(); renderDetail(focused, 'input'); }));
+      spineEl.querySelectorAll('[data-output]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.output.split('|')[0]; selectedGroup = 'main'; focused = button.dataset.output.split('|')[1]; renderNodes(); renderDetail(focused, 'output'); }));
+    }
+     function matchesSearch(parts, query) {
+       return !query || parts.join(' ').toLocaleLowerCase().includes(query);
+     }
+     function renderPlanning() {
+       planningPanelEl.hidden = route !== 'with-planning';
+       const query = searchEl.value.trim().toLocaleLowerCase();
+       const visible = planningNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query));
+       planningSpineEl.innerHTML = visible.length ? visible.map((n, index) => `<article class="process ${selectedGroup === 'planning' && n.id === selected ? 'active' : ''}" data-process="${n.id}"><div class="process-card input"><h3>输入文件 <span class="count">${n.inputs.length}</span></h3>${n.inputs.map(file => `<button class="${selectedGroup === 'planning' && focused === file[0] ? 'is-focus' : ''}" data-plan-file="${n.id}|${file[0]}"><span class="branch">${file[0]}</span></button>`).join('')}</div><button class="process-core" data-plan-node="${n.id}"><b>${String(planningNodes.indexOf(n) + 1).padStart(2,'0')} / PLAN</b><strong>${n.title}</strong><small>${n.short}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n.outputs.length}</span></h3>${n.outputs.map(item => `<button class="${selectedGroup === 'planning' && focused === item ? 'is-focus' : ''}" data-plan-output="${n.id}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的单产品规划节点</div>';
+      planningSpineEl.querySelectorAll('[data-plan-node]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planNode; selectedGroup = 'planning'; focused = ''; renderPlanning(); renderNodes(); renderDetail(); }));
+      planningSpineEl.querySelectorAll('[data-plan-file]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planFile.split('|')[0]; selectedGroup = 'planning'; focused = button.dataset.planFile.split('|')[1]; renderPlanning(); renderNodes(); renderDetail(focused, 'input'); }));
+       planningSpineEl.querySelectorAll('[data-plan-output]').forEach(button => button.addEventListener('click', () => { selected = button.dataset.planOutput.split('|')[0]; selectedGroup = 'planning'; focused = button.dataset.planOutput.split('|')[1]; renderPlanning(); renderNodes(); renderDetail(focused, 'output'); }));
+     }
+     function renderProcessSpine(target, flowNodes, prefix, group, widthClass) {
+       target.innerHTML = flowNodes.length ? flowNodes.map((n, index) => `<article class="process ${selectedGroup === group && selected === `${group}:${n[0]}` ? 'active' : ''}" data-process="${n[0]}"><div class="process-card input"><h3>输入文件 <span class="count">${n[1].length}</span></h3>${n[1].map(file => `<button class="${selectedGroup === group && focused === file ? 'is-focus' : ''}" data-flow-input="${group}|${n[0]}|${file}"><span class="branch">${file}</span></button>`).join('')}</div><button class="process-core" data-flow-node="${group}|${n[0]}"><b>${String(index + 1).padStart(2,'0')} / ${prefix}</b><strong>${n[0]}</strong><small>${n[2]}</small></button><div class="process-card output"><h3>输出产物 <span class="count">${n[3].length}</span></h3>${n[3].map(item => `<button class="${selectedGroup === group && focused === item ? 'is-focus' : ''}" data-flow-output="${group}|${n[0]}|${item}"><span class="branch">${item}</span></button>`).join('')}</div></article>`).join('') : '<div class="empty">没有匹配的流程节点</div>';
+      target.querySelectorAll('[data-flow-node]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowNode.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = ''; renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1])); }));
+      target.querySelectorAll('[data-flow-input]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowInput.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1]), focused, 'input'); }));
+      target.querySelectorAll('[data-flow-output]').forEach(button => button.addEventListener('click', () => { const parts = button.dataset.flowOutput.split('|'); selected = `${parts[0]}:${parts[1]}`; selectedGroup = parts[0]; focused = parts.slice(2).join('|'); renderAllFlowViews(); renderFlowDetail(flowNodes.find(item => item[0] === parts[1]), focused, 'output'); }));
+    }
+     function renderPlatform() {
+       const visible = route === 'platform';
+       platformPanelEl.hidden = !visible;
+       const query = searchEl.value.trim().toLocaleLowerCase();
+       const planningRows = platformPlanningNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query)).map(n => [n.title, n.inputs.map(file => file[0]), n.short, n.outputs]);
+       const developmentRows = platformDevelopmentNodes.filter(n => matchesSearch([n.title, n.short, n.desc, n.source, JSON.stringify(n.inputs), JSON.stringify(n.outputs)], query)).map(n => [n.title, n.inputs.map(file => file[0]), n.short, n.outputs]);
+      renderProcessSpine(platformPlanningSpineEl, planningRows, 'P-PLAN', 'platform-planning', '');
+      renderProcessSpine(platformDevelopmentSpineEl, developmentRows, 'P-DEV', 'platform-development', '');
+    }
+    function renderSupportOptions() {
+      supportOptionsEl.innerHTML = supportFlows.map(flow => `<button class="support-option ${selectedSupports.includes(flow.id) ? 'active' : ''}" data-support="${flow.id}" type="button">${flow.tag} · ${flow.title}</button>`).join('');
+      supportOptionsEl.querySelectorAll('[data-support]').forEach(button => button.addEventListener('click', () => { const id = button.dataset.support; selectedSupports = selectedSupports.includes(id) ? selectedSupports.filter(item => item !== id) : [...selectedSupports, id]; renderSupportOptions(); renderSupportFlows(); }));
+    }
+     function renderSupportFlows() {
+       const selectedFlows = supportFlows.filter(flow => selectedSupports.includes(flow.id));
+       const query = searchEl.value.trim().toLocaleLowerCase();
+       supportFlowsEl.innerHTML = selectedFlows.length ? selectedFlows.map(flow => `<article class="support-flow"><h3>${flow.tag} · ${flow.title}</h3><p>${flow.intro}</p><div class="spine-scroll"><div class="spine" id="support-${flow.id}"></div></div><p class="source">${flow.source}。此处为沙盘整理，不替代原工作表和当前系统流程。</p></article>`).join('') : '<p class="empty">请选择一个或多个特定领域流程，查看它们如何并行支撑方案阶段。</p>';
+       selectedFlows.forEach(flow => { const target = document.getElementById(`support-${flow.id}`); const flowMatches = matchesSearch([flow.title, flow.tag, flow.intro, flow.source], query); const rows = (flowMatches ? flow.nodes : flow.nodes.filter(row => matchesSearch(row, query))).map(row => [row[0], [row[1]], '支线节点', [row[2]]]); renderProcessSpine(target, rows, 'SUPPORT', `support:${flow.id}`, ''); });
+    }
+    function renderFlowDetail(row, focus, focusType) {
+      const flow = selectedGroup.startsWith('platform') ? [...platformPlanningNodes, ...platformDevelopmentNodes].find(n => n.title === row[0]) : supportFlows.flatMap(item => item.nodes).map(item => ({title:item[0], short:item[2], inputs:[[item[1],'支线输入',item[1],item[1]]], outputs:[item[2]], gate:'该支线的具体审批、时限和角色需回到原工作表确认。', owner:'对应专业/项目团队', kicker:'SUPPORT', desc:'该节点属于特定领域并行支线，目的是说明它与主研发主线的衔接关系。', source:'12.xlsx工作表整理说明。'})).find(n => n.title === row[0]);
+      if (!flow) return;
+       if (selectedGroup.startsWith('platform')) { renderDetailForNode(flow, focus, focusType, selectedGroup); return; }
+      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在支线中定位到该节点。</div>` : '';
+      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${flow.kicker} · 特定领域支线</div><h2>${flow.title}</h2><p>${flow.desc}</p><span class="status">牵头：${flow.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>支线输入</h3>${flow.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n示例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>支线输出</h3><ul>${flow.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>适用边界</h3><div class="gate">${flow.gate}</div></div></div><p class="source">${flow.source}</p>`;
+    }
+    function renderDetailForNode(n, focus, focusType, group) {
+      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在支线中定位到该节点，右侧展示该节点的完整文件证据链。</div>` : '';
+      const groupLabel = group.startsWith('platform') ? '平台研发主线' : '方案阶段';
+      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate">${n.gate}</div></div></div><p class="source">${n.source} 文件样例为沙盘整理内容，字段和数值不是实际项目数据。</p>`;
+    }
+    function renderAllFlowViews() { renderNodes(); renderPlanning(); renderPlatform(); renderSupportFlows(); }
+    function renderDetail(focus, focusType) {
+      const n = (selectedGroup === 'planning' ? planningNodes : nodes).find(item => item.id === selected);
+      if (!n) return;
+      const focusText = focus ? `<div class="gate"><strong>当前聚焦：</strong>${focusType === 'input' ? '输入文件' : '输出产物'}「${focus}」<br>已在鱼骨图中定位到本节点，右侧展示该节点的完整文件证据链。</div>` : '';
+      const groupLabel = selectedGroup === 'planning' ? '单产品规划' : '方案阶段';
+      detailEl.innerHTML = `<div class="detail-head"><div class="kicker">${n.kicker} · ${groupLabel}</div><h2>${n.title}</h2><p>${n.desc}</p><span class="status">牵头：${n.owner}</span></div>${focusText}<div class="grid"><div class="card wide"><h3>输入文件与文件样例</h3>${n.inputs.map(file => `<div class="file"><strong>${file[0]}</strong><small>${file[1]}</small><div class="sample">${file[2]}\n\n样例：\n${file[3]}</div></div>`).join('')}</div><div class="card"><h3>本节点主要产物</h3><ul>${n.outputs.map(item => `<li>${item}</li>`).join('')}</ul></div><div class="card"><h3>下一节点前要确认</h3><div class="gate ${n.id === 'gate' || n.id === 'plan-decision' ? 'red' : ''}">${n.gate}</div></div></div><p class="source">${n.source} 文件样例为沙盘演示内容，字段和数值不是实际项目数据。</p>`;
+    }
+     searchEl.addEventListener('input', renderAllFlowViews);
+    filterEls.forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; filterEls.forEach(item => item.classList.toggle('active', item === button)); renderNodes(); }));
+     routeEls.forEach(button => button.addEventListener('click', () => { route = button.dataset.route; routeEls.forEach(item => item.classList.toggle('active', item === button)); routeStatusEl.textContent = route === 'with-planning' ? '当前路径：需要单产品规划。方案阶段的“正式产品规划书”由上游单产品规划输出。' : route === 'platform' ? '当前路径：平台规划 → 平台开发。平台规划书、配置边界和平台交付作为后续产品方案的上游输入。' : '当前路径：不需要单产品规划。项目从已有正式产品规划书、平台/模块/派生路径或其他已确认输入进入方案阶段。'; if (route !== 'with-planning' && selectedGroup === 'planning') { selected = 'launch'; selectedGroup = 'main'; focused = ''; } if (route !== 'platform' && selectedGroup.startsWith('platform')) { selected = 'launch'; selectedGroup = 'main'; focused = ''; } renderAllFlowViews(); renderDetail(); }));
+     supportClearEl.addEventListener('click', () => { selectedSupports = []; renderSupportOptions(); renderSupportFlows(); });
+     renderSupportOptions();
+     renderSupportFlows();
+     renderNodes();
+     renderPlanning();
+     renderPlatform();
+     renderDetail();
+  </script>
+</body>
+</html>
