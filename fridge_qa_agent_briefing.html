@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>冰箱问答智能体 · 架构 + 样例对照</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #14212b;
+      --ink-soft: #3a4a57;
+      --muted: #5c6b78;
+      --line: #d5dde4;
+      --paper: #f7f5f1;
+      --panel: #ffffff;
+      --left-bg: #eef2f5;
+      --right-bg: #f3efe8;
+      --accent: #0f6e6a;
+      --accent-soft: #d8ecea;
+      --warn: #9a5b16;
+      --warn-soft: #f3e4d1;
+      --ok: #2f6b3a;
+      --ok-soft: #dde9df;
+      --shadow: 0 1px 0 rgba(20, 33, 43, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -10%, #e4eef0 0%, transparent 42%),
+        radial-gradient(circle at 90% 0%, #efe6d8 0%, transparent 38%),
+        var(--paper);
+      font-family: "Noto Sans SC", "IBM Plex Sans", sans-serif;
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--ink-soft);
+      max-width: 52rem;
+      font-size: 0.98rem;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink-soft);
+    }
+    .tag.accent { background: var(--accent-soft); color: var(--accent); border-color: #b7d8d5; }
+    .tag.warn { background: var(--warn-soft); color: var(--warn); border-color: #e5cdb0; }
+    .tag.ok { background: var(--ok-soft); color: var(--ok); border-color: #bdd2c1; }
+
+    .board {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .board { grid-template-columns: 1fr; }
+    }
+
+    .col {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    .col.left { background: linear-gradient(180deg, #f8fafb 0%, var(--left-bg) 100%); }
+    .col.right { background: linear-gradient(180deg, #fbf8f3 0%, var(--right-bg) 100%); }
+
+    .col-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .col-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    h3 {
+      margin: 20px 0 10px;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+    }
+    h3:first-of-type { margin-top: 8px; }
+
+    .note {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #b7d8d5;
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+    .note.warn {
+      border-color: #e5cdb0;
+      background: var(--warn-soft);
+    }
+    .note.neutral {
+      border-color: var(--line);
+      background: #fff;
+    }
+
+    .stack { display: grid; gap: 10px; }
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 8px 0 4px;
+    }
+    .box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .box.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .box.ok { background: var(--ok-soft); border-color: #bdd2c1; }
+    .box.warn { background: var(--warn-soft); border-color: #e5cdb0; }
+    .box .t { font-weight: 700; font-size: 0.86rem; }
+    .box .s { font-size: 0.78rem; color: inherit; opacity: 0.88; margin-top: 3px; }
+    .box.accent .s { opacity: 0.9; }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .layers { display: grid; gap: 10px; }
+    .layer {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .layer.biz { border-left: 4px solid var(--accent); }
+    .layer.app { border-left: 4px solid var(--ok); }
+    .layer.data { border-left: 4px solid var(--warn); }
+    .layer .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .layer .title { font-weight: 700; font-size: 0.98rem; margin-bottom: 6px; }
+    .layer .desc { font-size: 0.86rem; color: var(--ink-soft); }
+
+    .map {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (max-width: 700px) {
+      .map { grid-template-columns: 1fr; }
+    }
+    .map .item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 0.82rem;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (max-width: 700px) {
+      .data-grid { grid-template-columns: 1fr; }
+    }
+
+    .muted { color: var(--muted); font-size: 0.82rem; }
+
+    .task {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .task-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .task-head strong { font-size: 0.9rem; }
+    .task p { margin: 0 0 6px; font-size: 0.82rem; color: var(--ink-soft); }
+    .task ul {
+      margin: 0 0 8px;
+      padding-left: 1.1rem;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+    .task li { margin: 2px 0; }
+    .task .meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px dashed var(--line);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    .conclusion {
+      background: #fff;
+      border: 1px solid #b7d8d5;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.82rem;
+    }
+    .conclusion strong { display: block; margin-bottom: 8px; font-size: 0.9rem; }
+    .conclusion li { margin: 4px 0; color: var(--ink-soft); }
+
+    .footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      .col { break-inside: avoid; }
+      .task { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <h1>冰箱问答智能体 · 架构 + 样例对照</h1>
+        <p>左：业务 / 应用 / 技术（数据）三层大结构与关系。右：用「冰箱 A 去巴西」拆成真实任务，说明怎么查、查什么、难在哪。老板、业务、需求、工程师同一口径。</p>
+      </div>
+      <div class="tags">
+        <span class="tag accent">左粗右细</span>
+        <span class="tag">业务 · 应用 · 数据</span>
+        <span class="tag warn">右栏负责任务共情</span>
+        <span class="tag ok">可拆 · 可查 · 可裁决</span>
+      </div>
+    </header>
+
+    <div class="board">
+      <!-- LEFT -->
+      <section class="col left">
+        <div class="col-head">
+          <span class="tag accent">左：大结构</span>
+          <h2>业务架构 · 应用架构 · 技术架构</h2>
+        </div>
+
+        <div class="note">
+          左边只讲结构和关系。细节看右边样例。左边回答三件事：业务上怎么办事、Agent 怎么转、底下要哪些数据。
+        </div>
+
+        <h3>总图：三层对应</h3>
+        <div class="layers">
+          <div class="layer biz">
+            <div class="label">业务架构</div>
+            <div class="title">用户看见的办事流程</div>
+            <div class="desc">拆题 → 步骤清单 → 四库取证 → 裁决 → 结论</div>
+          </div>
+          <div class="layer app">
+            <div class="label">应用架构</div>
+            <div class="title">Agent 工作引擎</div>
+            <div class="desc">理解 · 定目标 · 规划 · 调工具 · 记忆 · 反馈循环</div>
+          </div>
+          <div class="layer data">
+            <div class="label">技术架构（数据）</div>
+            <div class="title">四大知识库供数</div>
+            <div class="desc">产品 · 竞品 · 法规专利 · 可靠性售后</div>
+          </div>
+        </div>
+
+        <div class="flow" style="margin-top:12px">
+          <div class="box"><div class="t">业务架构</div><div class="s">规定人怎么把问题办成结论</div></div>
+          <span class="arrow">↓</span>
+          <div class="box"><div class="t">应用架构</div><div class="s">规定 Agent 怎么执行这套流程</div></div>
+          <span class="arrow">↓</span>
+          <div class="box"><div class="t">技术架构</div><div class="s">规定要哪些数据、Agent 调什么</div></div>
+        </div>
+
+        <h3>① 业务架构：办事流程</h3>
+        <div class="flow">
+          <div class="box accent"><div class="t">①提出问题</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="t">②拆解问题</div></div>
+          <span class="arrow">→</span>
+          <div class="box ok"><div class="t">③规划步骤</div></div>
+          <span class="arrow">→</span>
+          <div class="box warn"><div class="t">④访问知识库</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="t">⑤分析裁决</div></div>
+          <span class="arrow">→</span>
+          <div class="box accent"><div class="t">⑥给出结论</div></div>
+        </div>
+        <p class="muted">出牌原则：先硬约束（法规 / 专利 / 质量）→ 再改动量 → 再市场机会 → 再经济性 → 最后定路径。具体字段见右边任务。</p>
+
+        <h3>② 应用架构：Agent 核心框</h3>
+        <div class="flow">
+          <div class="box accent"><div class="t">理解问题</div><div class="s">实体 · 高度</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="t">确定目标</div><div class="s">结论形态</div></div>
+          <span class="arrow">→</span>
+          <div class="box ok"><div class="t">规划行动</div><div class="s">任务清单</div></div>
+          <span class="arrow">→</span>
+          <div class="box warn"><div class="t">调用知识库</div><div class="s">按任务取证</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="t">记忆</div><div class="s">证据 · 缺口</div></div>
+          <span class="arrow">→</span>
+          <div class="box ok"><div class="t">反馈循环</div><div class="s">不够再查</div></div>
+          <span class="arrow">→</span>
+          <div class="box accent"><div class="t">形成答案</div><div class="s">路径 · 依据</div></div>
+        </div>
+
+        <h3>业务框 ↔ 应用框</h3>
+        <div class="map">
+          <div class="item">拆解问题 → 理解 + 定目标</div>
+          <div class="item">规划步骤 → 规划行动（任务清单）</div>
+          <div class="item">访问知识库 → 调用工具 / 知识库</div>
+          <div class="item">分析裁决 → 记忆 + 反馈循环 + 出牌</div>
+          <div class="item">给出结论 → 形成答案</div>
+          <div class="item">正/负反馈 → 齐了增强；缺了再查</div>
+        </div>
+
+        <h3>③ 技术架构：数据要什么</h3>
+        <p class="muted">这里只定「要什么数据」。细字段由右边真实任务体现。</p>
+        <div class="data-grid">
+          <div class="box accent"><div class="t">产品数据</div><div class="s">平台 / 型号 / SKU、BOM、试验、成本、工艺、可售与服务（立项→售后）</div></div>
+          <div class="box ok"><div class="t">竞品数据</div><div class="s">对标型号、价格卖点、拆解、节奏、口碑故障（全流程对照）</div></div>
+          <div class="box warn"><div class="t">法规专利数据</div><div class="s">各国法规包、认证清单、制冷剂 / 能效、FTO 与专利族</div></div>
+          <div class="box"><div class="t">可靠性售后数据</div><div class="s">失效率、故障模式、试验门禁、服务网点与备件</div></div>
+        </div>
+
+        <h3>三层如何串起来</h3>
+        <div class="note neutral">
+          业务架构规定办事步骤；应用架构用 Agent 把步骤跑起来（规划任务、调库、记忆、循环）；技术架构提供四大类数据。右边样例展示：一个真实问题如何被拆成任务并落到这些框里。
+        </div>
+        <p class="muted">另：简单项目少人跑全球，挂在业务结论之后——路径若为配置 / 颜色 / 区域变型且硬约束通过，再进自动变更流水线；与问答共用同一数据底座。</p>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="col right">
+        <div class="col-head">
+          <span class="tag warn">右：真实任务</span>
+          <h2>冰箱 A → 巴西</h2>
+        </div>
+
+        <div class="box" style="margin-bottom:12px">
+          <div class="t">业务原问（一句）</div>
+          <div class="s" style="margin-top:6px;opacity:1;color:var(--ink-soft)">
+            冰箱 A 在东南亚卖得很好。能不能去巴西卖？该不该卖？怎么卖？
+          </div>
+          <p class="muted" style="margin:8px 0 0">系统不会直接答「能/不能」。先拆成下面 9 个真实任务。</p>
+        </div>
+
+        <div class="note warn">
+          听起来是一句话；落地是 9 个任务、四类数据、几十个字段。难度在「强制查全 + 按序裁决」，不是更会聊天。
+        </div>
+
+        <div class="stack">
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务1</span><strong>摸清东南亚在售的 A 是哪一版</strong></div>
+            <p>去哪查：产品数据 · 要回答：卖得好的 A 具体是哪个平台/型号/SKU？</p>
+            <ul>
+              <li>平台ID、型号、东南亚在售 SKU 列表</li>
+              <li>容积、门体、色板、电压频率、插头、语言包</li>
+              <li>制冷剂、压缩机、气候类型、能效/噪音</li>
+              <li>BOM 版本、电控/区域参数版本</li>
+              <li>主卖点、主渠道、近12月销量与价位、成本带</li>
+            </ul>
+            <div class="meta">查完得到：《A-东南亚档案》 · 难度：同名多配置，钉不死 SKU 后面全错</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务2</span><strong>列产品侧：东南亚版 vs 巴西可能差异</strong></div>
+            <p>去哪查：产品数据 · 要回答：搬去巴西，产品上大概要动什么？</p>
+            <ul>
+              <li>气候包络 vs 巴西使用环境</li>
+              <li>电压/插头是否只改配件</li>
+              <li>是否已有拉美/巴西电控参数集、葡语包</li>
+              <li>色板/外观渠道偏好、历史跨区变型案例</li>
+              <li>产线换型难度（插头/标签/说明书）</li>
+            </ul>
+            <div class="meta">查完得到：《产品差异初表》 · 难度：无历史变型数据时只能列可能项，置信度下调</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务3</span><strong>读巴西法规：允不允许这样卖</strong></div>
+            <p>去哪查：法规专利数据·准入 · 要回答：强制要求是什么？A 差在哪？周期费用？</p>
+            <ul>
+              <li>能效规则、测试方法、过渡期截止日</li>
+              <li>安全认证项、机构、周期、费用</li>
+              <li>制冷剂允许/禁用（是否一票否决）</li>
+              <li>标签铭牌语言、插头电压、本地化要求</li>
+              <li>宣传用语限制、关税/本地政策</li>
+            </ul>
+            <div class="meta">查完得到：《巴西准入对照表》+红灯 · 难度：东南亚证书常不能直接互认；缺过渡期文件不能假装合规</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务4</span><strong>读专利：原方案搬过去会不会被挡</strong></div>
+            <p>去哪查：法规专利数据·IP · 要回答：门体/风道/控制等 FTO 如何？</p>
+            <ul>
+              <li>A 的技术方案指纹</li>
+              <li>相关专利族、法律状态、地域</li>
+              <li>风险等级、规避改法、许可可能</li>
+              <li>是否已有有效期内法务 FTO 可复用</li>
+            </ul>
+            <div class="meta">查完得到：《专利风险：低/可规避/阻断》 · 难度：阻断级需法务复核，不能自动放行</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务5</span><strong>读竞品：巴西战场打谁</strong></div>
+            <p>去哪查：竞品数据 · 要回答：同容积对手、价格卖点窗口、还有没有机会？</p>
+            <ul>
+              <li>Top3～5 品牌型号：容积能效噪音卖点价格渠道</li>
+              <li>近12～24月上市与促销节奏</li>
+              <li>与东南亚同品牌的定位差异</li>
+              <li>口碑故障主题；若有拆解则关键件/成本带</li>
+            </ul>
+            <div class="meta">查完得到：《巴西战场表》+《优势/缺口》 · 难度：来源杂，必须带可信度</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务6</span><strong>读可靠性：卖得好是否质量也稳</strong></div>
+            <p>去哪查：可靠性售后数据 · 要回答：东南亚早期失效与高发故障？换巴西会否放大？</p>
+            <ul>
+              <li>30/90/365 天早期失效率（必须有分母）</li>
+              <li>千台故障、返修/重复维修、Top 故障模式</li>
+              <li>重大质量/召回是否未关闭</li>
+              <li>高温高湿/电压波动敏感故障是否在 Top</li>
+              <li>关键件失效率与供应商质量等级</li>
+            </ul>
+            <div class="meta">查完得到：《质量迁移评估》 · 难度：没有分母的故障数没有意义</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务7</span><strong>读售后：卖得出去服不服得了</strong></div>
+            <p>去哪查：可靠性售后 + 产品服务档案 · 要回答：巴西网点、备件、保修、葡语维修是否就绪？</p>
+            <ul>
+              <li>服务网络覆盖、保修是否满足当地</li>
+              <li>葡语说明书/维修手册</li>
+              <li>关键备件供货周期与库存</li>
+              <li>未就绪时可限哪些渠道/城市试销</li>
+            </ul>
+            <div class="meta">查完得到：《服务就绪度》 · 难度：常被业务问漏；有产品没服务网是上市大坑</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务8</span><strong>算经济性：改完还进不进价格带</strong></div>
+            <p>去哪查：产品成本 + 法规费用 + 竞品价格 · 要回答：改配+认证+本地化后还能否挣钱？</p>
+            <ul>
+              <li>改配增量（插头、标签、语言包、可能换料）</li>
+              <li>认证费、物流关税本地化假设</li>
+              <li>目标成交价 vs 竞品价格带、毛利门槛</li>
+              <li>历史类似跨区成功率（若有）</li>
+            </ul>
+            <div class="meta">查完得到：《经济性结论》 · 难度：假设一变结论就变，必须写清假设</div>
+          </article>
+
+          <article class="task">
+            <div class="task-head"><span class="tag accent">任务9</span><strong>汇总裁决：按序出牌给路径</strong></div>
+            <p>去哪查：不再新查；任务1–8 的表放一桌 · 要回答：直接卖 / 改配置 / 小改 / 暂缓 / 不做？</p>
+            <ul>
+              <li>先看任务3/4/6 有无阻断红灯</li>
+              <li>再看任务2/3 改动量档位</li>
+              <li>再看任务7 服务开多大</li>
+              <li>再看任务5 机会、任务8 划算</li>
+              <li>列出缺口：缺什么不能无条件拍板</li>
+            </ul>
+            <div class="meta">查完得到：一页路径+条件+依据+缺口+下一步 · 难度：必须先过红灯再谈机会</div>
+          </article>
+        </div>
+
+        <h3>结论形态（示例）</h3>
+        <div class="conclusion">
+          <strong>建议：配置变型后进入巴西（有条件）</strong>
+          <ul>
+            <li>任务3/4：无专利阻断；需补标签认证；制冷剂文件待确认</li>
+            <li>任务1/2：差异在插头电压件、葡语说明书、标签；不新开平台</li>
+            <li>任务5：价格带可进入</li>
+            <li>任务6/7：质量在基线内；服务未全就绪 → 先限渠道</li>
+            <li>任务8：假设费用下经济性可接受</li>
+            <li>下一步：变更单、补证、售后建点、补文件后再全渠道</li>
+          </ul>
+        </div>
+
+        <div class="note warn" style="margin-top:12px">
+          左边三层是结构；右边 9 个任务是落地。需求请落到可拆、可查、可裁决的问题——否则无法稳定产出带依据的结论。
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      冰箱行业问答智能体对外讲解页 · 后续可据此转一页 PPT · 打印本页亦可用于投屏讲解
+    </footer>
+  </div>
+</body>
+</html>
